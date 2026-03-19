@@ -1,0 +1,35 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+
+  # ========================
+  # DC SERVER
+  # ========================
+  - job_name: 'dc-server'
+    static_configs:
+      - targets: ['10.10.1.10:9100']
+        labels:
+          server: dc-server
+          location: DC
+
+  # ========================
+  # DRC SERVER
+  # ========================
+  - job_name: 'drc-server'
+    static_configs:
+      - targets: ['10.20.2.10:9100']
+        labels:
+          server: drc-server
+          location: DRC
+
+  # ========================
+  # ROUTER
+  # ========================
+  - job_name: 'router'
+    static_configs:
+      - targets: ['10.10.1.1:9100']
+        labels:
+          server: router
+          location: CORE
+          role: network

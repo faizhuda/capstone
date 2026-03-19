@@ -1,0 +1,13 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens33:   # DC network
+      dhcp4: no
+      addresses:
+        - 10.10.1.1/24
+
+    ens37:   # DRC network
+      dhcp4: no
+      addresses:
+        - 10.20.2.1/24
