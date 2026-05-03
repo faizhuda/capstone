@@ -1,122 +1,164 @@
 # Proyek Capstone
 
-## Sistem Monitoring Infrastruktur (Simulasi DC–DRC + Alerting Real-Time)
+## Sistem Monitoring Infrastruktur (Simulasi DC–DRC + Router + Alerting Real-Time)
 
 ---
 
 # Gambaran Umum
 
-Proyek ini mengimplementasikan **sistem monitoring infrastruktur real-time** untuk lingkungan simulasi **Data Center (DC)** dan **Disaster Recovery Center (DRC)**.
+Proyek ini mengimplementasikan **sistem monitoring infrastruktur real-time** untuk lingkungan simulasi:
+
+* **Data Center (DC)**
+* **Disaster Recovery Center (DRC)**
+
+yang dihubungkan melalui **Router VM**, serta dimonitor oleh **Monitoring Server terpusat**.
 
 Sistem ini mampu:
 
-* Mengumpulkan metrik sistem (CPU, memory, disk, network)
-* Menampilkan visualisasi real-time
+* Mengumpulkan metrik sistem (CPU, Memory, Disk, Network)
+* Menampilkan visualisasi real-time (Grafana)
 * Mengirim alert otomatis ke Telegram
-* Memonitor multi-network secara terpusat
-
-Stack utama:
-
-* **Node Exporter** → pengambil metrik
-* **Prometheus** → pengumpul data
-* **Grafana** → visualisasi
-* **Alertmanager** → sistem alerting
-* **Telegram Bot** → notifikasi
+* Mensimulasikan arsitektur jaringan nyata (DC ↔ DRC via Router)
 
 ---
 
-# Arsitektur Sistem (UPDATED)
+# Arsitektur Sistem (FINAL)
 
 ```text
-                     INTERNET
-                         |
-                   (VMware NAT)
-                  192.168.163.0/24
-                         |
-               +----------------------+
-               |  Monitoring Server   |
-               |----------------------|
-               | Prometheus           |
-               | Grafana              |
-               | Alertmanager         |
-               |                      |
-               | ens33 → 10.10.1.100  |
-               | ens34 → 192.168.163.x|
-               +----------+-----------+
-                          |
-        ----------------------------------------
-        |                                      |
-   10.10.1.0/24                         10.20.2.0/24
-        |                                      |
-  +-------------+                      +-------------+
-  | DC Server   |                      | DRC Server  |
-  |-------------|                      |-------------|
-  | Node Exporter                     | Node Exporter
-  | 10.10.1.10                        | 10.20.2.10
-  +-------------+                      +-------------+
+                         INTERNET
+                             |
+                       (VMware NAT)
+                      192.168.163.0/24
+                             |
+               +------------------------------+
+               |     Monitoring Server        |
+               |------------------------------|
+               | Prometheus                  |
+               | Grafana                     |
+               | Alertmanager                |
+               |                             |
+               | ens33 → 10.10.1.100 (DC)    |
+               | ens37 → 192.168.163.x (NAT) |
+               +-------------+---------------+
+                             |
+                      10.10.1.0/24
+                             |
+                      +--------------+
+                      |  Router VM   |
+                      |--------------|
+                      | 10.10.1.1    |
+                      | 10.20.2.1    |
+                      +------+-------+
+                             |
+                ------------------------------
+                |                            |
+        10.10.1.0/24                10.20.2.0/24
+                |                            |
+        +-------------+              +-------------+
+        | DC Server   |              | DRC Server  |
+        |-------------|              |-------------|
+        | Node Exporter              | Node Exporter
+        | 10.10.1.10                | 10.20.2.10
+        +-------------+              +-------------+
 ```
 
 ---
 
-# Konsep Penting
+# Konsep Arsitektur
 
-* Monitoring server memiliki **2 network + 1 NAT**
-* DC & DRC **tidak saling terhubung langsung**
-* Semua komunikasi melalui monitoring server
-* Internet digunakan untuk **alert Telegram**
+## 🔹 Router sebagai Core Network
+
+Router VM berfungsi sebagai:
+
+* Penghubung jaringan DC dan DRC
+* Gateway antar subnet
+* Simulasi network layer seperti di dunia nyata
+
+👉 Tanpa router:
+DC dan DRC tidak bisa saling komunikasi
+
+---
+
+## 🔹 Monitoring Terpusat
+
+Monitoring Server:
+
+* Terhubung ke DC secara langsung
+* Mengakses DRC melalui router
+* Memiliki akses internet (NAT) untuk alert Telegram
+
+---
+
+## 🔹 Hybrid Network Model
+
+Arsitektur ini mensimulasikan:
+
+* **Internal network (DC & DRC)**
+* **Routing layer (Router VM)**
+* **External connectivity (Internet via NAT)**
 
 ---
 
 # Komponen Infrastruktur
 
-## Monitoring Server
+## 🖥 Monitoring Server
 
-Layanan:
-
-* Prometheus
-* Grafana
-* Alertmanager
-
-Network:
-
-| Interface | IP                           |
-| --------- | ---------------------------- |
-| ens33     | 10.10.1.100                  |
-| ens37     | 192.168.163.x (NAT Internet) |
+| Komponen | Nilai                             |
+| -------- | --------------------------------- |
+| IP (DC)  | 10.10.1.100                       |
+| IP (NAT) | 192.168.163.x                     |
+| Services | Prometheus, Grafana, Alertmanager |
 
 Fungsi:
 
-* Scrape metrik dari DC & DRC
+* Scrape metrik DC & DRC
 * Visualisasi data
-* Kirim alert ke Telegram
+* Mengirim alert ke Telegram
 
 ---
 
-## DC Server
+## 🌐 Router VM
+
+| Interface   | IP        |
+| ----------- | --------- |
+| DC Network  | 10.10.1.1 |
+| DRC Network | 10.20.2.1 |
+
+Fungsi:
+
+* Routing antar jaringan
+* Gateway DC & DRC
+* Simulasi infrastruktur real
+
+---
+
+## 🏢 DC Server
 
 | Field    | Value         |
 | -------- | ------------- |
 | Hostname | dc-server     |
 | IP       | 10.10.1.10    |
+| Gateway  | 10.10.1.1     |
 | Service  | Node Exporter |
 
 ---
 
-## DRC Server
+## 🏭 DRC Server
 
 | Field    | Value         |
 | -------- | ------------- |
 | Hostname | drc-server    |
 | IP       | 10.20.2.10    |
+| Gateway  | 10.20.2.1     |
 | Service  | Node Exporter |
 
 ---
 
 # Monitoring Stack
 
-## Prometheus
+## 🔹 Prometheus
 
-Scrape setiap 15 detik
+Scrape interval: **15 detik**
 
 ```yaml
 scrape_configs:
@@ -133,7 +175,7 @@ scrape_configs:
 
 ---
 
-## Grafana
+## 🔹 Grafana
 
 Dashboard:
 
@@ -149,7 +191,7 @@ Menampilkan:
 
 ---
 
-## Alertmanager (AKTIF)
+## 🔹 Alertmanager
 
 ```yaml
 route:
@@ -172,36 +214,34 @@ receivers:
 
 # Alert yang Diimplementasikan
 
-## High CPU Usage
+## 🔥 High CPU Usage
 
-```yaml
+```
 CPU usage > 80%
 ```
 
-## Node Down
+## 🚨 Node Down
 
-```yaml
+```
 up == 0
 ```
 
 ---
 
-# Integrasi Telegram (SUDAH BERJALAN)
+# Integrasi Telegram
 
 Contoh notifikasi:
 
 ```
 🚨 HighCPUUsage
-
 Instance: 10.10.1.10:9100
 Severity: warning
-
 CPU usage > 80%
 ```
 
 ---
 
-# Pengujian
+# Pengujian Sistem
 
 ## CPU Stress
 
@@ -209,15 +249,11 @@ CPU usage > 80%
 stress-ng --cpu 4 --timeout 60s
 ```
 
----
-
 ## Memory Stress
 
 ```
 stress-ng --vm 2 --vm-bytes 1G --timeout 60s
 ```
-
----
 
 ## Disk Stress
 
@@ -225,73 +261,49 @@ stress-ng --vm 2 --vm-bytes 1G --timeout 60s
 stress-ng --hdd 2 --timeout 60s
 ```
 
----
-
-## Network Test
+## Network Test (via Router)
 
 ```
-iperf3 -c 10.10.1.100
+iperf3 -c 10.20.2.10
 ```
 
 ---
 
 # Fitur yang Sudah Diimplementasikan
 
-* Monitoring multi-server (DC & DRC)
+* Monitoring DC & DRC secara terpusat
+* Routing antar network menggunakan Router VM
 * Prometheus scraping
-* Dashboard Grafana
-* Alert otomatis (CPU & Node Down)
+* Grafana dashboard
+* Alert otomatis
 * Notifikasi Telegram real-time
-* Dual network monitoring server
 * NAT internet integration
-* Routing antar network
+* Simulasi arsitektur real-world
 
 ---
 
-# Masalah yang Ditemui & Solusi
+# Masalah & Solusi
 
-## ❌ Tidak bisa akses internet
+## ❌ NAT tidak bekerja
 
-Penyebab:
-
-* Subnet VM tidak sesuai NAT
-
-Solusi:
-
-* Samakan subnet dengan VMnet8 (192.168.163.0/24)
-
----
+✔ Solusi: samakan subnet dengan VMnet8
 
 ## ❌ DNS gagal
 
-Penyebab:
-
-* resolv.conf default stub
-
-Solusi:
-
-* set DNS ke 8.8.8.8
-
----
+✔ Solusi: set DNS manual (8.8.8.8)
 
 ## ❌ Telegram tidak mengirim
 
-Penyebab:
-
-* Tidak ada koneksi internet
-
-Solusi:
-
-* Tambah adapter NAT
+✔ Solusi: pastikan koneksi internet aktif
 
 ---
 
 # Pengembangan Selanjutnya
 
-* Dashboard NOC custom (React)
-* Multi Alert Channel (Email + Telegram)
+* Dashboard NOC (React)
+* Multi-channel alert (Email, Discord)
 * High Availability Prometheus
-* Auto-recovery system (self healing)
+* Auto recovery (self-healing)
 * Failover DC → DRC
 
 ---
@@ -301,13 +313,13 @@ Solusi:
 | Tools         | Fungsi       |
 | ------------- | ------------ |
 | Prometheus    | Monitoring   |
-| Grafana       | Dashboard    |
+| Grafana       | Visualisasi  |
 | Node Exporter | Metrics      |
 | Alertmanager  | Alert        |
 | Telegram Bot  | Notifikasi   |
 | VMware        | Virtualisasi |
 | stress-ng     | Testing      |
-| iperf3        | Network test |
+| iperf3        | Network      |
 
 ---
 
@@ -317,13 +329,13 @@ Membangun sistem monitoring modern yang:
 
 * Real-time
 * Terpusat
-* Otomatis
-* Siap digunakan di environment production kecil
+* Berbasis alert
+* Mendekati implementasi di dunia nyata
 
 ---
 
 # Status Proyek
 
 ```
-Works Locally, Next Up: Deployment
+Works Locally, Next Up: Deployment.
 ```
