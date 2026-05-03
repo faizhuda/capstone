@@ -1,6 +1,6 @@
 # Proyek Capstone
 
-## Sistem Monitoring Infrastruktur (Simulasi DC–DRC)
+## Sistem Monitoring Infrastruktur (Simulasi DC–DRC + Alerting Real-Time)
 
 ---
 
@@ -8,387 +8,322 @@
 
 Proyek ini mengimplementasikan **sistem monitoring infrastruktur real-time** untuk lingkungan simulasi **Data Center (DC)** dan **Disaster Recovery Center (DRC)**.
 
-Sistem monitoring mengumpulkan metrik sistem seperti:
+Sistem ini mampu:
 
-* Penggunaan CPU
-* Penggunaan memori
-* Utilisasi disk
-* Trafik jaringan
+* Mengumpulkan metrik sistem (CPU, memory, disk, network)
+* Menampilkan visualisasi real-time
+* Mengirim alert otomatis ke Telegram
+* Memonitor multi-network secara terpusat
 
-Metrik dikumpulkan menggunakan **Node Exporter**, di-scrape oleh **Prometheus**, dan divisualisasikan melalui **dashboard Grafana**.
+Stack utama:
 
-Server monitoring terhubung ke **jaringan DC dan DRC secara bersamaan**, sehingga monitoring terpusat dapat dilakukan tanpa membutuhkan komunikasi langsung antara kedua server.
-
-Pengembangan berikutnya mencakup **integrasi router, sistem alerting, notifikasi Telegram, dan dashboard web monitoring kustom yang mirip NOC pemerintah (gaya Diskominfo)**.
+* **Node Exporter** → pengambil metrik
+* **Prometheus** → pengumpul data
+* **Grafana** → visualisasi
+* **Alertmanager** → sistem alerting
+* **Telegram Bot** → notifikasi
 
 ---
 
-# Arsitektur Sistem Saat Ini
-
-Implementasi saat ini menggunakan **server monitoring dual-network** yang terhubung ke kedua jaringan.
+# Arsitektur Sistem (UPDATED)
 
 ```text
-                 Monitoring Server
-           +------------------------------+
-           | Prometheus                   |
-           | Grafana                      |
-           | Alertmanager (planned)       |
-           |                              |
-           | Adapter 1 → 10.10.1.100      |
-           | Adapter 2 → 10.20.2.100      |
-           +--------------+---------------+
+                     INTERNET
+                         |
+                   (VMware NAT)
+                  192.168.163.0/24
+                         |
+               +----------------------+
+               |  Monitoring Server   |
+               |----------------------|
+               | Prometheus           |
+               | Grafana              |
+               | Alertmanager         |
+               |                      |
+               | ens33 → 10.10.1.100  |
+               | ens34 → 192.168.163.x|
+               +----------+-----------+
                           |
-           -------------------------------
-           |                             |
-     10.10.1.0/24                   10.20.2.0/24
-           |                             |
-     +------------+                +------------+
-     | DC Server  |                | DRC Server |
-     |------------|                |------------|
-     | Node Exporter               | Node Exporter
-     | 10.10.1.10                  | 10.20.2.10
-     +------------+                +------------+
+        ----------------------------------------
+        |                                      |
+   10.10.1.0/24                         10.20.2.0/24
+        |                                      |
+  +-------------+                      +-------------+
+  | DC Server   |                      | DRC Server  |
+  |-------------|                      |-------------|
+  | Node Exporter                     | Node Exporter
+  | 10.10.1.10                        | 10.20.2.10
+  +-------------+                      +-------------+
 ```
 
-### Catatan Penting
+---
 
-* DC dan DRC **tidak berkomunikasi secara langsung**
-* Server monitoring bertindak sebagai **node monitoring terpusat**
-* Setiap server mengekspose metrik melalui **Node Exporter**
+# Konsep Penting
+
+* Monitoring server memiliki **2 network + 1 NAT**
+* DC & DRC **tidak saling terhubung langsung**
+* Semua komunikasi melalui monitoring server
+* Internet digunakan untuk **alert Telegram**
 
 ---
 
 # Komponen Infrastruktur
 
-## Server Monitoring
+## Monitoring Server
 
-Layanan yang berjalan:
+Layanan:
 
 * Prometheus
 * Grafana
-* Alertmanager (direncanakan)
+* Alertmanager
 
-Konfigurasi jaringan:
+Network:
 
-| Interface | IP          |
-| --------- | ----------- |
-| Adapter 1 | 10.10.1.100 |
-| Adapter 2 | 10.20.2.100 |
+| Interface | IP                           |
+| --------- | ---------------------------- |
+| ens33     | 10.10.1.100                  |
+| ens37     | 192.168.163.x (NAT Internet) |
 
-Tujuan:
+Fungsi:
 
-* Melakukan scrape metrik dari server DC
-* Melakukan scrape metrik dari server DRC
-* Memvisualisasikan metrik menggunakan Grafana
-
----
-
-## Server DC
-
-| Komponen   | Nilai         |
-| ---------- | ------------- |
-| Hostname   | dc-server     |
-| IP Address | 10.10.1.10    |
-| Network    | 10.10.1.0/24  |
-| Service    | Node Exporter |
-
-Endpoint metrik:
-
-```
-http://10.10.1.10:9100/metrics
-```
+* Scrape metrik dari DC & DRC
+* Visualisasi data
+* Kirim alert ke Telegram
 
 ---
 
-## Server DRC
+## DC Server
 
-| Komponen   | Nilai         |
-| ---------- | ------------- |
-| Hostname   | drc-server    |
-| IP Address | 10.20.2.10    |
-| Network    | 10.20.2.0/24  |
-| Service    | Node Exporter |
-
-Endpoint metrik:
-
-```
-http://10.20.2.10:9100/metrics
-```
+| Field    | Value         |
+| -------- | ------------- |
+| Hostname | dc-server     |
+| IP       | 10.10.1.10    |
+| Service  | Node Exporter |
 
 ---
 
-# Stack Monitoring
+## DRC Server
+
+| Field    | Value         |
+| -------- | ------------- |
+| Hostname | drc-server    |
+| IP       | 10.20.2.10    |
+| Service  | Node Exporter |
+
+---
+
+# Monitoring Stack
 
 ## Prometheus
 
-Prometheus melakukan scrape metrik dari Node Exporter setiap **15 detik**.
-
-Contoh konfigurasi:
-
-```
-/etc/prometheus/prometheus.yml
-```
+Scrape setiap 15 detik
 
 ```yaml
-global:
-  scrape_interval: 15s
-
 scrape_configs:
   - job_name: "node-exporter"
-
     static_configs:
       - targets: ["10.10.1.10:9100"]
         labels:
-          server: "dc-server"
-          location: "DC"
+          job: "dc-server"
 
       - targets: ["10.20.2.10:9100"]
         labels:
-          server: "drc-server"
-          location: "DRC"
-```
-
----
-
-## Node Exporter
-
-Node Exporter mengumpulkan metrik tingkat sistem, termasuk:
-
-* Penggunaan CPU
-* Penggunaan memori
-* Penggunaan disk
-* Trafik jaringan
-* Beban sistem
-* Uptime sistem
-
-Format endpoint metrik:
-
-```
-http://<server-ip>:9100/metrics
+          job: "drc-server"
 ```
 
 ---
 
 ## Grafana
 
-Grafana memvisualisasikan metrik Prometheus menggunakan dashboard.
+Dashboard:
 
-Dashboard yang digunakan:
+* Node Exporter Full
 
-```
-Node Exporter Full
-```
+Menampilkan:
 
-Metrik yang ditampilkan mencakup:
-
-* Penggunaan CPU
-* Penggunaan memori
-* Utilisasi disk
-* Trafik jaringan
-* Beban sistem
-* Uptime
+* CPU usage
+* Memory usage
+* Disk usage
+* Network traffic
+* System load
 
 ---
 
-# Pengujian & Simulasi
+## Alertmanager (AKTIF)
 
-## Uji Stress CPU
+```yaml
+route:
+  receiver: telegram
+  group_by: ['alertname', 'instance']
+  group_wait: 10s
+  group_interval: 30s
+  repeat_interval: 5m
 
-Jalankan di server DC atau DRC:
+receivers:
+  - name: telegram
+    telegram_configs:
+      - bot_token: "YOUR_TOKEN"
+        chat_id: YOUR_CHAT_ID
+        parse_mode: Markdown
+        send_resolved: true
+```
+
+---
+
+# Alert yang Diimplementasikan
+
+## High CPU Usage
+
+```yaml
+CPU usage > 80%
+```
+
+## Node Down
+
+```yaml
+up == 0
+```
+
+---
+
+# Integrasi Telegram (SUDAH BERJALAN)
+
+Contoh notifikasi:
+
+```
+🚨 HighCPUUsage
+
+Instance: 10.10.1.10:9100
+Severity: warning
+
+CPU usage > 80%
+```
+
+---
+
+# Pengujian
+
+## CPU Stress
 
 ```
 stress-ng --cpu 4 --timeout 60s
 ```
 
-Hasil yang diharapkan:
-
-* Lonjakan penggunaan CPU terlihat pada dashboard Grafana.
-
 ---
 
-## Uji Stress Memori
+## Memory Stress
 
 ```
 stress-ng --vm 2 --vm-bytes 1G --timeout 60s
 ```
 
-Hasil yang diharapkan:
-
-* Penggunaan memori meningkat.
-
 ---
 
-## Uji Disk I/O
+## Disk Stress
 
 ```
 stress-ng --hdd 2 --timeout 60s
 ```
 
-Hasil yang diharapkan:
-
-* Lonjakan aktivitas disk terlihat di Grafana.
-
 ---
 
-## Uji Trafik Jaringan
-
-Karena DC dan DRC terisolasi, pengujian jaringan dilakukan **antara masing-masing server dan server monitoring**.
-
-Jalankan server iperf3 di server monitoring:
+## Network Test
 
 ```
-iperf3 -s
+iperf3 -c 10.10.1.100
 ```
-
-Jalankan client dari server DC:
-
-```
-iperf3 -c 10.10.1.100 -t 60
-```
-
-Jalankan client dari server DRC:
-
-```
-iperf3 -c 10.20.2.100 -t 60
-```
-
-Hasil yang diharapkan:
-
-* Lonjakan trafik jaringan terlihat pada dashboard Grafana.
 
 ---
 
 # Fitur yang Sudah Diimplementasikan
 
-* Monitoring infrastruktur multi-server
-* Scrape metrik dengan Prometheus
-* Dashboard visualisasi Grafana
-* Simulasi stress resource
-* Simulasi trafik jaringan
-* Server monitoring dual-network
+* Monitoring multi-server (DC & DRC)
+* Prometheus scraping
+* Dashboard Grafana
+* Alert otomatis (CPU & Node Down)
+* Notifikasi Telegram real-time
+* Dual network monitoring server
+* NAT internet integration
+* Routing antar network
 
 ---
 
-# TODO / Pengembangan Selanjutnya
+# Masalah yang Ditemui & Solusi
 
-## 1 Integrasi Router (Arsitektur Ideal)
+## ❌ Tidak bisa akses internet
 
-Untuk mensimulasikan lingkungan infrastruktur yang lebih realistis, akan ditambahkan **VM router** untuk menghubungkan jaringan DC dan DRC.
+Penyebab:
 
-Topologi ideal:
+* Subnet VM tidak sesuai NAT
 
-```text
-                +-------------------------+
-                |     Monitoring Server   |
-                |-------------------------|
-                | Prometheus              |
-                | Grafana                 |
-                +-----------+-------------+
-                            |
-            -----------------------------------
-            |                                 |
-       10.10.1.0/24                     10.20.2.0/24
-            |                                 |
-      +------------+                   +------------+
-      | DC Server  |                   | DRC Server |
-      +------+-----+                   +------+-----+
-             \                               /
-              \                             /
-               \                           /
-                +-------------------------+
-                |        Router VM        |
-                | 10.10.1.1               |
-                | 10.20.2.1               |
-                +-------------------------+
-```
+Solusi:
 
-Manfaat:
-
-* Memungkinkan komunikasi DC ↔ DRC
-* Mendukung **pengujian iperf3 lintas jaringan**
-* Mensimulasikan routing infrastruktur nyata
+* Samakan subnet dengan VMnet8 (192.168.163.0/24)
 
 ---
 
-## 2 Sistem Alerting
+## ❌ DNS gagal
 
-Mengimplementasikan aturan alert menggunakan **Prometheus Alertmanager**.
+Penyebab:
 
-Rencana alert:
+* resolv.conf default stub
 
-Alert CPU
+Solusi:
 
-```
-CPU usage > 80%
-```
-
-Alert Memori
-
-```
-Memory usage > 85%
-```
-
-Alert Disk
-
-```
-Disk usage > 90%
-```
+* set DNS ke 8.8.8.8
 
 ---
 
-## 3 Integrasi Bot Telegram
+## ❌ Telegram tidak mengirim
 
-Alert akan dikirim langsung kepada administrator melalui Telegram.
+Penyebab:
 
-Contoh notifikasi:
+* Tidak ada koneksi internet
+
+Solusi:
+
+* Tambah adapter NAT
+
+---
+
+# Pengembangan Selanjutnya
+
+* Dashboard NOC custom (React)
+* Multi Alert Channel (Email + Telegram)
+* High Availability Prometheus
+* Auto-recovery system (self healing)
+* Failover DC → DRC
+
+---
+
+# Teknologi
+
+| Tools         | Fungsi       |
+| ------------- | ------------ |
+| Prometheus    | Monitoring   |
+| Grafana       | Dashboard    |
+| Node Exporter | Metrics      |
+| Alertmanager  | Alert        |
+| Telegram Bot  | Notifikasi   |
+| VMware        | Virtualisasi |
+| stress-ng     | Testing      |
+| iperf3        | Network test |
+
+---
+
+# Tujuan
+
+Membangun sistem monitoring modern yang:
+
+* Real-time
+* Terpusat
+* Otomatis
+* Siap digunakan di environment production kecil
+
+---
+
+# Status Proyek
 
 ```
-⚠ Infrastructure Alert
-
-Server: dc-server
-Metric: CPU Usage
-Value: 92%
-
-Status: High Resource Usage
+Works Locally, Next Up: Deployment
 ```
-
----
-
-## 4 Dashboard Web Monitoring (Gaya Diskominfo)
-
-Mengembangkan antarmuka monitoring kustom yang mirip dengan **dashboard Network Operations Center**.
-
-Fitur yang direncanakan:
-
-* Gambaran kesehatan server secara real-time
-* Perbandingan DC vs DRC
-* Indikator status infrastruktur
-* Panel Grafana yang di-embed
-
-Teknologi yang memungkinkan:
-
-* React / Next.js
-* Dashboard HTML sederhana
-* Panel embed Grafana
-
----
-
-# Teknologi yang Digunakan
-
-| Teknologi     | Kegunaan                 |
-| ------------- | ------------------------ |
-| Prometheus    | Pengumpulan metrik       |
-| Grafana       | Visualisasi monitoring   |
-| Node Exporter | Exporter metrik sistem   |
-| Alertmanager  | Routing alert            |
-| stress-ng     | Pengujian stress resource|
-| iperf3        | Pengujian jaringan       |
-| VMware        | Infrastruktur virtual    |
-
----
-
-# Tujuan Proyek
-
-Tujuan proyek ini adalah menunjukkan bagaimana **sistem monitoring modern mendeteksi masalah infrastruktur secara real-time**, sehingga administrator dapat dengan cepat mengidentifikasi masalah performa dan anomali sistem.
-
-Proyek ini mensimulasikan **sistem monitoring skala kecil yang mirip dengan yang digunakan di data center produksi dan network operations center (NOC) pemerintah**.
