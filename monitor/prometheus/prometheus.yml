@@ -1,0 +1,32 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - localhost:9093
+
+scrape_configs:
+
+  - job_name: "dc-server"
+
+    static_configs:
+      - targets:
+          - "10.10.1.10:9100"
+
+  - job_name: "drc-server"
+
+    static_configs:
+      - targets:
+          - "10.20.2.10:9100"
+
+  - job_name: "router"
+
+    static_configs:
+      - targets:
+          - "10.10.1.1:9100"

@@ -1,0 +1,27 @@
+groups:
+
+- name: infrastructure-alerts
+
+  rules:
+
+  - alert: NodeDown
+    expr: up == 0
+    for: 10s
+
+    labels:
+      severity: critical
+
+    annotations:
+      summary: "Node Down"
+      description: "{{ $labels.instance }} is down"
+
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 80
+    for: 30s
+
+    labels:
+      severity: warning
+
+    annotations:
+      summary: "High CPU Usage"
+      description: "CPU usage tinggi pada {{ $labels.instance }}"

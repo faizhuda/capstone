@@ -1,0 +1,87 @@
+# =========================
+# VMware Files
+# =========================
+*.log
+*.vmx
+*.vmdk
+*.vmsd
+*.nvram
+*.vmem
+*.vmsn
+*.vmss
+*.lck
+
+# =========================
+# Linux Temporary Files
+# =========================
+*.swp
+*.tmp
+*.bak
+*~
+
+# =========================
+# System Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Prometheus Data
+# =========================
+prometheus/data/
+*.db
+
+# =========================
+# Grafana Data
+# =========================
+grafana/data/
+
+# =========================
+# Node Modules
+# =========================
+node_modules/
+
+# =========================
+# Python Cache
+# =========================
+__pycache__/
+*.pyc
+
+# =========================
+# Environment Files
+# =========================
+.env
+.env.local
+
+# =========================
+# Secret / Credential Files
+# =========================
+secrets.yml
+token.txt
+private.key
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# Build / Cache
+# =========================
+dist/
+build/
+.cache/
+
+# =========================
+# IDE Files
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Terraform (optional future)
+# =========================
+.terraform/
+*.tfstate
+*.tfstate.backup
