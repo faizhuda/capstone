@@ -1,6 +1,6 @@
 # IP Forwarding
 
-Agar Router VM dapat meneruskan paket antar subnet, IP forwarding harus diaktifkan.
+Agar Router VM dapat meneruskan paket trafik monitoring/testing dalam topologi simulasi, IP forwarding harus diaktifkan.
 
 ## Enable Temporarily
 

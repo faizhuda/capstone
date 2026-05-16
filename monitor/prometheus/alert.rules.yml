@@ -1,0 +1,100 @@
+groups:
+  - name: infrastructure_alerts
+    rules:
+
+      # =====================================================
+      # NODE DOWN
+      # =====================================================
+      - alert: NodeDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Server Tidak Dapat Diakses"
+          description: "{{ $labels.job }} sedang DOWN atau tidak dapat dihubungi oleh Prometheus."
+
+      # =====================================================
+      # HIGH CPU USAGE
+      # Trigger jika CPU > 80% selama 1 menit
+      # =====================================================
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Penggunaan CPU Tinggi"
+          description: "Penggunaan CPU pada {{ $labels.job }} melebihi 80% selama 1 menit."
+
+      # =====================================================
+      # HIGH MEMORY USAGE
+      # Trigger jika RAM > 80% selama 1 menit
+      # =====================================================
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Penggunaan Memori Tinggi"
+          description: "Penggunaan RAM pada {{ $labels.job }} melebihi 80% selama 1 menit."
+
+      # =====================================================
+      # HIGH DISK USAGE
+      # Trigger jika storage > 80%
+      # =====================================================
+      - alert: HighDiskUsage
+        expr: (
+          (
+            node_filesystem_size_bytes{fstype!="tmpfs"} -
+            node_filesystem_free_bytes{fstype!="tmpfs"}
+          )
+          /
+          node_filesystem_size_bytes{fstype!="tmpfs"}
+        ) * 100 > 80
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Penyimpanan Hampir Penuh"
+          description: "Penggunaan storage pada {{ $labels.job }} melebihi 80%."
+
+      # =====================================================
+      # HIGH LOAD AVERAGE
+      # Trigger jika load average > 2 selama 1 menit
+      # =====================================================
+      - alert: HighLoad
+        expr: node_load1 > 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Load Server Tinggi"
+          description: "{{ $labels.job }} mengalami load average di atas kapasitas 2 vCPU selama 1 menit."
+
+      # =====================================================
+      # HIGH NETWORK TRAFFIC
+      # Trigger jika traffic > 80 Mbps selama 1 menit
+      # =====================================================
+      - alert: HighNetworkTraffic
+        expr: rate(node_network_receive_bytes_total[1m]) > 10000000
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Traffic Jaringan Tinggi"
+          description: "{{ $labels.job }} mengalami lonjakan traffic jaringan lebih dari 80 Mbps selama 1 menit."
+
+      # =====================================================
+      # HIGH DISK I/O WAIT
+      # Trigger jika iowait > 20% selama 1 menit
+      # =====================================================
+      - alert: HighDiskIOWait
+        expr: rate(node_cpu_seconds_total{mode="iowait"}[1m]) * 100 > 20
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk I/O Wait Tinggi"
+          description: "{{ $labels.job }} mengalami bottleneck disk dengan I/O wait di atas 20% selama 1 menit."

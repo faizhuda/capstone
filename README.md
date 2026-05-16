@@ -6,19 +6,24 @@
 
 # Gambaran Umum
 
-Proyek ini mengimplementasikan **sistem monitoring infrastruktur real-time** untuk lingkungan simulasi:
+Proyek ini mengimplementasikan sistem monitoring infrastruktur real-time untuk lingkungan simulasi:
 
-* **Data Center (DC)**
-* **Disaster Recovery Center (DRC)**
+- Data Center (DC)
+- Disaster Recovery Center (DRC)
 
-yang dihubungkan melalui **Router VM**, serta dimonitor oleh **Monitoring Server terpusat**.
+yang dimonitor secara terpusat menggunakan Monitoring Server berbasis:
 
-Sistem ini mampu:
+- Prometheus
+- Grafana
+- Alertmanager
 
-* Mengumpulkan metrik sistem (CPU, Memory, Disk, Network)
-* Menampilkan visualisasi real-time (Grafana)
-* Mengirim alert otomatis ke Telegram
-* Mensimulasikan arsitektur jaringan nyata (DC ↔ DRC via Router)
+Sistem monitoring ini mampu:
+
+- Mengumpulkan metrik sistem secara real-time
+- Menampilkan visualisasi monitoring dashboard
+- Mengirim alert otomatis ke Telegram
+- Melakukan simulasi stress testing server
+- Mensimulasikan arsitektur infrastruktur data center sederhana
 
 ---
 
@@ -37,29 +42,26 @@ Sistem ini mampu:
                | Grafana                     |
                | Alertmanager                |
                |                             |
-               | ens33 → 10.10.1.100 (DC)    |
-               | ens37 → 192.168.163.x (NAT) |
+               | ens33 → 10.10.1.100         |
+               | ens37 → 192.168.163.x       |
                +-------------+---------------+
                              |
                       10.10.1.0/24
                              |
-                      +--------------+
-                      |  Router VM   |
-                      |--------------|
-                      | 10.10.1.1    |
-                      | 10.20.2.1    |
-                      +------+-------+
+                    +----------------+
+                    |   Router VM    |
+                    |----------------|
+                    | 10.10.1.1      |
+                    +--------+-------+
                              |
-                ------------------------------
-                |                            |
-        10.10.1.0/24                10.20.2.0/24
-                |                            |
-        +-------------+              +-------------+
-        | DC Server   |              | DRC Server  |
-        |-------------|              |-------------|
-        | Node Exporter              | Node Exporter
-        | 10.10.1.10                | 10.20.2.10
-        +-------------+              +-------------+
+         ------------------------------------------------
+         |                                              |
+ +---------------+                             +---------------+
+ |   DC Server   |                             |  DRC Server   |
+ |---------------|                             |---------------|
+ | 10.10.1.10    |                             | 10.10.1.20    |
+ | Node Exporter |                             | Node Exporter |
+ +---------------+                             +---------------+
 ```
 
 ---
@@ -70,87 +72,60 @@ Sistem ini mampu:
 
 Router VM berfungsi sebagai:
 
-* Penghubung jaringan DC dan DRC
-* Gateway antar subnet
-* Simulasi network layer seperti di dunia nyata
-
-👉 Tanpa router:
-DC dan DRC tidak bisa saling komunikasi
+- Simulasi core network infrastructure
+- Gateway utama seluruh VM
+- Simulasi environment enterprise/data center
+- Penghubung trafik monitoring dan testing
 
 ---
 
 ## 🔹 Monitoring Terpusat
 
-Monitoring Server:
+Monitoring Server bertugas untuk:
 
-* Terhubung ke DC secara langsung
-* Mengakses DRC melalui router
-* Memiliki akses internet (NAT) untuk alert Telegram
-
----
-
-## 🔹 Hybrid Network Model
-
-Arsitektur ini mensimulasikan:
-
-* **Internal network (DC & DRC)**
-* **Routing layer (Router VM)**
-* **External connectivity (Internet via NAT)**
+- Melakukan scraping metrics dari DC & DRC
+- Menampilkan visualisasi monitoring
+- Mengirim alert otomatis ke Telegram
+- Menjadi pusat observability seluruh infrastruktur
 
 ---
 
-# Komponen Infrastruktur
+## 🔹 Single Subnet Optimization
 
-## 🖥 Monitoring Server
+Seluruh VM ditempatkan dalam satu subnet:
 
-| Komponen | Nilai                             |
-| -------- | --------------------------------- |
-| IP (DC)  | 10.10.1.100                       |
-| IP (NAT) | 192.168.163.x                     |
-| Services | Prometheus, Grafana, Alertmanager |
+```text
+10.10.1.0/24
+```
 
-Fungsi:
+Tujuan:
 
-* Scrape metrik DC & DRC
-* Visualisasi data
-* Mengirim alert ke Telegram
-
----
-
-## 🌐 Router VM
-
-| Interface   | IP        |
-| ----------- | --------- |
-| DC Network  | 10.10.1.1 |
-| DRC Network | 10.20.2.1 |
-
-Fungsi:
-
-* Routing antar jaringan
-* Gateway DC & DRC
-* Simulasi infrastruktur real
+- Mengurangi latency VMware virtual network
+- Menghindari timeout scraping Prometheus
+- Meningkatkan stabilitas monitoring
+- Menyederhanakan troubleshooting
 
 ---
 
-## 🏢 DC Server
+# Infrastruktur VM
 
-| Field    | Value         |
-| -------- | ------------- |
-| Hostname | dc-server     |
-| IP       | 10.10.1.10    |
-| Gateway  | 10.10.1.1     |
-| Service  | Node Exporter |
+| VM | CPU | RAM | Fungsi |
+|---|---|---|---|
+| Monitoring Server | 2 vCPU | 2 GB | Monitoring Stack |
+| Router VM | 1 vCPU | 1 GB | Core Network |
+| DC Server | 1 vCPU | 1 GB | Simulasi Data Center |
+| DRC Server | 1 vCPU | 1 GB | Simulasi Disaster Recovery |
 
 ---
 
-## 🏭 DRC Server
+# IP Addressing
 
-| Field    | Value         |
-| -------- | ------------- |
-| Hostname | drc-server    |
-| IP       | 10.20.2.10    |
-| Gateway  | 10.20.2.1     |
-| Service  | Node Exporter |
+| Device | IP Address |
+|---|---|
+| Monitoring Server | 10.10.1.100 |
+| Router VM | 10.10.1.1 |
+| DC Server | 10.10.1.10 |
+| DRC Server | 10.10.1.20 |
 
 ---
 
@@ -158,7 +133,19 @@ Fungsi:
 
 ## 🔹 Prometheus
 
-Scrape interval: **15 detik**
+Digunakan untuk:
+
+- Metrics scraping
+- Time-series database
+- Alert rule evaluation
+
+Scrape interval:
+
+```yaml
+15s
+```
+
+Contoh target:
 
 ```yaml
 scrape_configs:
@@ -168,7 +155,7 @@ scrape_configs:
         labels:
           job: "dc-server"
 
-      - targets: ["10.20.2.10:9100"]
+      - targets: ["10.10.1.20:9100"]
         labels:
           job: "drc-server"
 ```
@@ -177,165 +164,194 @@ scrape_configs:
 
 ## 🔹 Grafana
 
-Dashboard:
+Digunakan untuk visualisasi monitoring dashboard.
 
-* Node Exporter Full
+Dashboard menampilkan:
 
-Menampilkan:
-
-* CPU usage
-* Memory usage
-* Disk usage
-* Network traffic
-* System load
+- CPU Usage
+- Memory Usage
+- Disk Usage
+- Network Traffic
 
 ---
 
 ## 🔹 Alertmanager
 
-```yaml
-route:
-  receiver: telegram
-  group_by: ['alertname', 'instance']
-  group_wait: 10s
-  group_interval: 30s
-  repeat_interval: 5m
+Digunakan untuk:
 
-receivers:
-  - name: telegram
-    telegram_configs:
-      - bot_token: "YOUR_TOKEN"
-        chat_id: YOUR_CHAT_ID
-        parse_mode: Markdown
-        send_resolved: true
-```
+- Mengelola alert Prometheus
+- Mengirim notifikasi Telegram
+- Grouping alert
+- Real-time notification
 
 ---
 
 # Alert yang Diimplementasikan
 
-## 🔥 High CPU Usage
-
-```
-CPU usage > 80%
-```
-
-## 🚨 Node Down
-
-```
-up == 0
-```
+| Alert | Threshold |
+|---|---|
+| HighCPUUsage | CPU > 80% selama 1 menit |
+| HighMemoryUsage | RAM > 80% selama 1 menit |
+| HighDiskUsage | Storage > 80% |
+| HighNetworkTraffic | Traffic > 100 Mbps selama 1 menit |
+| NodeDown | Server tidak dapat diakses |
 
 ---
 
 # Integrasi Telegram
 
-Contoh notifikasi:
+Contoh alert Telegram:
 
-```
+```text
 🚨 HighCPUUsage
-Instance: 10.10.1.10:9100
-Severity: warning
-CPU usage > 80%
+
+🖥️ Server: dc-server
+⚠️ Severity: warning
+
+📝 Summary:
+Penggunaan CPU Tinggi
+
+📖 Description:
+Penggunaan CPU pada dc-server melebihi 80% selama 1 menit.
 ```
 
 ---
 
 # Pengujian Sistem
 
-## CPU Stress
+## 🔥 CPU Stress Test
 
-```
-stress-ng --cpu 4 --timeout 60s
-```
-
-## Memory Stress
-
-```
-stress-ng --vm 2 --vm-bytes 1G --timeout 60s
+```bash
+stress-ng --cpu 4 --timeout 120s
 ```
 
-## Disk Stress
+---
 
-```
-stress-ng --hdd 2 --timeout 60s
+## 🧠 Memory Stress Test
+
+```bash
+stress-ng --vm 2 --vm-bytes 90% --timeout 120s
 ```
 
-## Network Test (via Router)
+---
 
+## 💽 Disk Usage Stress Test
+
+```bash
+fallocate -l 6G bigfile.test
 ```
-iperf3 -c 10.20.2.10
+
+Hapus file setelah testing:
+
+```bash
+rm bigfile.test
+```
+
+---
+
+## 🌐 Network Stress Test
+
+### DRC Server
+
+```bash
+iperf3 -s
+```
+
+### DC Server
+
+```bash
+iperf3 -c 10.10.1.20 -t 120
+```
+
+---
+
+## 🚨 Node Down Test
+
+```bash
+sudo systemctl stop node_exporter
+```
+
+Menyalakan kembali:
+
+```bash
+sudo systemctl start node_exporter
 ```
 
 ---
 
 # Fitur yang Sudah Diimplementasikan
 
-* Monitoring DC & DRC secara terpusat
-* Routing antar network menggunakan Router VM
-* Prometheus scraping
-* Grafana dashboard
-* Alert otomatis
-* Notifikasi Telegram real-time
-* NAT internet integration
-* Simulasi arsitektur real-world
+- Centralized monitoring DC & DRC
+- Real-time Grafana dashboard
+- Prometheus metrics scraping
+- Telegram alert notification
+- Stress testing simulation
+- Single subnet infrastructure optimization
+- VMware virtual infrastructure simulation
+- Core router simulation
+- Real-time observability system
 
 ---
 
 # Masalah & Solusi
 
-## ❌ NAT tidak bekerja
+## ❌ Scraping DRC tidak stabil
 
-✔ Solusi: samakan subnet dengan VMnet8
+### Penyebab
+VMware virtual networking menyebabkan latency dan timeout ketika menggunakan multi-subnet routing.
 
-## ❌ DNS gagal
+### Solusi
+Seluruh VM dipindahkan ke subnet yang sama untuk meningkatkan stabilitas scraping Prometheus.
 
-✔ Solusi: set DNS manual (8.8.8.8)
+---
 
-## ❌ Telegram tidak mengirim
+## ❌ Telegram alert tidak terkirim
 
-✔ Solusi: pastikan koneksi internet aktif
+### Solusi
+
+- Pastikan Monitoring Server memiliki akses internet
+- Pastikan bot token dan chat ID benar
+- Pastikan Alertmanager aktif
+
+---
+
+# Teknologi yang Digunakan
+
+| Teknologi | Fungsi |
+|---|---|
+| Prometheus | Monitoring |
+| Grafana | Visualisasi |
+| Alertmanager | Alert System |
+| Node Exporter | Metrics Collection |
+| Telegram Bot | Notifikasi |
+| VMware Workstation | Virtualisasi |
+| stress-ng | Stress Testing |
+| iperf3 | Network Testing |
+| Ubuntu Server | Operating System |
 
 ---
 
 # Pengembangan Selanjutnya
 
-* Dashboard NOC (React)
-* Multi-channel alert (Email, Discord)
-* High Availability Prometheus
-* Auto recovery (self-healing)
-* Failover DC → DRC
+- VPS deployment
+- Public monitoring access
 
 ---
 
-# Teknologi
+# Tujuan Proyek
 
-| Tools         | Fungsi       |
-| ------------- | ------------ |
-| Prometheus    | Monitoring   |
-| Grafana       | Visualisasi  |
-| Node Exporter | Metrics      |
-| Alertmanager  | Alert        |
-| Telegram Bot  | Notifikasi   |
-| VMware        | Virtualisasi |
-| stress-ng     | Testing      |
-| iperf3        | Network      |
+Membangun sistem monitoring infrastruktur modern yang:
 
----
-
-# Tujuan
-
-Membangun sistem monitoring modern yang:
-
-* Real-time
-* Terpusat
-* Berbasis alert
-* Mendekati implementasi di dunia nyata
+- Real-time
+- Terpusat
+- Berbasis observability
+- Mendukung alert otomatis
 
 ---
 
 # Status Proyek
 
-```
-Works Locally, Next Up: Deployment.
+```text
+Monitoring System Fully Operational Locally.
+Next Phase: VPS Deployment & Public Hosting.
 ```

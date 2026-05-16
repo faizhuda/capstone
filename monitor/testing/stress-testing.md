@@ -1,95 +1,13 @@
-# Stress & Failure Testing
+# 🚨 Alert Testing Cheatsheet
 
-Dokumentasi pengujian performa dan simulasi failure pada sistem monitoring DC–DRC.
+Dokumentasi command untuk melakukan simulasi dan testing seluruh alert pada sistem monitoring.
 
 ---
 
-# 1. CPU Stress Test
-
-## Command
-
-```bash
-stress-ng --cpu 4 --timeout 60s
-```
+# 1. Node Down Alert
 
 ## Tujuan
-
-Mensimulasikan penggunaan CPU tinggi pada server.
-
-## Expected Result
-
-- CPU usage meningkat di Grafana
-- Alert `HighCPUUsage` muncul
-- Notifikasi Telegram terkirim
-
----
-
-# 2. Memory Stress Test
-
-## Command
-
-```bash
-stress-ng --vm 2 --vm-bytes 1G --timeout 60s
-```
-
-## Tujuan
-
-Mensimulasikan penggunaan memori tinggi.
-
-## Expected Result
-
-- Penggunaan RAM meningkat
-- Grafik memory usage berubah secara real-time
-
----
-
-# 3. Disk Stress Test
-
-## Command
-
-```bash
-stress-ng --hdd 2 --timeout 60s
-```
-
-## Tujuan
-
-Mensimulasikan aktivitas disk tinggi.
-
-## Expected Result
-
-- Disk I/O meningkat
-- Grafana menunjukkan lonjakan disk activity
-
----
-
-# 4. Network Test
-
-## Command
-
-Jalankan iperf3 server:
-
-```bash
-iperf3 -s
-```
-
-Jalankan client:
-
-```bash
-iperf3 -c 10.20.2.10
-```
-
-## Tujuan
-
-Mengukur performa jaringan antar subnet melalui Router VM.
-
-## Expected Result
-
-- Trafik jaringan meningkat
-- Routing DC ↔ DRC berjalan normal
-
----
-
-# 5. Node Down Test
+Mensimulasikan server tidak dapat diakses oleh Prometheus.
 
 ## Command
 
@@ -97,91 +15,200 @@ Mengukur performa jaringan antar subnet melalui Router VM.
 sudo systemctl stop node_exporter
 ```
 
-## Tujuan
+## Expected Alert
 
-Mensimulasikan service monitoring mati.
+```text
+Server Tidak Dapat Diakses
+```
 
-## Expected Result
+## Recovery
 
-- Target menjadi DOWN di Prometheus
-- Alert `NodeDown` aktif
-- Telegram mengirim notifikasi
+```bash
+sudo systemctl start node_exporter
+```
 
 ---
 
-# 6. Full Server Shutdown Test
+# 2. High CPU Usage Alert
+
+## Threshold
+
+```text
+CPU > 80% selama 1 menit
+```
 
 ## Command
 
 ```bash
-sudo poweroff
+stress-ng --cpu 1 --timeout 120s
 ```
 
-## Tujuan
+## Monitoring
 
-Mensimulasikan server failure.
+Grafana:
+- CPU Usage naik > 80%
 
-## Expected Result
+Telegram:
+- Alert HighCPUUsage muncul
 
-- Prometheus gagal scraping
-- Alert critical muncul
-- Monitoring menunjukkan server offline
+## Recovery
+
+Tunggu proses selesai otomatis atau:
+
+```bash
+pkill stress-ng
+```
 
 ---
 
-# 7. Routing Test
+# 3. High Memory Usage Alert
+
+## Threshold
+
+```text
+RAM > 80% selama 1 menit
+```
 
 ## Command
 
 ```bash
-ping 10.20.2.10
+stress-ng --vm 1 --vm-bytes 80% --vm-keep --timeout 120s
 ```
 
-## Tujuan
+## Monitoring
 
-Memastikan Router VM dapat meneruskan paket antar subnet.
+Grafana:
+- Memory usage > 80%
 
-## Expected Result
+Telegram:
+- Alert HighMemoryUsage muncul
 
-- Ping berhasil
-- Latency stabil
-- Inter-subnet communication berjalan
-
----
-
-# 8. Scraping Latency Test
-
-## Command
+## Recovery
 
 ```bash
-curl -w "\nTIME: %{time_total}\n" http://10.20.2.10:9100/metrics -o /dev/null
-```
-
-## Tujuan
-
-Mengukur waktu scraping Prometheus ke DRC.
-
-## Expected Result
-
-- Metrics dapat diakses
-- Response time stabil
-
----
-
-# Kendala yang Ditemui
-
-Meskipun router telah berhasil diimplementasikan sehingga komunikasi antara DC dan DRC dapat berjalan dengan baik, masih ditemukan kendala pada proses scraping metrik dari DRC oleh monitoring server.
-
-Keterbatasan virtual network VMware, khususnya pada IP forwarding dan packet forwarding antar virtual interface, menyebabkan latensi dan koneksi menjadi fluktuatif.
-
-Dampaknya, proses scraping Prometheus terkadang lambat atau mengalami timeout (`context deadline exceeded`).
-
-## Solusi Sementara
-
-Meningkatkan timeout Prometheus:
-
-```yaml
-scrape_timeout: 10s
+pkill stress-ng
 ```
 
 ---
+
+# 4. High Disk Usage Alert
+
+## Threshold
+
+```text
+Storage > 80%
+```
+
+## Check Available Space
+
+```bash
+df -h
+```
+
+## Simulasi Disk Full
+
+```bash
+fallocate -l 6G largefile.img
+```
+
+## Monitoring
+
+Grafana:
+- Disk usage meningkat
+
+Telegram:
+- Alert HighDiskUsage muncul
+
+## Recovery
+
+```bash
+rm largefile.img
+```
+
+---
+
+# 5. High Network Traffic Alert
+
+## Threshold
+
+```text
+Traffic > 100 Mbps selama 1 menit
+```
+
+## Install iperf3
+
+```bash
+sudo apt install iperf3 -y
+```
+
+## Jalankan Server (DRC)
+
+```bash
+iperf3 -s
+```
+
+## Jalankan Client (DC)
+
+```bash
+iperf3 -c 10.10.1.20 -t 120
+```
+
+## Monitoring
+
+Grafana:
+- Network traffic meningkat
+
+Telegram:
+- Alert HighNetworkTraffic muncul
+
+## Recovery
+
+Tekan:
+
+```text
+CTRL + C
+```
+
+---
+
+# 📊 Monitoring Dashboard
+
+## Prometheus
+
+```text
+http://10.10.1.100:9090
+```
+
+## Grafana
+
+```text
+http://10.10.1.100:3000
+```
+
+## Alertmanager
+
+```text
+http://10.10.1.100:9093
+```
+
+---
+
+# 🔥 Tips Saat Demo
+
+## Recommended Demo Flow
+
+1. Tampilkan Grafana dashboard
+2. Tampilkan Telegram group
+3. Jalankan stress test
+4. Tunggu alert muncul
+5. Jelaskan threshold & dampaknya
+
+---
+
+# ⚠️ Notes
+
+- Semua threshold disesuaikan dengan spesifikasi VM:
+  - 1 vCPU
+  - 1 GB RAM
+
+- Environment menggunakan VMware virtual network sehingga kemungkinan terdapat sedikit fluktuasi performa selama stress testing.

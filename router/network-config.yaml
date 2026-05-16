@@ -8,8 +8,3 @@ network:
       dhcp4: no
       addresses:
         - 10.10.1.1/24
-
-    ens37:
-      dhcp4: no
-      addresses:
-        - 10.20.2.1/24

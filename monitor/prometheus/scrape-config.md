@@ -10,7 +10,6 @@ Target yang dimonitor:
 
 - DC Server
 - DRC Server
-- Router VM
 
 ## Verification
 
