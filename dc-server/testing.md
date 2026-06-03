@@ -3,13 +3,13 @@
 ## Ping Router
 
 ```bash
-ping 10.10.1.1
+ping 10.10.1.2
 ```
 
 ## Ping Monitoring Server
 
 ```bash
-ping 10.10.1.100
+ping 10.10.1.200
 ```
 
 ## Test Node Exporter

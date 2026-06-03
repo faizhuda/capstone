@@ -7,4 +7,4 @@ network:
     ens33:
       dhcp4: no
       addresses:
-        - 10.10.1.1/24
+        - 10.10.1.2/24
