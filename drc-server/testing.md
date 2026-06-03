@@ -9,7 +9,7 @@ ping 10.10.1.2
 ## Ping Monitoring Server
 
 ```bash
-ping 10.10.1.200
+ping 10.10.1.100
 ```
 
 ## Test Node Exporter
@@ -21,7 +21,7 @@ curl localhost:9100/metrics
 ## Test Intra-Subnet Routing
 
 ```bash
-ping 10.10.1.20
+ping 10.10.1.10
 ```
 
 ## Result

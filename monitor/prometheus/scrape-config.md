@@ -8,11 +8,20 @@ Prometheus melakukan scraping metrics setiap:
 
 Target yang dimonitor:
 
-- DC Server
-- DRC Server
+- DC Server (10.10.1.10:9100)
+- DRC Server (10.10.1.20:9100)
+- Router VM (10.10.1.2:9100)
+- Monitoring Server (localhost:9090)
 
 ## Verification
 
 ```bash
+# Verify DC Server node exporter
 curl http://10.10.1.10:9100/metrics
+
+# Verify DRC Server node exporter
+curl http://10.10.1.20:9100/metrics
+
+# Verify Router VM node exporter
+curl http://10.10.1.2:9100/metrics
 ```

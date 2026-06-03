@@ -149,15 +149,30 @@ Contoh target:
 
 ```yaml
 scrape_configs:
-  - job_name: "node-exporter"
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "dc-server"
     static_configs:
       - targets: ["10.10.1.10:9100"]
         labels:
-          job: "dc-server"
+          server: "DC Server"
+          location: "Data Center"
 
+  - job_name: "drc-server"
+    static_configs:
       - targets: ["10.10.1.20:9100"]
         labels:
-          job: "drc-server"
+          server: "DRC Server"
+          location: "Disaster Recovery Center"
+
+  - job_name: "router"
+    static_configs:
+      - targets: ["10.10.1.2:9100"]
+        labels:
+          server: "Router VM"
+          role: "gateway"
 ```
 
 ---
@@ -168,10 +183,10 @@ Digunakan untuk visualisasi monitoring dashboard.
 
 Dashboard menampilkan:
 
-- CPU Usage
-- Memory Usage
-- Disk Usage
-- Network Traffic
+- Business Continuity Status (indikator kegagalan DC dan failover DRC)
+- Status konektivitas masing-masing Node (DC, DRC, Router, Monitoring Server)
+- Panel performa DC Server, DRC Server, dan Router VM (CPU, RAM, Disk, Traffic Jaringan)
+- Metrik System Health (Load Average komparatif dan Uptime masing-masing Node)
 
 ---
 
@@ -194,6 +209,8 @@ Digunakan untuk:
 | HighMemoryUsage | RAM > 80% selama 1 menit |
 | HighDiskUsage | Storage > 80% |
 | HighNetworkTraffic | Traffic > 80 Mbps selama 1 menit |
+| HighLoad | Load average per core > 1.5 selama 1 menit |
+| HighDiskIOWait | Disk I/O wait > 20% selama 1 menit |
 | NodeDown | Server tidak dapat diakses |
 
 ---

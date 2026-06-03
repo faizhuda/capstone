@@ -9,7 +9,7 @@ ping 10.10.1.2
 ## Ping Monitoring Server
 
 ```bash
-ping 10.10.1.200
+ping 10.10.1.100
 ```
 
 ## Test Node Exporter
