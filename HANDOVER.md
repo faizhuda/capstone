@@ -95,6 +95,8 @@ Host router      → 10.10.1.2    User: capstone  ServerAliveInterval: 60
 - Token Telegram sudah diisi di `/etc/alertmanager/alertmanager.yml` di VM (bukan di repo)
 - Timezone sistem di VM Monitoring Server telah diatur ke `Asia/Jakarta` (WIB)
 - Konfigurasi Netplan dengan gateway baru `10.10.1.2` telah diterapkan secara aktif (`netplan apply`) di VM DC dan DRC
+- Dashboard Grafana versi terbaru (`dashboard.json`) telah di-import ke Grafana UI
+- Pengujian alerting Telegram end-to-end telah berhasil dilakukan (alert diterima saat stress test)
 
 ---
 
@@ -105,12 +107,12 @@ Host router      → 10.10.1.2    User: capstone  ServerAliveInterval: 60
 - Semua VM running dan dapat di-SSH dari Windows host
 - Prometheus scraping 4 target, semua `up`
 - Alertmanager terkonfigurasi dan terhubung ke Telegram
-- Grafana dashboard JSON sudah dibuat dan di-push ke repo, **belum di-import ulang** ke Grafana UI (masih menggunakan dashboard lama)
-- Dashboard JSON terakhir (`5d2e548`) dimodifikasi user setelah push: warna diubah dari named colors (`"green"`, `"red"`) ke hex codes (`"#10B981"`, `"#EF4444"`), dan `graphMode` diubah dari `"none"` ke `"area"` pada beberapa panel stat
+- Grafana dashboard versi terbaru telah berhasil di-import dan berjalan normal
+- Notifikasi alert Telegram berhasil diuji menggunakan skenario stress-testing
 
 ### Sedang Dikerjakan Saat Handover
 
-Proses re-import Grafana dashboard versi terbaru ke Grafana UI belum dilakukan. Handover terjadi setelah dashboard JSON selesai direvisi.
+Proses re-import dashboard dan pengujian alert sudah selesai dilakukan. Langkah selanjutnya adalah setup Cloudflare Tunnel untuk publik akses.
 
 ### Kendala yang Masih Terbuka
 
@@ -128,14 +130,11 @@ Proses re-import Grafana dashboard versi terbaru ke Grafana UI belum dilakukan. 
 
 | Tugas | Dependensi | Langkah |
 |---|---|---|
-| Re-import Grafana dashboard versi terbaru | Repo sudah up-to-date | Login Grafana -> Dashboards -> New -> Import -> upload `monitor/grafana/dashboard.json` |
 | Setup Cloudflare Tunnel untuk public access | Monitoring server harus punya akses internet (via ens37) | SSH ke monitoring -> install cloudflared -> `cloudflared tunnel --url http://localhost:3000` |
 
 ### Medium Priority
 
-| Tugas | Dependensi | Langkah |
-|---|---|---|
-| Test end-to-end alert Telegram | Token sudah diisi | Jalankan `stress-ng --cpu 1 --timeout 120s` di dc-server -> tunggu alert muncul di Telegram |
+*Semua tugas prioritas sedang telah diselesaikan.*
 
 ### Low Priority
 
@@ -303,12 +302,11 @@ sudo netplan apply
 
 | # | Pertanyaan | Konteks |
 |---|---|---|
-| 1 | Apakah alert Telegram sudah pernah berhasil dikirim? | Token sudah diisi tapi belum dikonfirmasi end-to-end test |
-| 2 | Apakah `HighDiskUsage` alert sekarang sudah berfungsi? | Sebelumnya YAML-invalid sehingga kemungkinan tidak pernah trigger; sudah diperbaiki di commit `9955ed9` tapi belum ditest |
-| 3 | Apakah deployment requirement (public access) cukup dengan Cloudflare Tunnel sementara, atau perlu VPS permanen? | README menyebut "VPS deployment" sebagai next phase, tapi untuk presentasi Cloudflare Tunnel seharusnya cukup |
-| 4 | Apakah Router VM perlu dimonitor (Node Exporter sudah dipasang)? | Saat ini sudah di-scrape oleh Prometheus, tapi tidak ada alert rules khusus untuk router. Perlu ditambahkan? |
-| 5 | Apakah `cloud-init` di Router VM akan menimpa konfigurasi network saat reboot? | Belum ditest; jika `10.10.1.2` hilang setelah reboot, perlu disable cloud-init network config |
-| 6 | Grafana default credentials `admin/admin`: apakah sudah diganti? | Tidak ada catatan bahwa password sudah diubah; perlu dikonfirmasi sebelum public deployment |
+| 1 | Apakah `HighDiskUsage` alert sekarang sudah berfungsi? | Sebelumnya YAML-invalid sehingga kemungkinan tidak pernah trigger; sudah diperbaiki di commit `9955ed9` tapi belum ditest |
+| 2 | Apakah deployment requirement (public access) cukup dengan Cloudflare Tunnel sementara, atau perlu VPS permanen? | README menyebut "VPS deployment" sebagai next phase, tapi untuk presentasi Cloudflare Tunnel seharusnya cukup |
+| 3 | Apakah Router VM perlu dimonitor (Node Exporter sudah dipasang)? | Saat ini sudah di-scrape oleh Prometheus, tapi tidak ada alert rules khusus untuk router. Perlu ditambahkan? |
+| 4 | Apakah `cloud-init` di Router VM akan menimpa konfigurasi network saat reboot? | Belum ditest; jika `10.10.1.2` hilang setelah reboot, perlu disable cloud-init network config |
+| 5 | Grafana default credentials `admin/admin`: apakah sudah diganti? | Tidak ada catatan bahwa password sudah diubah; perlu dikonfirmasi sebelum public deployment |
 
 ---
 
