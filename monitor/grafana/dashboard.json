@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "Sistem Monitoring Infrastruktur — Simulasi Data Center & Disaster Recovery Center",
+  "description": "Infrastructure Monitoring System - Data Center & Disaster Recovery Center Simulation",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -22,14 +22,15 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Indicates current operational status. GREEN means DC is running normally. RED means DC is unreachable and DRC failover should be active.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
           "mappings": [
             {
               "options": {
-                "0": { "color": "red",   "index": 0, "text": "🔴   DISASTER — DRC ACTIVE"   },
-                "1": { "color": "green", "index": 1, "text": "🟢   NORMAL — DC OPERATIONAL" }
+                "0": { "color": "red",   "index": 0, "text": "DISASTER  -  DRC ACTIVE"   },
+                "1": { "color": "green", "index": 1, "text": "NORMAL  -  DC OPERATIONAL" }
               },
               "type": "value"
             }
@@ -44,7 +45,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 0 },
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 0 },
       "id": 1,
       "options": {
         "colorMode": "background",
@@ -56,7 +57,7 @@
           "fields": "",
           "values": false
         },
-        "text": { "valueSize": 40 },
+        "text": { "titleSize": 14, "valueSize": 32 },
         "textMode": "value"
       },
       "targets": [
@@ -74,7 +75,7 @@
 
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
       "id": 20,
       "title": "Node Status",
       "type": "row"
@@ -82,6 +83,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Reachability status of DC Server as seen by Prometheus scraper.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -104,7 +106,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 7 },
+      "gridPos": { "h": 3, "w": 6, "x": 0, "y": 6 },
       "id": 2,
       "options": {
         "colorMode": "background",
@@ -116,6 +118,7 @@
           "fields": "",
           "values": false
         },
+        "text": { "valueSize": 20 },
         "textMode": "auto"
       },
       "targets": [
@@ -133,6 +136,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Reachability status of DRC Server as seen by Prometheus scraper.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -155,7 +159,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 7 },
+      "gridPos": { "h": 3, "w": 6, "x": 6, "y": 6 },
       "id": 3,
       "options": {
         "colorMode": "background",
@@ -167,6 +171,7 @@
           "fields": "",
           "values": false
         },
+        "text": { "valueSize": 20 },
         "textMode": "auto"
       },
       "targets": [
@@ -184,6 +189,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Reachability status of Router VM as seen by Prometheus scraper.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -206,7 +212,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 7 },
+      "gridPos": { "h": 3, "w": 6, "x": 12, "y": 6 },
       "id": 4,
       "options": {
         "colorMode": "background",
@@ -218,6 +224,7 @@
           "fields": "",
           "values": false
         },
+        "text": { "valueSize": 20 },
         "textMode": "auto"
       },
       "targets": [
@@ -235,6 +242,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Reachability status of the Monitoring Server itself (Prometheus self-scrape).",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -257,7 +265,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 7 },
+      "gridPos": { "h": 3, "w": 6, "x": 18, "y": 6 },
       "id": 5,
       "options": {
         "colorMode": "background",
@@ -269,6 +277,7 @@
           "fields": "",
           "values": false
         },
+        "text": { "valueSize": 20 },
         "textMode": "auto"
       },
       "targets": [
@@ -286,14 +295,15 @@
 
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
       "id": 21,
-      "title": "🖥️  DC Server — Data Center",
+      "title": "DC Server - Data Center (10.10.1.10)",
       "type": "row"
     },
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Current CPU utilization. Alert threshold: 80% for 1 minute.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -312,7 +322,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 0, "y": 12 },
+      "gridPos": { "h": 8, "w": 4, "x": 0, "y": 10 },
       "id": 6,
       "options": {
         "orientation": "auto",
@@ -321,14 +331,14 @@
           "fields": "",
           "values": false
         },
-        "showThresholdLabels": false,
+        "showThresholdLabels": true,
         "showThresholdMarkers": true
       },
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\", job=\"dc-server\"}[1m])) * 100)",
-          "legendFormat": "CPU",
+          "legendFormat": "CPU Usage",
           "refId": "A"
         }
       ],
@@ -338,6 +348,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Current RAM utilization. Alert threshold: 80% for 1 minute.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -356,7 +367,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 4, "y": 12 },
+      "gridPos": { "h": 8, "w": 4, "x": 4, "y": 10 },
       "id": 7,
       "options": {
         "orientation": "auto",
@@ -365,14 +376,14 @@
           "fields": "",
           "values": false
         },
-        "showThresholdLabels": false,
+        "showThresholdLabels": true,
         "showThresholdMarkers": true
       },
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "(1 - (node_memory_MemAvailable_bytes{job=\"dc-server\"} / node_memory_MemTotal_bytes{job=\"dc-server\"})) * 100",
-          "legendFormat": "Memory",
+          "legendFormat": "Memory Usage",
           "refId": "A"
         }
       ],
@@ -382,6 +393,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Current disk utilization on root partition. Alert threshold: 80%.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -400,7 +412,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 8, "y": 12 },
+      "gridPos": { "h": 8, "w": 4, "x": 8, "y": 10 },
       "id": 8,
       "options": {
         "orientation": "auto",
@@ -409,14 +421,14 @@
           "fields": "",
           "values": false
         },
-        "showThresholdLabels": false,
+        "showThresholdLabels": true,
         "showThresholdMarkers": true
       },
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "(1 - (node_filesystem_free_bytes{job=\"dc-server\", fstype!=\"tmpfs\", mountpoint=\"/\"} / node_filesystem_size_bytes{job=\"dc-server\", fstype!=\"tmpfs\", mountpoint=\"/\"})) * 100",
-          "legendFormat": "Disk",
+          "legendFormat": "Disk Usage",
           "refId": "A"
         }
       ],
@@ -426,258 +438,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "gradientMode": "none",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": { "type": "linear" },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "off" }
-          },
-          "unit": "bps"
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
-      "id": 9,
-      "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "none" }
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(node_network_receive_bytes_total{job=\"dc-server\", device!=\"lo\"}[1m]) * 8",
-          "legendFormat": "RX — {{device}}",
-          "refId": "A"
-        },
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(node_network_transmit_bytes_total{job=\"dc-server\", device!=\"lo\"}[1m]) * 8",
-          "legendFormat": "TX — {{device}}",
-          "refId": "B"
-        }
-      ],
-      "title": "Network Traffic",
-      "type": "timeseries"
-    },
-
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 20 },
-      "id": 22,
-      "title": "🔄  DRC Server — Disaster Recovery Center",
-      "type": "row"
-    },
-
-    {
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "thresholds" },
-          "min": 0,
-          "max": 100,
-          "unit": "percent",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green",  "value": null },
-              { "color": "yellow", "value": 70   },
-              { "color": "orange", "value": 80   },
-              { "color": "red",    "value": 90   }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 4, "x": 0, "y": 21 },
-      "id": 10,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\", job=\"drc-server\"}[1m])) * 100)",
-          "legendFormat": "CPU",
-          "refId": "A"
-        }
-      ],
-      "title": "CPU Usage",
-      "type": "gauge"
-    },
-
-    {
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "thresholds" },
-          "min": 0,
-          "max": 100,
-          "unit": "percent",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green",  "value": null },
-              { "color": "yellow", "value": 70   },
-              { "color": "orange", "value": 80   },
-              { "color": "red",    "value": 90   }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 4, "x": 4, "y": 21 },
-      "id": 11,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "(1 - (node_memory_MemAvailable_bytes{job=\"drc-server\"} / node_memory_MemTotal_bytes{job=\"drc-server\"})) * 100",
-          "legendFormat": "Memory",
-          "refId": "A"
-        }
-      ],
-      "title": "Memory Usage",
-      "type": "gauge"
-    },
-
-    {
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "thresholds" },
-          "min": 0,
-          "max": 100,
-          "unit": "percent",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green",  "value": null },
-              { "color": "yellow", "value": 70   },
-              { "color": "orange", "value": 80   },
-              { "color": "red",    "value": 90   }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 4, "x": 8, "y": 21 },
-      "id": 12,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "(1 - (node_filesystem_free_bytes{job=\"drc-server\", fstype!=\"tmpfs\", mountpoint=\"/\"} / node_filesystem_size_bytes{job=\"drc-server\", fstype!=\"tmpfs\", mountpoint=\"/\"})) * 100",
-          "legendFormat": "Disk",
-          "refId": "A"
-        }
-      ],
-      "title": "Disk Usage",
-      "type": "gauge"
-    },
-
-    {
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "gradientMode": "none",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": { "type": "linear" },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "off" }
-          },
-          "unit": "bps"
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 21 },
-      "id": 13,
-      "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "none" }
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(node_network_receive_bytes_total{job=\"drc-server\", device!=\"lo\"}[1m]) * 8",
-          "legendFormat": "RX — {{device}}",
-          "refId": "A"
-        },
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(node_network_transmit_bytes_total{job=\"drc-server\", device!=\"lo\"}[1m]) * 8",
-          "legendFormat": "TX — {{device}}",
-          "refId": "B"
-        }
-      ],
-      "title": "Network Traffic",
-      "type": "timeseries"
-    },
-
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
-      "id": 23,
-      "title": "📊  System Health",
-      "type": "row"
-    },
-
-    {
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Inbound (RX) and outbound (TX) network traffic on all active interfaces. Alert threshold: 80 Mbps for 1 minute.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -689,6 +450,273 @@
             "barAlignment": 0,
             "drawStyle": "line",
             "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "bps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(node_network_receive_bytes_total{job=\"dc-server\", device!=\"lo\"}[1m]) * 8",
+          "legendFormat": "RX - {{device}}",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(node_network_transmit_bytes_total{job=\"dc-server\", device!=\"lo\"}[1m]) * 8",
+          "legendFormat": "TX - {{device}}",
+          "refId": "B"
+        }
+      ],
+      "title": "Network Traffic",
+      "type": "timeseries"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "id": 22,
+      "title": "DRC Server - Disaster Recovery Center (10.10.1.20)",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Current CPU utilization. Alert threshold: 80% for 1 minute.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green",  "value": null },
+              { "color": "yellow", "value": 70   },
+              { "color": "orange", "value": 80   },
+              { "color": "red",    "value": 90   }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 4, "x": 0, "y": 19 },
+      "id": 10,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\", job=\"drc-server\"}[1m])) * 100)",
+          "legendFormat": "CPU Usage",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Usage",
+      "type": "gauge"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Current RAM utilization. Alert threshold: 80% for 1 minute.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green",  "value": null },
+              { "color": "yellow", "value": 70   },
+              { "color": "orange", "value": 80   },
+              { "color": "red",    "value": 90   }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 4, "x": 4, "y": 19 },
+      "id": 11,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "(1 - (node_memory_MemAvailable_bytes{job=\"drc-server\"} / node_memory_MemTotal_bytes{job=\"drc-server\"})) * 100",
+          "legendFormat": "Memory Usage",
+          "refId": "A"
+        }
+      ],
+      "title": "Memory Usage",
+      "type": "gauge"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Current disk utilization on root partition. Alert threshold: 80%.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green",  "value": null },
+              { "color": "yellow", "value": 70   },
+              { "color": "orange", "value": 80   },
+              { "color": "red",    "value": 90   }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 4, "x": 8, "y": 19 },
+      "id": 12,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "(1 - (node_filesystem_free_bytes{job=\"drc-server\", fstype!=\"tmpfs\", mountpoint=\"/\"} / node_filesystem_size_bytes{job=\"drc-server\", fstype!=\"tmpfs\", mountpoint=\"/\"})) * 100",
+          "legendFormat": "Disk Usage",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk Usage",
+      "type": "gauge"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Inbound (RX) and outbound (TX) network traffic on all active interfaces. Alert threshold: 80 Mbps for 1 minute.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "bps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 19 },
+      "id": 13,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(node_network_receive_bytes_total{job=\"drc-server\", device!=\"lo\"}[1m]) * 8",
+          "legendFormat": "RX - {{device}}",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(node_network_transmit_bytes_total{job=\"drc-server\", device!=\"lo\"}[1m]) * 8",
+          "legendFormat": "TX - {{device}}",
+          "refId": "B"
+        }
+      ],
+      "title": "Network Traffic",
+      "type": "timeseries"
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 27 },
+      "id": 23,
+      "title": "System Health",
+      "type": "row"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "1-minute and 5-minute load average comparison between DC and DRC. Threshold line at 2.0 (above 2x vCPU capacity).",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Load",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 8,
             "gradientMode": "none",
             "hideFrom": { "legend": false, "tooltip": false, "viz": false },
             "lineInterpolation": "smooth",
@@ -711,58 +739,62 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 14, "x": 0, "y": 30 },
+      "gridPos": { "h": 8, "w": 14, "x": 0, "y": 28 },
       "id": 14,
       "options": {
-        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "legend": {
+          "calcs": ["mean", "max", "lastNotNull"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
         "tooltip": { "mode": "multi", "sort": "none" }
       },
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "node_load1{job=\"dc-server\"}",
-          "legendFormat": "DC — Load 1m",
+          "legendFormat": "DC - Load 1m",
           "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "node_load1{job=\"drc-server\"}",
-          "legendFormat": "DRC — Load 1m",
+          "legendFormat": "DRC - Load 1m",
           "refId": "B"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "node_load5{job=\"dc-server\"}",
-          "legendFormat": "DC — Load 5m",
+          "legendFormat": "DC - Load 5m",
           "refId": "C"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "node_load5{job=\"drc-server\"}",
-          "legendFormat": "DRC — Load 5m",
+          "legendFormat": "DRC - Load 5m",
           "refId": "D"
         }
       ],
-      "title": "Load Average — DC vs DRC",
+      "title": "Load Average - DC vs DRC",
       "type": "timeseries"
     },
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Time elapsed since last boot.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null }
-            ]
+            "steps": [{ "color": "blue", "value": null }]
           },
           "unit": "dtdurations"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 5, "x": 14, "y": 30 },
+      "gridPos": { "h": 4, "w": 5, "x": 14, "y": 28 },
       "id": 15,
       "options": {
         "colorMode": "value",
@@ -774,6 +806,7 @@
           "fields": "",
           "values": false
         },
+        "text": { "valueSize": 18 },
         "textMode": "auto"
       },
       "targets": [
@@ -785,26 +818,25 @@
           "refId": "A"
         }
       ],
-      "title": "DC — Uptime",
+      "title": "DC Server - Uptime",
       "type": "stat"
     },
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Time elapsed since last boot.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null }
-            ]
+            "steps": [{ "color": "blue", "value": null }]
           },
           "unit": "dtdurations"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 5, "x": 19, "y": 30 },
+      "gridPos": { "h": 4, "w": 5, "x": 19, "y": 28 },
       "id": 16,
       "options": {
         "colorMode": "value",
@@ -816,6 +848,7 @@
           "fields": "",
           "values": false
         },
+        "text": { "valueSize": 18 },
         "textMode": "auto"
       },
       "targets": [
@@ -827,26 +860,25 @@
           "refId": "A"
         }
       ],
-      "title": "DRC — Uptime",
+      "title": "DRC Server - Uptime",
       "type": "stat"
     },
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Time elapsed since last boot.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null }
-            ]
+            "steps": [{ "color": "blue", "value": null }]
           },
           "unit": "dtdurations"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 5, "x": 14, "y": 34 },
+      "gridPos": { "h": 4, "w": 5, "x": 14, "y": 32 },
       "id": 17,
       "options": {
         "colorMode": "value",
@@ -858,6 +890,7 @@
           "fields": "",
           "values": false
         },
+        "text": { "valueSize": 18 },
         "textMode": "auto"
       },
       "targets": [
@@ -869,26 +902,25 @@
           "refId": "A"
         }
       ],
-      "title": "Router — Uptime",
+      "title": "Router VM - Uptime",
       "type": "stat"
     },
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Time elapsed since last boot.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null }
-            ]
+            "steps": [{ "color": "blue", "value": null }]
           },
           "unit": "dtdurations"
         },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 5, "x": 19, "y": 34 },
+      "gridPos": { "h": 4, "w": 5, "x": 19, "y": 32 },
       "id": 18,
       "options": {
         "colorMode": "value",
@@ -900,6 +932,7 @@
           "fields": "",
           "values": false
         },
+        "text": { "valueSize": 18 },
         "textMode": "auto"
       },
       "targets": [
@@ -911,7 +944,7 @@
           "refId": "A"
         }
       ],
-      "title": "Monitoring — Uptime",
+      "title": "Monitoring Server - Uptime",
       "type": "stat"
     }
 
@@ -938,7 +971,7 @@
   "time": { "from": "now-1h", "to": "now" },
   "timepicker": {},
   "timezone": "Asia/Jakarta",
-  "title": "Infrastructure Monitoring DC–DRC",
+  "title": "Infrastructure Monitoring DC-DRC",
   "uid": "capstone-infra-v1",
-  "version": 1
+  "version": 2
 }
