@@ -45,14 +45,7 @@ groups:
       # Trigger jika storage > 80%
       # =====================================================
       - alert: HighDiskUsage
-        expr: (
-          (
-            node_filesystem_size_bytes{fstype!="tmpfs"} -
-            node_filesystem_free_bytes{fstype!="tmpfs"}
-          )
-          /
-          node_filesystem_size_bytes{fstype!="tmpfs"}
-        ) * 100 > 80
+        expr: (1 - (node_filesystem_free_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 80
         for: 1m
         labels:
           severity: critical
@@ -62,16 +55,18 @@ groups:
 
       # =====================================================
       # HIGH LOAD AVERAGE
-      # Trigger jika load average > 2 selama 1 menit
+      # Trigger jika load PER CORE > 1.5 selama 1 menit.
+      # Dihitung relatif terhadap jumlah vCPU tiap server,
+      # jadi otomatis benar baik untuk VM 1 vCPU maupun 2 vCPU.
       # =====================================================
       - alert: HighLoad
-        expr: node_load1 > 2
+        expr: node_load1 / count by(instance) (node_cpu_seconds_total{mode="idle"}) > 1.5
         for: 1m
         labels:
           severity: warning
         annotations:
           summary: "Load Server Tinggi"
-          description: "{{ $labels.job }} mengalami load average di atas kapasitas 2 vCPU selama 1 menit."
+          description: "{{ $labels.job }} mengalami load average di atas 1.5x jumlah vCPU selama 1 menit."
 
       # =====================================================
       # HIGH NETWORK TRAFFIC
@@ -91,7 +86,7 @@ groups:
       # Trigger jika iowait > 20% selama 1 menit
       # =====================================================
       - alert: HighDiskIOWait
-        expr: rate(node_cpu_seconds_total{mode="iowait"}[1m]) * 100 > 20
+        expr: avg by(instance) (rate(node_cpu_seconds_total{mode="iowait"}[1m])) * 100 > 20
         for: 1m
         labels:
           severity: warning

@@ -132,7 +132,7 @@ rm largefile.img
 ## Threshold
 
 ```text
-Traffic > 100 Mbps selama 1 menit
+Traffic > 80 Mbps selama 1 menit
 ```
 
 ## Install iperf3

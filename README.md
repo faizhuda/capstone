@@ -193,7 +193,7 @@ Digunakan untuk:
 | HighCPUUsage | CPU > 80% selama 1 menit |
 | HighMemoryUsage | RAM > 80% selama 1 menit |
 | HighDiskUsage | Storage > 80% |
-| HighNetworkTraffic | Traffic > 100 Mbps selama 1 menit |
+| HighNetworkTraffic | Traffic > 80 Mbps selama 1 menit |
 | NodeDown | Server tidak dapat diakses |
 
 ---
@@ -214,6 +214,26 @@ Penggunaan CPU Tinggi
 📖 Description:
 Penggunaan CPU pada dc-server melebihi 80% selama 1 menit.
 ```
+
+## Konfigurasi Token Telegram
+
+Edit file `monitor/alertmanager/alertmanager.yml` dan isi placeholder berikut:
+
+| Field | Cara Mendapatkan |
+|---|---|
+| `bot_token` | Buat bot baru via [@BotFather](https://t.me/BotFather), salin token yang diberikan |
+| `chat_id` | Kirim pesan ke bot, lalu buka `https://api.telegram.org/bot<TOKEN>/getUpdates` dan ambil nilai `chat.id` |
+
+Setelah diisi, restart Alertmanager:
+
+```bash
+sudo cp monitor/alertmanager/alertmanager.yml /etc/alertmanager/
+sudo systemctl restart alertmanager
+```
+
+> ⚠️ Jangan commit token asli ke Git. File `.gitignore` sudah mengabaikan
+> `token.txt`, `secrets.yml`, dan `.env`. Biarkan placeholder `YOUR_TOKEN`
+> di repo, isi nilai asli hanya di file `/etc/alertmanager/` pada VM.
 
 ---
 

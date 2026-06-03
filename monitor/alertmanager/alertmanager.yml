@@ -22,3 +22,17 @@ receivers:
     chat_id: YOUR_CHAT_ID
     parse_mode: Markdown
     send_resolved: true
+
+# =====================================================
+# INHIBIT RULES
+# Jika server DOWN (NodeDown), jangan kirim alert resource
+# (CPU/Memory/Disk/dll) untuk server yang sama. Mencegah
+# "alert storm" saat satu server mati.
+# =====================================================
+inhibit_rules:
+  - source_match:
+      alertname: NodeDown
+    target_match_re:
+      alertname: "HighCPUUsage|HighMemoryUsage|HighDiskUsage|HighLoad|HighNetworkTraffic|HighDiskIOWait"
+    equal:
+      - instance

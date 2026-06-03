@@ -28,4 +28,4 @@ ping 10.10.1.10
 
 - Routing dalam subnet berjalan
 - Node Exporter dapat discrape oleh Prometheus
-- Monitoring server dapat mengakses DRC melalui router
+- Monitoring server mengakses DRC langsung dalam subnet yang sama (10.10.1.0/24)

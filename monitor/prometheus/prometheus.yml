@@ -13,14 +13,31 @@ alerting:
 
 scrape_configs:
 
-  - job_name: "dc-server"
+  - job_name: "prometheus"
+    static_configs:
+      - targets:
+          - "localhost:9090"
 
+  - job_name: "dc-server"
     static_configs:
       - targets:
           - "10.10.1.10:9100"
+        labels:
+          server: "DC Server"
+          location: "Data Center"
 
   - job_name: "drc-server"
-
     static_configs:
       - targets:
           - "10.10.1.20:9100"
+        labels:
+          server: "DRC Server"
+          location: "Disaster Recovery Center"
+
+  - job_name: "router"
+    static_configs:
+      - targets:
+          - "10.10.1.1:9100"
+        labels:
+          server: "Router VM"
+          role: "gateway"

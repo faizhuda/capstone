@@ -4,17 +4,22 @@ network:
 
   ethernets:
 
+    # LAN internal (DC/DRC/Router) — directly connected,
+    # tidak perlu default gateway di sini.
     ens33:
       dhcp4: no
       addresses:
         - 10.10.1.100/24
-      gateway4: 10.10.1.1
-    
+
+    # NAT VMware — jalur ke internet (apt, Telegram API).
+    # Default route hanya ada di interface ini.
     ens37:
       dhcp4: no
       addresses:
         - 192.168.163.10/24
-      gateway4: 192.168.163.2
+      routes:
+        - to: default
+          via: 192.168.163.2
       nameservers:
         addresses:
           - 8.8.8.8
