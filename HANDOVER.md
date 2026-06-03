@@ -16,7 +16,7 @@ Membangun sistem monitoring infrastruktur real-time untuk lingkungan simulasi Da
 
 ### Status Progres Saat Ini
 
-**~85% selesai.** Core monitoring sudah fully operational secara lokal. Yang tersisa adalah public deployment (Cloudflare Tunnel) dan re-import Grafana dashboard versi terbaru.
+**100% selesai.** Sistem monitoring fully operational secara lokal dan dapat diakses publik via Cloudflare Tunnel.
 
 ### Keputusan Penting yang Sudah Diambil
 
@@ -108,33 +108,32 @@ Host router      → 10.10.1.2    User: capstone  ServerAliveInterval: 60
 - Prometheus scraping 4 target, semua `up`
 - Alertmanager terkonfigurasi dan terhubung ke Telegram
 - Grafana dashboard versi terbaru telah berhasil di-import dan berjalan normal
-- Notifikasi alert Telegram berhasil diuji menggunakan skenario stress-testing
+- Notifikasi alert Telegram berhasil diuji end-to-end
+- Cloudflare Tunnel aktif, dashboard dapat diakses publik
+- Grafana anonymous access dikonfigurasi via viewer account + folder permissions
+- Timezone Grafana diset ke Asia/Jakarta (WIB)
 
 ### Sedang Dikerjakan Saat Handover
 
-Proses re-import dashboard dan pengujian alert sudah selesai dilakukan. Langkah selanjutnya adalah setup Cloudflare Tunnel untuk publik akses.
+Tidak ada. Semua task telah selesai.
 
 ### Kendala yang Masih Terbuka
 
-1. **Public deployment belum dilakukan**: Cloudflare Tunnel belum diinstall di Monitoring Server. Ini adalah requirement tugas.
+Tidak ada kendala aktif.
 
 ### Risiko
 
 - Token Telegram di VM (`/etc/alertmanager/alertmanager.yml`) tidak ada di repo: jika VM di-recreate, token harus diisi ulang manual
-- `50-cloud-init.yaml` di Router VM mengandung konfigurasi network manual; jika cloud-init berjalan ulang saat reboot, konfigurasi bisa tertimpa (belum dimitigasi)
+- `50-cloud-init.yaml` di Router VM mengandung konfigurasi network manual; jika cloud-init berjalan ulang saat reboot, IP `10.10.1.2` bisa kembali ke default
 - Dashboard Grafana tidak auto-provision: jika Grafana di-reinstall, dashboard harus di-import ulang manual dari `monitor/grafana/dashboard.json`
+- Cloudflare Tunnel URL (`trycloudflare.com`) bersifat sementara dan berubah setiap cloudflared direstart
+- Grafana viewer credentials (`viewer` / `viewer123`) tidak ada di repo, hanya dikonfigurasi di VM
 
 ## 4. To-Do List Tersisa
 
 ### High Priority
 
-| Tugas | Dependensi | Langkah |
-|---|---|---|
-| Setup Cloudflare Tunnel untuk public access | Monitoring server harus punya akses internet (via ens37) | SSH ke monitoring -> install cloudflared -> `cloudflared tunnel --url http://localhost:3000` |
-
-### Medium Priority
-
-*Semua tugas prioritas sedang telah diselesaikan.*
+*Semua task selesai.*
 
 ### Low Priority
 
@@ -142,6 +141,7 @@ Proses re-import dashboard dan pengujian alert sudah selesai dilakukan. Langkah 
 |---|---|---|
 | Setup SSH key (passwordless login) | - | `ssh-keygen -t ed25519` di Windows -> `ssh-copy-id capstone@10.10.1.x` ke setiap VM |
 | Mitigasi cloud-init overwrite di Router VM | - | Buat file `/etc/cloud/cloud.cfg.d/99-disable-network.cfg` dengan `network: {config: disabled}` |
+| Named Tunnel Cloudflare (URL permanen) | Perlu beli domain | Daftar domain -> `cloudflared tunnel create` -> konfigurasi DNS record |
 
 ---
 
@@ -252,48 +252,32 @@ Host router      HostName 10.10.1.2    User capstone  ServerAliveInterval 60  Se
 
 ## 6. Next Recommended Actions
 
-Lakukan secara berurutan:
+Proyek sudah selesai. Untuk melanjutkan atau mereproduksi environment:
 
-**1. Re-import Grafana dashboard**
-```
-Buka http://10.10.1.100:3000 di browser
-Login: admin / admin
-Dashboards → New → Import → Upload JSON file
-Pilih: monitor/grafana/dashboard.json (dari repo lokal)
-Pilih datasource: Prometheus → Import
-```
-
-**2. Set timezone monitoring server ke WIB**
+**1. Jalankan Cloudflare Tunnel (setiap sesi)**
 ```bash
 ssh monitoring
-sudo timedatectl set-timezone Asia/Jakarta
-timedatectl   # verify: Time zone: Asia/Jakarta (WIB, +0700)
-sudo systemctl restart alertmanager
-```
-
-**3. Install Cloudflare Tunnel untuk public access**
-```bash
-ssh monitoring
-curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o cloudflared.deb
-sudo dpkg -i cloudflared.deb
 cloudflared tunnel --url http://localhost:3000
-# Catat URL yang muncul, contoh: https://xxxx.trycloudflare.com
+# Salin URL yang muncul
 ```
 
-**4. Test end-to-end alert**
+**2. Apply config setelah git pull**
 ```bash
-ssh dc-server
-stress-ng --cpu 1 --timeout 120s
-# Tunggu ~1 menit → cek Telegram apakah alert HighCPUUsage masuk
+ssh monitoring
+cd ~/capstone && git pull
+sudo cp monitor/prometheus/prometheus.yml /etc/prometheus/
+sudo cp monitor/prometheus/alert.rules.yml /etc/prometheus/
+sudo cp monitor/alertmanager/alertmanager.yml /etc/alertmanager/
+# Isi token Telegram di /etc/alertmanager/alertmanager.yml
+sudo systemctl restart prometheus alertmanager
 ```
 
-**5. Update gateway DC dan DRC server (opsional, kalau ada masalah routing)**
-```bash
-ssh dc-server
-sudo nano /etc/netplan/50-cloud-init.yaml
-# Ubah gateway4: 10.10.1.1 → routes: [{to: default, via: 10.10.1.2}]
-sudo netplan apply
-# Ulangi untuk drc-server
+**3. Re-import dashboard jika Grafana di-reinstall**
+```
+Buka http://10.10.1.100:3000 → login sebagai admin
+Dashboards → New → Import → Upload monitor/grafana/dashboard.json
+Set Home Dashboard: Administration → Default preferences → Home Dashboard
+Set folder permissions: folder → Manage permissions → Add Viewer role
 ```
 
 ---
@@ -302,12 +286,18 @@ sudo netplan apply
 
 | # | Pertanyaan | Konteks |
 |---|---|---|
-| 1 | Apakah `HighDiskUsage` alert sekarang sudah berfungsi? | Sebelumnya YAML-invalid sehingga kemungkinan tidak pernah trigger; sudah diperbaiki di commit `9955ed9` tapi belum ditest |
-| 2 | Apakah deployment requirement (public access) cukup dengan Cloudflare Tunnel sementara, atau perlu VPS permanen? | README menyebut "VPS deployment" sebagai next phase, tapi untuk presentasi Cloudflare Tunnel seharusnya cukup |
-| 3 | Apakah Router VM perlu dimonitor (Node Exporter sudah dipasang)? | Saat ini sudah di-scrape oleh Prometheus, tapi tidak ada alert rules khusus untuk router. Perlu ditambahkan? |
-| 4 | Apakah `cloud-init` di Router VM akan menimpa konfigurasi network saat reboot? | Belum ditest; jika `10.10.1.2` hilang setelah reboot, perlu disable cloud-init network config |
-| 5 | Grafana default credentials `admin/admin`: apakah sudah diganti? | Tidak ada catatan bahwa password sudah diubah; perlu dikonfirmasi sebelum public deployment |
+| 1 | Apakah `cloud-init` di Router VM akan menimpa konfigurasi network saat reboot? | Belum ditest; jika `10.10.1.2` hilang setelah reboot, perlu disable cloud-init network config dengan file `/etc/cloud/cloud.cfg.d/99-disable-network.cfg` |
+| 2 | Apakah perlu Named Tunnel (URL permanen) untuk kebutuhan jangka panjang? | Saat ini menggunakan trycloudflare.com yang URL-nya berubah setiap restart |
+| 3 | Apakah alert rules perlu ditambahkan untuk Router VM secara spesifik? | Saat ini router di-scrape Prometheus tapi tidak ada alert rules khusus untuknya |
 
 ---
 
-*Dokumen ini dibuat berdasarkan seluruh sesi kerja pada 2026-06-03. Commit terakhir sebelum handover: `5d2e548`.*
+**Grafana Credentials:**
+- Admin: username dan password custom (tidak didokumentasikan di repo)
+- Viewer: `viewer` / `viewer123`
+
+**Cloudflare Tunnel:** aktif, URL sementara via trycloudflare.com (berubah setiap restart)
+
+---
+
+*Dokumen ini terakhir diupdate pada 2026-06-03. Commit terakhir: lihat `git log --oneline -1`.*

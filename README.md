@@ -217,19 +217,34 @@ Digunakan untuk:
 
 # Integrasi Telegram
 
-Contoh alert Telegram:
+Contoh alert Telegram (format aktual yang diterima):
 
 ```text
-🚨 HighCPUUsage
+INFRASTRUCTURE ALERT
+────────────────────────
+Server    : dc-server
+Severity  : warning
 
-🖥️ Server: dc-server
-⚠️ Severity: warning
-
-📝 Summary:
 Penggunaan CPU Tinggi
-
-📖 Description:
 Penggunaan CPU pada dc-server melebihi 80% selama 1 menit.
+
+Fired: 03 Jun 2026, 14:30 WIB
+────────────────────────
+```
+
+Contoh alert resolved:
+
+```text
+ALERT RESOLVED
+────────────────────────
+Server    : dc-server
+Severity  : warning
+
+Penggunaan CPU Tinggi
+Penggunaan CPU pada dc-server melebihi 80% selama 1 menit.
+
+Resolved: 03 Jun 2026, 14:33 WIB
+────────────────────────
 ```
 
 ## Konfigurasi Token Telegram
@@ -352,26 +367,82 @@ Seluruh VM dipindahkan ke subnet yang sama untuk meningkatkan stabilitas scrapin
 
 ---
 
-# Teknologi yang Digunakan
+## ❌ SSH ke Router VM connection refused
 
-| Teknologi | Fungsi |
-|---|---|
-| Prometheus | Monitoring |
-| Grafana | Visualisasi |
-| Alertmanager | Alert System |
-| Node Exporter | Metrics Collection |
-| Telegram Bot | Notifikasi |
-| VMware Workstation | Virtualisasi |
-| stress-ng | Stress Testing |
-| iperf3 | Network Testing |
-| Ubuntu Server | Operating System |
+### Penyebab
+IP `10.10.1.1` diambil oleh VMware Host Virtual Network Adapter di Windows, bukan oleh Router VM. Ping ke `10.10.1.1` menjawab dengan TTL=128 (Windows), bukan TTL=64 (Linux).
+
+### Solusi
+Ganti IP Router VM dari `10.10.1.1` ke `10.10.1.2` di `/etc/netplan/50-cloud-init.yaml`, lalu jalankan `sudo netplan apply`.
 
 ---
 
-# Pengembangan Selanjutnya
+## ❌ Grafana anonymous access tidak berfungsi (Grafana 12)
 
-- VPS deployment
-- Public monitoring access
+### Penyebab
+Grafana versi 12 menggunakan API baru berbasis Kubernetes (`/apis/dashboard.grafana.app/v1beta1/`) yang tidak mendukung anonymous access dengan benar.
+
+### Solusi
+Buat akun viewer khusus dan set folder permissions agar dapat diakses oleh role Viewer:
+
+```bash
+curl -X POST http://<admin>:<password>@localhost:3000/api/admin/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Viewer","login":"viewer","password":"viewer123","role":"Viewer"}'
+```
+
+Kemudian set folder permissions via Grafana UI: Dashboards -> folder -> Manage permissions -> Add Viewer role.
+
+---
+
+# Teknologi yang Digunakan
+
+| Teknologi | Versi | Fungsi |
+|---|---|---|
+| Prometheus | latest | Metrics scraping dan alert evaluation |
+| Grafana | 12.4.1 | Visualisasi dashboard |
+| Alertmanager | latest | Alert routing dan notifikasi |
+| Node Exporter | 1.10.2 | Metrics collection per server |
+| Telegram Bot | - | Notifikasi alert real-time |
+| Cloudflare Tunnel | latest | Public access tanpa port forwarding |
+| VMware Workstation | latest | Virtualisasi infrastruktur |
+| stress-ng | - | Stress testing resource |
+| iperf3 | - | Network traffic testing |
+| Ubuntu Server | 24.04 LTS | Operating system semua VM |
+
+---
+
+# Akses Publik
+
+Dashboard Grafana dapat diakses secara publik melalui Cloudflare Tunnel.
+
+## Cara Akses
+
+Buka URL tunnel yang aktif di browser. Dashboard langsung tampil tanpa login.
+
+Untuk akses dengan privileges viewer (read-only):
+
+| Field | Value |
+|---|---|
+| Username | viewer |
+| Password | viewer123 |
+
+## Menjalankan Tunnel
+
+```bash
+ssh monitoring
+cloudflared tunnel --url http://localhost:3000
+```
+
+Salin URL yang muncul, contoh:
+
+```text
+https://xxxx-xxxx-xxxx.trycloudflare.com
+```
+
+> Catatan: URL trycloudflare.com bersifat sementara dan berubah setiap kali
+> cloudflared direstart. Untuk URL permanen, gunakan Named Tunnel dengan domain
+> sendiri yang didaftarkan ke Cloudflare.
 
 ---
 
@@ -389,6 +460,7 @@ Membangun sistem monitoring infrastruktur modern yang:
 # Status Proyek
 
 ```text
-Monitoring System Fully Operational Locally.
-Next Phase: VPS Deployment & Public Hosting.
+Monitoring System Fully Operational.
+Public Access: Active via Cloudflare Tunnel.
+Alerting: Active via Telegram Bot.
 ```
