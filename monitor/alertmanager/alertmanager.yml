@@ -33,7 +33,7 @@ receivers:
       📝  {{ .Annotations.description }}
       {{ end -}}
       ━━━━━━━━━━━━━━━━━━━━━━━━
-      {{ if eq .Status "resolved" }}🕐  Resolved: {{ (index .Alerts 0).EndsAt.Format "02 Jan 2006, 15:04 UTC" }}{{ else }}🕐  Fired: {{ (index .Alerts 0).StartsAt.Format "02 Jan 2006, 15:04 UTC" }}{{ end }}
+      {{ if eq .Status "resolved" }}🕐  Resolved: {{ (index .Alerts 0).EndsAt.Local.Format "02 Jan 2006, 15:04 WIB" }}{{ else }}🕐  Fired: {{ (index .Alerts 0).StartsAt.Local.Format "02 Jan 2006, 15:04 WIB" }}{{ end }}
 
 # =====================================================
 # INHIBIT RULES
