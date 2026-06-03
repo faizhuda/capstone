@@ -1,5 +1,5 @@
 # Handover Documentation
-## Capstone Project — Infrastructure Monitoring System DC-DRC
+## Capstone Project - Infrastructure Monitoring System DC-DRC
 
 **Last updated:** 2026-06-03
 **Prepared for:** AI successor / next collaborator
@@ -46,27 +46,27 @@ Membangun sistem monitoring infrastruktur real-time untuk lingkungan simulasi Da
 
 Dilakukan full audit project dengan hasil skor 68/100 (naik dari 47/100 di versi awal). Perbaikan yang sudah diimplementasikan dan di-push ke repo:
 
-**Commit `9955ed9` — Batch perbaikan utama:**
-- `monitor/alertmanager/alertmanager.yml` — tambah `inhibit_rules` untuk mencegah alert storm saat NodeDown (resource alerts di-suppress jika server sudah down)
-- `monitor/prometheus/prometheus.yml` — tambah label custom (`server`, `location`), scrape target router (`10.10.1.2:9100`), dan self-monitoring Prometheus (`localhost:9090`)
-- `monitor/prometheus/alert.rules.yml` — fix `HighDiskIOWait` query (tambah `avg by(instance)`), fix `HighLoad` menjadi relatif per-vCPU, **fix kritis**: `HighDiskUsage` expr multi-line yang YAML-invalid sejak awal (kemungkinan alert disk tidak pernah trigger sebelumnya)
-- `monitor/network/netplan.yaml` — ganti `gateway4:` deprecated ke `routes:`, fix dual default-gateway pada monitoring server (ens33 tidak perlu default route, hanya ens37)
-- `dc-server/network-config.yaml` dan `drc-server/network-config.yaml` — ganti `gateway4:` ke `routes:`
-- `dc-server/node-exporter-setup.md` dan `drc-server/node-exporter-setup.md` — tambah instruksi systemd service
-- `drc-server/testing.md` — hapus teks stale "melalui router"
-- `README.md` — sinkronkan threshold network (100 Mbps → 80 Mbps), tambah panduan konfigurasi token Telegram
-- `monitor/testing/stress-testing.md` — sinkronkan threshold network
+**Commit `9955ed9` (Batch perbaikan utama):**
+- `monitor/alertmanager/alertmanager.yml`: tambah `inhibit_rules` untuk mencegah alert storm saat NodeDown (resource alerts di-suppress jika server sudah down)
+- `monitor/prometheus/prometheus.yml`: tambah label custom (`server`, `location`), scrape target router (`10.10.1.2:9100`), dan self-monitoring Prometheus (`localhost:9090`)
+- `monitor/prometheus/alert.rules.yml`: fix `HighDiskIOWait` query (tambah `avg by(instance)`), fix `HighLoad` menjadi relatif per-vCPU, **fix kritis**: `HighDiskUsage` expr multi-line yang YAML-invalid sejak awal (kemungkinan alert disk tidak pernah trigger sebelumnya)
+- `monitor/network/netplan.yaml`: ganti `gateway4:` deprecated ke `routes:`, fix dual default-gateway pada monitoring server (ens33 tidak perlu default route, hanya ens37)
+- `dc-server/network-config.yaml` dan `drc-server/network-config.yaml`: ganti `gateway4:` ke `routes:`
+- `dc-server/node-exporter-setup.md` dan `drc-server/node-exporter-setup.md`: tambah instruksi systemd service
+- `drc-server/testing.md`: hapus teks stale "melalui router"
+- `README.md`: sinkronkan threshold network (100 Mbps to 80 Mbps), tambah panduan konfigurasi token Telegram
+- `monitor/testing/stress-testing.md`: sinkronkan threshold network
 
-**Commit `4286cc7` — IP Router fix:**
+**Commit `4286cc7` (IP Router fix):**
 - Semua referensi `10.10.1.1` (router) diubah ke `10.10.1.2` di seluruh repo
 - File terdampak: `router/network-config.yaml`, `monitor/prometheus/prometheus.yml`, `dc-server/network-config.yaml`, `drc-server/network-config.yaml`, `README.md`, `dc-server/testing.md`, `drc-server/testing.md`
 
-**Commit `b589d00` + `caff093` — Telegram template:**
+**Commit `b589d00` + `caff093` (Telegram template):**
 - Template pesan Telegram custom dengan format profesional (header status, server, severity, summary, description, timestamp)
 - Timestamp menggunakan `.Local.Format` agar ikut timezone sistem VM
 - **Penting:** monitoring server harus diset ke timezone `Asia/Jakarta` agar timestamp tampil WIB, bukan UTC
 
-**Commit `14ced1d` + `5d2e548` — Grafana dashboard:**
+**Commit `14ced1d` + `5d2e548` (Grafana dashboard):**
 - Dashboard JSON custom dibuat dari scratch di `monitor/grafana/dashboard.json`
 - Tanpa emoji, tanpa em dash, tampilan profesional
 - Panel: Business Continuity Status (full-width, green/red), Node Status (4 server), DC metrics (CPU/Memory/Disk gauge + Network timeseries), DRC metrics (sama), System Health (Load Average comparison + 4 uptime panels)
@@ -93,6 +93,8 @@ Host router      → 10.10.1.2    User: capstone  ServerAliveInterval: 60
 
 - Prometheus dan Alertmanager config sudah di-`git pull` dan di-apply di Monitoring Server
 - Token Telegram sudah diisi di `/etc/alertmanager/alertmanager.yml` di VM (bukan di repo)
+- Timezone sistem di VM Monitoring Server telah diatur ke `Asia/Jakarta` (WIB)
+- Konfigurasi Netplan dengan gateway baru `10.10.1.2` telah diterapkan secara aktif (`netplan apply`) di VM DC dan DRC
 
 ---
 
@@ -112,17 +114,13 @@ Proses re-import Grafana dashboard versi terbaru ke Grafana UI belum dilakukan. 
 
 ### Kendala yang Masih Terbuka
 
-1. **Public deployment belum dilakukan** — Cloudflare Tunnel belum diinstall di Monitoring Server. Ini adalah requirement tugas.
-2. **Timezone monitoring server belum dikonfirmasi** — Perlu `sudo timedatectl set-timezone Asia/Jakarta` di VM monitoring agar timestamp Telegram tampil WIB. Belum dikonfirmasi apakah sudah dilakukan.
-3. **Gateway DC dan DRC server belum diupdate** — File `network-config.yaml` di repo sudah diubah gateway dari `10.10.1.1` ke `10.10.1.2`, tapi perubahan ini belum di-apply ke dalam VM (netplan belum di-update di DC dan DRC server aktual).
+1. **Public deployment belum dilakukan**: Cloudflare Tunnel belum diinstall di Monitoring Server. Ini adalah requirement tugas.
 
 ### Risiko
 
-- Token Telegram di VM (`/etc/alertmanager/alertmanager.yml`) tidak ada di repo — jika VM di-recreate, token harus diisi ulang manual
+- Token Telegram di VM (`/etc/alertmanager/alertmanager.yml`) tidak ada di repo: jika VM di-recreate, token harus diisi ulang manual
 - `50-cloud-init.yaml` di Router VM mengandung konfigurasi network manual; jika cloud-init berjalan ulang saat reboot, konfigurasi bisa tertimpa (belum dimitigasi)
-- Dashboard Grafana tidak auto-provision — jika Grafana di-reinstall, dashboard harus di-import ulang manual dari `monitor/grafana/dashboard.json`
-
----
+- Dashboard Grafana tidak auto-provision: jika Grafana di-reinstall, dashboard harus di-import ulang manual dari `monitor/grafana/dashboard.json`
 
 ## 4. To-Do List Tersisa
 
@@ -130,22 +128,20 @@ Proses re-import Grafana dashboard versi terbaru ke Grafana UI belum dilakukan. 
 
 | Tugas | Dependensi | Langkah |
 |---|---|---|
-| Re-import Grafana dashboard versi terbaru | Repo sudah up-to-date | Login Grafana → Dashboards → New → Import → upload `monitor/grafana/dashboard.json` |
-| Setup Cloudflare Tunnel untuk public access | Monitoring server harus punya akses internet (via ens37) | SSH ke monitoring → install cloudflared → `cloudflared tunnel --url http://localhost:3000` |
-| Konfirmasi timezone WIB di monitoring server | - | `ssh monitoring` → `sudo timedatectl set-timezone Asia/Jakarta` → `timedatectl` untuk verify |
+| Re-import Grafana dashboard versi terbaru | Repo sudah up-to-date | Login Grafana -> Dashboards -> New -> Import -> upload `monitor/grafana/dashboard.json` |
+| Setup Cloudflare Tunnel untuk public access | Monitoring server harus punya akses internet (via ens37) | SSH ke monitoring -> install cloudflared -> `cloudflared tunnel --url http://localhost:3000` |
 
 ### Medium Priority
 
 | Tugas | Dependensi | Langkah |
 |---|---|---|
-| Apply netplan update di DC dan DRC server | Gateway sudah diubah di repo | SSH ke dc-server dan drc-server → update `/etc/netplan/50-cloud-init.yaml` ganti `gateway4: 10.10.1.1` ke `routes: [{to: default, via: 10.10.1.2}]` → `sudo netplan apply` |
-| Test end-to-end alert Telegram | Token sudah diisi | Jalankan `stress-ng --cpu 1 --timeout 120s` di dc-server → tunggu alert muncul di Telegram |
+| Test end-to-end alert Telegram | Token sudah diisi | Jalankan `stress-ng --cpu 1 --timeout 120s` di dc-server -> tunggu alert muncul di Telegram |
 
 ### Low Priority
 
 | Tugas | Dependensi | Langkah |
 |---|---|---|
-| Setup SSH key (passwordless login) | - | `ssh-keygen -t ed25519` di Windows → `ssh-copy-id capstone@10.10.1.x` ke setiap VM |
+| Setup SSH key (passwordless login) | - | `ssh-keygen -t ed25519` di Windows -> `ssh-copy-id capstone@10.10.1.x` ke setiap VM |
 | Mitigasi cloud-init overwrite di Router VM | - | Buat file `/etc/cloud/cloud.cfg.d/99-disable-network.cfg` dengan `network: {config: disabled}` |
 
 ---
@@ -312,7 +308,7 @@ sudo netplan apply
 | 3 | Apakah deployment requirement (public access) cukup dengan Cloudflare Tunnel sementara, atau perlu VPS permanen? | README menyebut "VPS deployment" sebagai next phase, tapi untuk presentasi Cloudflare Tunnel seharusnya cukup |
 | 4 | Apakah Router VM perlu dimonitor (Node Exporter sudah dipasang)? | Saat ini sudah di-scrape oleh Prometheus, tapi tidak ada alert rules khusus untuk router. Perlu ditambahkan? |
 | 5 | Apakah `cloud-init` di Router VM akan menimpa konfigurasi network saat reboot? | Belum ditest; jika `10.10.1.2` hilang setelah reboot, perlu disable cloud-init network config |
-| 6 | Grafana default credentials `admin/admin` — apakah sudah diganti? | Tidak ada catatan bahwa password sudah diubah; perlu dikonfirmasi sebelum public deployment |
+| 6 | Grafana default credentials `admin/admin`: apakah sudah diganti? | Tidak ada catatan bahwa password sudah diubah; perlu dikonfirmasi sebelum public deployment |
 
 ---
 
