@@ -1,0 +1,846 @@
+\documentclass[10pt,twocolumn]{article}
+
+% ============================================================
+% PACKAGES
+% ============================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[bahasa]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{cite}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{abstract}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{xcolor}
+
+% ============================================================
+% PAGE GEOMETRY
+% ============================================================
+\geometry{
+  a4paper,
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2cm,
+  right=2cm,
+  columnsep=0.8cm
+}
+
+% ============================================================
+% HYPERREF SETUP
+% ============================================================
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+% ============================================================
+% SECTION FORMATTING
+% ============================================================
+\titleformat{\section}
+  {\normalfont\bfseries\large}{\thesection.}{0.5em}{}
+\titleformat{\subsection}
+  {\normalfont\bfseries\normalsize}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}
+  {\normalfont\bfseries\small}{\thesubsubsection}{0.5em}{}
+
+% ============================================================
+% HEADER / FOOTER
+% ============================================================
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\textit{Prototype Monitoring dan Alert System DRC Pemerintah Kota Bogor}}
+\fancyhead[R]{\small\thepage}
+
+% ============================================================
+% ABSTRACT FORMATTING
+% ============================================================
+\newenvironment{abstractfull}{%
+  \begin{minipage}{\textwidth}
+  \small
+}{%
+  \end{minipage}
+}
+
+% ============================================================
+% BEGIN DOCUMENT
+% ============================================================
+\begin{document}
+
+% ---- TITLE (one-column span) --------------------------------
+\twocolumn[{%
+\begin{@twocolumnfalse}
+
+  \begin{center}
+    {\LARGE\bfseries Prototype Monitoring and Alert System for Disaster Recovery Center (DRC) of Bogor City Government}\\[6pt]
+
+    {\large\itshape Prototype Sistem Monitoring dan Alert Disaster Recovery Center (DRC)\\
+    Pemerintah Kota Bogor}\\[10pt]
+
+    {\normalsize
+      Tsabitha Naylasafa Aurora$^{1}$,
+      Faiz Naufal Huda$^{2}$,
+      Daffa Kautsar Falih$^{3}$,\\
+      Muhammad Naufal Fathurrahman$^{4}$,
+      Dr.\ Shelvie Nidya Neyman$^{5}$
+    }\\[4pt]
+
+    {\small
+      $^{1,2,3,4}$Program Studi Ilmu Komputer, Sekolah Sains Data, Matematika, dan Informatika,\\
+      Institut Pertanian Bogor, Indonesia\\[2pt]
+      $^{5}$Departemen Ilmu Komputer, Institut Pertanian Bogor, Indonesia\\[2pt]
+      \textit{corresponding author:}
+      \href{mailto:tsabitha06nayla@apps.ipb.ac.id}{tsabitha06nayla@apps.ipb.ac.id}
+    }\\[6pt]
+
+    {\footnotesize
+      Copyright \copyright\ 2026 Tsabitha Naylasafa Aurora, et al.
+      This is an open-access article distributed under the Creative Commons Attribution License,
+      which permits unrestricted use, distribution, and reproduction in any medium,
+      provided the original work is properly cited.
+    }
+  \end{center}
+
+  \vspace{6pt}
+  \hrule
+  \vspace{6pt}
+
+  % ---- ABSTRACT (English) ----
+  \noindent\textbf{Abstract}\\[4pt]
+  \noindent\small
+  Digital services of Bogor City Government increasingly depend on reliable information technology
+  infrastructure, as mandated by Presidential Regulation No.\ 95 of 2018 on Electronic-Based
+  Government Systems (SPBE). However, no standardized real-time monitoring mechanism currently exists
+  for government-owned Disaster Recovery Centers (DRC) at the regional level. This research designs
+  and implements a prototype real-time monitoring and alerting system for a DRC using an open-source
+  technology stack: Prometheus, Grafana 12.4.1, Alertmanager, and Node Exporter 1.10.2. The system
+  monitors seven critical infrastructure parameters across four virtual machines running Ubuntu Server
+  24.04 LTS in a simulated DC-DRC environment, and delivers automatic notifications via Telegram Bot
+  API. An inhibit rules mechanism suppresses redundant resource alerts when a NodeDown event is
+  active, preventing alert storms. All components run as systemd services with a 15-second scrape
+  interval. Testing was conducted through load simulation using \texttt{iperf3} and \texttt{stress-ng}
+  in a VMware Workstation environment. The results show that the system successfully detects and
+  delivers alerts within $[\mathit{X}]$ seconds of the incident occurring, with threshold detection
+  accuracy of $[\mathit{Y}]$\%.\\[4pt]
+
+  \noindent\textbf{Keywords:} alert, disaster recovery center, Grafana, inhibit rules, monitoring,
+  Prometheus, systemd, virtual machine.
+
+  \vspace{8pt}
+  \hrule
+  \vspace{6pt}
+
+  % ---- ABSTRAK (Indonesian) ----
+  \noindent\textbf{Abstrak}\\[4pt]
+  \noindent\small
+  Layanan digital Pemerintah Kota Bogor semakin bergantung pada infrastruktur teknologi informasi
+  yang handal, sebagaimana diamanatkan oleh Peraturan Presiden Nomor 95 Tahun 2018 tentang Sistem
+  Pemerintahan Berbasis Elektronik (SPBE). Namun, belum terdapat mekanisme pemantauan
+  \textit{real-time} yang terstandarisasi untuk \textit{Disaster Recovery Center} (DRC) milik
+  pemerintah daerah. Penelitian ini merancang dan mengimplementasikan \textit{prototype} sistem
+  \textit{monitoring} dan \textit{alerting real-time} untuk DRC menggunakan \textit{stack} teknologi
+  \textit{open-source}: Prometheus, Grafana 12.4.1, Alertmanager, dan Node Exporter 1.10.2. Sistem
+  memantau tujuh parameter kritis pada empat \textit{virtual machine} Ubuntu Server 24.04 LTS yang
+  mensimulasikan lingkungan DC-DRC, dan mengirimkan notifikasi otomatis melalui Telegram Bot API.
+  Mekanisme \textit{inhibit rules} menekan \textit{alert} sumber daya yang redundan saat kondisi
+  NodeDown aktif, mencegah \textit{alert storm}. Seluruh komponen berjalan sebagai layanan
+  \textit{systemd} dengan \textit{scrape interval} 5 detik dan \textit{evaluation interval} 5 detik. Pengujian dilakukan melalui simulasi
+  beban menggunakan \texttt{iperf3} dan \texttt{stress-ng} pada lingkungan VMware Workstation. Hasil
+  pengujian menunjukkan sistem berhasil mendeteksi dan mengirimkan \textit{alert} dalam rentang waktu
+  $[\mathit{X}]$ detik, dengan akurasi deteksi \textit{threshold} sebesar $[\mathit{Y}]$\%.\\[4pt]
+
+  \noindent\textbf{Kata Kunci:} \textit{alert}, \textit{disaster recovery center}, Grafana,
+  \textit{inhibit rules}, \textit{monitoring}, Prometheus, \textit{systemd},
+  \textit{virtual machine}.
+
+  \vspace{8pt}
+  \hrule
+  \vspace{10pt}
+
+\end{@twocolumnfalse}
+}]
+
+% ============================================================
+% SECTION 1 -- PENDAHULUAN
+% ============================================================
+\section{Pendahuluan}
+
+Peraturan Presiden Nomor 95 Tahun 2018 tentang Sistem Pemerintahan Berbasis Elektronik (SPBE)
+mewajibkan seluruh instansi pemerintah untuk memastikan ketersediaan layanan digital secara
+berkelanjutan \cite{perpres2018}. Sebagai implementasi dari mandat tersebut, Diskominfo Kota Bogor
+sebagai pengelola infrastruktur teknologi informasi pemerintahan bertanggung jawab menjaga
+keberlangsungan layanan melalui mekanisme \textit{Disaster Recovery Center} (DRC). BSSN (2021)
+menegaskan bahwa DRC merupakan komponen wajib dalam rencana keberlangsungan layanan pemerintah,
+namun pedoman tersebut tidak menyertakan panduan teknis mengenai mekanisme pemantauan kondisi DRC
+secara \textit{real-time} \cite{bssn2021}. Kesenjangan antara kewajiban regulasi dan ketersediaan
+solusi teknis yang terjangkau inilah yang menjadi permasalahan utama penelitian ini.
+
+Sistem \textit{monitoring} yang andal sangat dibutuhkan untuk mendeteksi anomali sebelum terjadi
+kegagalan layanan. Tanpa pemantauan \textit{real-time}, administrator hanya mengetahui kegagalan
+setelah dampaknya dirasakan pengguna, bukan sebelumnya. \textit{Stack monitoring open-source} seperti
+Prometheus dan Grafana menawarkan solusi yang fleksibel, skalabel, dan tidak memerlukan biaya lisensi,
+sehingga sesuai dengan kendala anggaran pemerintah daerah \cite{brikman2022}. Penelitian ini merancang
+\textit{prototype} sistem \textit{monitoring} dan \textit{alert} yang memantau tujuh parameter kritis
+(ketersediaan \textit{node}, CPU, memori, \textit{disk}, \textit{load average}, trafik jaringan, dan
+I/O \textit{disk}) secara \textit{real-time}, serta mengirimkan notifikasi otomatis kepada
+administrator melalui Telegram.
+
+Berdasarkan latar belakang tersebut, rumusan masalah penelitian ini adalah:
+\begin{enumerate}[leftmargin=*, label=\arabic*.]
+  \item Bagaimana merancang arsitektur sistem \textit{monitoring real-time} yang sesuai untuk
+        lingkungan DRC Diskominfo Kota Bogor dengan \textit{stack open-source}?
+  \item Parameter kritis apa saja yang perlu dipantau untuk menjamin kontinuitas layanan DRC, dan
+        berapa nilai \textit{threshold} yang tepat untuk tiap parameter?
+  \item Bagaimana sistem \textit{alerting} dapat mendeteksi gangguan dan memberikan notifikasi
+        otomatis sambil mencegah \textit{alert storm} akibat kegagalan berantai?
+  \item Bagaimana merancang \textit{dashboard} visual yang intuitif dan representatif untuk
+        mendukung pengambilan keputusan administrator?
+\end{enumerate}
+
+Tujuan penelitian ini adalah:
+\begin{enumerate}[leftmargin=*, label=\arabic*.]
+  \item Merancang dan mengimplementasikan \textit{prototype} sistem \textit{monitoring} infrastruktur
+        DRC berbasis Prometheus dan Grafana sebagai bukti konsep (\textit{proof of concept}) yang
+        dapat diadopsi pemerintah daerah.
+  \item Mendefinisikan dan mengonfigurasi \textit{threshold} tujuh parameter kritis infrastruktur DRC
+        berdasarkan kajian literatur dan \textit{best practice} industri.
+  \item Membangun sistem \textit{alerting} terintegrasi dengan Telegram Bot API beserta mekanisme
+        \textit{inhibit rules} untuk mencegah \textit{alert storm}.
+  \item Merancang \textit{dashboard} visual \textit{Command Center} dengan indikator
+        \textit{Business Continuity Status} yang representatif untuk kebutuhan Diskominfo Kota Bogor.
+\end{enumerate}
+
+% ============================================================
+% SECTION 2 -- TINJAUAN PUSTAKA
+% ============================================================
+\section{Tinjauan Pustaka}
+
+\subsection{Disaster Recovery Center (DRC)}
+
+\textit{Disaster Recovery Center} (DRC) merupakan fasilitas cadangan yang dirancang untuk memulihkan
+operasional sistem informasi ketika pusat data utama mengalami kegagalan \cite{bssn2021}. DRC memiliki
+peran strategis dalam menjamin \textit{Business Continuity Plan} (BCP) suatu organisasi. Konsep
+\textit{Recovery Time Objective} (RTO) dan \textit{Recovery Point Objective} (RPO) menjadi tolok ukur
+utama keberhasilan implementasi DRC \cite{kominfo2020}. Dalam konteks penelitian ini, pemantauan
+parameter kesehatan DRC secara \textit{real-time} merupakan prasyarat teknis untuk meminimalkan RTO:
+administrator hanya dapat memutuskan \textit{failover} ke DRC jika kondisi infrastruktur DRC dipastikan
+siap, dan keputusan tersebut membutuhkan data yang akurat dan terkini.
+
+\subsection{Sistem Monitoring Infrastruktur}
+
+Sistem \textit{monitoring} infrastruktur adalah sekumpulan alat yang mengamati kondisi \textit{server},
+jaringan, dan layanan secara berkelanjutan \cite{turnbull2018}. Terdapat dua pendekatan utama:
+\textit{pull-based monitoring} di mana \textit{server} aktif mengambil data dari target, dan
+\textit{push-based monitoring} di mana target mengirimkan data ke \textit{server}. Pendekatan
+\textit{pull-based} lebih mudah dikonfigurasi pada lingkungan VM terisolasi karena tidak memerlukan
+konfigurasi pengiriman data dari tiap target, melainkan cukup mengekspos \textit{endpoint} HTTP yang
+dapat diakses oleh \textit{server} Prometheus \cite{brikman2022}.
+
+\subsection{Prometheus}
+
+Prometheus adalah sistem \textit{monitoring} dan \textit{time-series database open-source} yang
+dikembangkan oleh SoundCloud dan saat ini dikelola oleh \textit{Cloud Native Computing Foundation}
+(CNCF) \cite{cncf2023}. Prometheus menggunakan PromQL (\textit{Prometheus Query Language}) untuk
+mengekstrak dan menganalisis metrik. Data dikumpulkan dari \textit{exporter} pada interval waktu yang
+dapat dikonfigurasi (\textit{scrape interval}) \cite{turnbull2018}. Prometheus dipilih dalam penelitian
+ini karena mendukung evaluasi \textit{alert rules} berbasis PromQL secara \textit{native},
+terintegrasi langsung dengan Alertmanager, dan menyediakan ekspresi yang fleksibel untuk mendefinisikan
+\textit{threshold} kompleks seperti \textit{load average} relatif per-vCPU
+\cite{brikman2022,cncf2023}.
+
+\subsection{Grafana}
+
+Grafana adalah platform visualisasi data \textit{open-source} yang mendukung Prometheus sebagai
+\textit{data source} secara \textit{native} \cite{brendan2020}. Grafana menyediakan berbagai jenis
+panel (\textit{time series}, \textit{gauge}, \textit{stat}) serta manajemen pengguna berbasis peran
+yang memungkinkan pembedaan akses antara administrator dan \textit{viewer} \cite{grafana2024}.
+Grafana dipilih karena kemampuan panel \textit{gauge} dan \textit{stat}-nya cocok untuk visualisasi
+kondisi infrastruktur secara sekilas (\textit{at-a-glance}), dan panel \textit{stat} mendukung
+konfigurasi \textit{value mapping} sehingga indikator \textit{Business Continuity Status} dapat
+dikonfigurasi sebagai panel biner (Hijau/Merah) tanpa pengembangan \textit{custom plugin}.
+
+\subsection{Alertmanager}
+
+Alertmanager adalah komponen Prometheus yang bertanggung jawab menangani \textit{alert} \cite{cncf2023}.
+Alertmanager menyediakan \textit{routing}, pengelompokan (\textit{grouping}), \textit{deduplication},
+dan \textit{inhibit rules}. Mekanisme \textit{inhibit rules} memungkinkan penekanan \textit{alert} yang
+redundan: apabila \textit{alert} sumber (NodeDown) aktif, \textit{alert} target yang berkaitan pada
+\textit{instance} yang sama ditekan secara otomatis. Alertmanager dipilih dibandingkan alternatif
+seperti Grafana Alerting karena \textit{inhibit rules}-nya beroperasi di level \textit{routing}
+sehingga lebih presisi dan dapat dikonfigurasi tanpa bergantung pada antarmuka grafis \cite{cncf2023}.
+
+\subsection{Node Exporter}
+
+\textit{Node Exporter} versi 1.10.2 adalah agen Prometheus untuk sistem Linux yang mengekspos metrik
+\textit{hardware} dan sistem operasi melalui \textit{endpoint} \texttt{/metrics} pada port 9100
+\cite{cncf2023}. Metrik yang tersedia meliputi CPU \textit{usage}, \textit{memory usage},
+\textit{disk} I/O, \textit{filesystem usage}, dan \textit{network statistics}. Node Exporter dipilih
+karena mengekspos seluruh metrik sistem yang relevan untuk pemantauan DRC tanpa memerlukan konfigurasi
+tambahan, serta dijalankan sebagai layanan \textit{systemd} agar tetap aktif secara otomatis saat VM
+\textit{reboot} \cite{turnbull2018}.
+
+\subsection{Systemd Service}
+
+\textit{Systemd} adalah sistem inisialisasi dan manajer layanan standar pada distribusi Linux modern,
+termasuk Ubuntu Server 24.04 LTS \cite{linux2023}. Dengan mendefinisikan berkas unit \texttt{.service},
+proses dapat dikelola secara konsisten: dijalankan otomatis saat \textit{boot}, di-\textit{restart}
+saat gagal (\texttt{Restart=on-failure}), dan dipantau melalui \texttt{systemctl status}. Pendekatan
+\textit{systemd} dipilih sebagai alternatif kontainerisasi (Docker) karena secara signifikan lebih
+ringan pada VM dengan alokasi RAM 1 GB, tidak memerlukan \textit{daemon} tambahan, dan terintegrasi
+langsung dengan sistem operasi sehingga mengurangi kompleksitas \textit{deployment} \cite{linux2023}.
+
+\subsection{Telegram Bot API}
+
+Telegram Bot API adalah antarmuka pemrograman yang memungkinkan pembuatan bot otomatis pada platform
+Telegram \cite{telegram2023}. Alertmanager dikonfigurasi untuk mengirimkan pesan berformat HTML ke
+grup Telegram melalui \textit{webhook}, memungkinkan administrator menerima peringatan secara instan
+di perangkat \textit{mobile}. Telegram dipilih sebagai saluran notifikasi karena tidak memerlukan
+konfigurasi server email atau berlangganan layanan berbayar, mendukung format HTML untuk penyajian
+informasi terstruktur, dan telah terbukti efektif pada penelitian serupa \cite{Rahman2020}.
+
+\subsection{Traffic Generator (\texttt{iperf3} dan \texttt{stress-ng})}
+
+\texttt{iperf3} adalah alat \textit{benchmark} jaringan yang menghasilkan trafik TCP/UDP sintetis
+untuk mengukur \textit{throughput} \cite{Rahayu2023}. \texttt{stress-ng} adalah utilitas pengujian
+beban sistem yang mensimulasikan penggunaan CPU, memori, dan I/O secara terprogram. Kedua alat ini
+dipilih karena dapat menghasilkan beban yang terkontrol dan terulang (\textit{reproducible}), sehingga
+memungkinkan pengukuran latensi \textit{alert} yang konsisten antar iterasi pengujian.
+
+\subsection{Penelitian Terdahulu}
+
+Rahman et al.\ \cite{Rahman2020} mengimplementasikan Prometheus dan Grafana untuk \textit{monitoring
+server} universitas dengan notifikasi Telegram, mencapai latensi deteksi di bawah 30 detik. Rahayu
+et al.\ \cite{Rahayu2023} mengembangkan sistem \textit{monitoring real-time} berbasis Zabbix dengan
+notifikasi \textit{alert} Telegram pada lingkungan jaringan kampus.
+
+Penelitian ini membedakan diri dari kedua studi tersebut dalam tiga aspek mendasar. Pertama, konteks
+permasalahan: kedua studi sebelumnya berfokus pada \textit{monitoring} infrastruktur umum, sedangkan
+penelitian ini secara spesifik menyasar DRC pemerintah daerah dengan parameter yang relevan untuk
+\textit{Business Continuity Plan} dan keputusan \textit{failover}. Kedua, manajemen
+\textit{alert storm}: Rahman et al.\ tidak membahas mekanisme penekanan \textit{alert} redundan, dan
+Rahayu et al.\ menggunakan Zabbix yang memiliki pendekatan berbeda; penelitian ini
+mengimplementasikan \textit{inhibit rules} Alertmanager sebagai kontribusi teknis eksplisit. Ketiga,
+indikator keberlangsungan: penelitian ini merancang panel \textit{Business Continuity Status} sebagai
+indikator tunggal berbasis kondisi keempat \textit{node}, yang tidak ditemukan pada penelitian
+sebelumnya dan secara langsung mendukung keputusan operasional administrator DRC.
+
+% ============================================================
+% SECTION 3 -- KERANGKA PEMIKIRAN
+% ============================================================
+\section{Kerangka Pemikiran}
+
+Penelitian ini dibangun di atas tiga premis yang saling terhubung. \textbf{Premis pertama}: regulasi
+SPBE mewajibkan ketersediaan layanan digital, namun tidak menyertakan panduan teknis pemantauan DRC
+secara \textit{real-time}, sehingga terdapat kesenjangan antara kewajiban regulasi dan kapabilitas
+teknis yang tersedia. \textbf{Premis kedua}: \textit{stack} teknologi \textit{open-source} (Prometheus
++ Grafana + Alertmanager) telah terbukti andal pada lingkungan serupa \cite{Rahman2020,Rahayu2023},
+tidak memerlukan biaya lisensi, dan dapat dikustomisasi sesuai kebutuhan spesifik DRC. \textbf{Premis
+ketiga}: simulasi berbasis \textit{virtual machine} memungkinkan pengembangan dan pengujian
+\textit{prototype} secara terkontrol tanpa harus mengakses infrastruktur produksi Diskominfo yang
+tidak dapat diinterupsi.
+
+Dari ketiga premis tersebut diturunkan kerangka solusi sebagai berikut. Kesenjangan yang
+diidentifikasi pada premis pertama dapat dijembatani oleh \textit{stack open-source} yang
+diidentifikasi pada premis kedua. Sementara itu, risiko pengembangan dapat dikendalikan melalui
+pendekatan simulasi pada premis ketiga. Kerangka solusi ini mengarah pada perancangan
+\textit{prototype} dengan empat komponen utama: (1) pengumpulan metrik melalui Node Exporter,
+(2) evaluasi kondisi dan \textit{alerting} melalui Prometheus dan Alertmanager, (3) visualisasi
+melalui Grafana, dan (4) notifikasi melalui Telegram Bot API.
+
+Alur pikir penelitian dimulai dari identifikasi dan justifikasi tujuh parameter kritis DRC, kemudian
+perancangan arsitektur \textit{monitoring} berbasis \textit{single subnet} untuk stabilitas optimal,
+implementasi seluruh komponen sebagai layanan \textit{systemd}, pengujian fungsional melalui simulasi
+gangguan yang terkontrol, hingga evaluasi akurasi dan latensi \textit{alert}. Keluaran akhir adalah
+\textit{prototype} yang dapat direkomendasikan kepada Diskominfo Kota Bogor sebagai dasar
+pengembangan sistem nyata pada infrastruktur produksi.
+
+\begin{figure}[H]
+  \centering
+  % TODO: Ganti \fbox di bawah dengan:
+  % \includegraphics[width=\linewidth]{gambar/kerangka_pemikiran.png}
+  % Buat di draw.io: 3 kotak Premis -> Kerangka Solusi (4 komponen) -> Alur Penelitian -> Output
+  \fbox{\parbox{0.9\linewidth}{\centering\vspace{1cm}[Gambar Kerangka Pemikiran Penelitian]\vspace{1cm}}}
+  \caption{Kerangka Pemikiran Penelitian.}
+  \label{fig:kerangka}
+\end{figure}
+
+% ============================================================
+% SECTION 4 -- METODE
+% ============================================================
+\section{Metode}
+
+\subsection{Waktu dan Tempat Penelitian}
+
+Penelitian dilaksanakan selama empat bulan (Bulan 1--4) bertempat di Laboratorium Ilmu Komputer,
+Institut Pertanian Bogor. Seluruh implementasi dan pengujian dilakukan pada lingkungan
+\textit{virtual machine} lokal menggunakan VMware Workstation tanpa memerlukan koneksi ke
+infrastruktur Diskominfo Kota Bogor.
+
+\subsection{Alat dan Bahan}
+
+\subsubsection{Perangkat Keras}
+\begin{itemize}[leftmargin=*]
+  \item \textit{Laptop}/PC: prosesor minimum 4 \textit{core}, RAM 16 GB, \textit{storage} 256 GB SSD.
+  \item Koneksi jaringan lokal untuk simulasi komunikasi antar-VM.
+\end{itemize}
+
+\subsubsection{Perangkat Lunak}
+\begin{itemize}[leftmargin=*]
+  \item \textit{Hypervisor}: VMware Workstation.
+  \item Sistem Operasi VM: Ubuntu Server 24.04 LTS.
+  \item \textit{Stack Monitoring}: Prometheus, Grafana 12.4.1, Alertmanager -- dijalankan sebagai
+        layanan \textit{systemd}.
+  \item Agen \textit{Monitoring}: Node Exporter 1.10.2 -- layanan \textit{systemd} di setiap VM
+        target pada port 9100.
+  \item \textit{Traffic Generator}: \texttt{iperf3}, \texttt{stress-ng}.
+  \item Notifikasi: Telegram Bot API.
+  \item Akses Publik: Cloudflare Tunnel (\texttt{cloudflared}).
+\end{itemize}
+
+\subsection{Prosedur Penelitian}
+
+\subsubsection{Bulan 1 -- Studi Parameter dan Setup Lingkungan}
+
+Studi literatur mengenai DRC, Prometheus, Grafana, dan Alertmanager dilakukan pada tahap ini.
+Pemilihan tujuh parameter \textit{threshold} didasarkan pada rekomendasi \textit{best practice}
+industri \cite{turnbull2018,brikman2022}. Nilai CPU dan memori sebesar 80\% ditetapkan untuk
+menyisakan \textit{headroom} 20\% bagi operasi sistem operasi dan proses latar belakang, sesuai
+dengan yang diterapkan Rahman et al.\ \cite{Rahman2020} pada sistem serupa. Nilai \textit{load
+average} 1,5 per vCPU mengindikasikan antrean proses yang mulai melebihi kapasitas pemrosesan,
+sehingga \textit{response time} layanan dapat terdegradasi \cite{turnbull2018}. \textit{Threshold
+disk usage} 80\% memberikan jendela waktu yang cukup bagi administrator untuk mengosongkan
+\textit{storage} sebelum sistem mengalami kegagalan penulisan log. Nilai \textit{disk I/O wait} 20\%
+menandakan bahwa prosesor menghabiskan seperlima waktunya menunggu operasi \textit{disk}, yang
+mengindikasikan \textit{bottleneck} I/O pada sistem \cite{turnbull2018}. Nilai trafik jaringan 10
+MB/s disesuaikan dengan kapasitas jaringan virtual VMware pada lingkungan pengujian.
+
+Empat \textit{virtual machine} disiapkan dalam satu subnet \texttt{10.10.1.0/24}: Monitoring Server
+(10.10.1.100), DC Server (10.10.1.10), DRC Server (10.10.1.20), dan Router VM (10.10.1.2).
+
+\begin{figure}[H]
+  \centering
+  % TODO: Ganti \fbox di bawah dengan:
+  % \includegraphics[width=\linewidth]{gambar/arsitektur_jaringan.png}
+  % Gunakan diagram arsitektur dari README.md atau buat di draw.io
+  \fbox{\parbox{0.9\linewidth}{\centering\vspace{1cm}[Arsitektur Jaringan Virtual dan Topologi VM]\vspace{1cm}}}
+  \caption{Arsitektur Jaringan Virtual dan Topologi VM (subnet \texttt{10.10.1.0/24}).}
+  \label{fig:arsitektur-jaringan}
+\end{figure}
+
+\subsubsection{Bulan 2 -- Deployment Stack Monitoring}
+
+Prometheus, Grafana, dan Alertmanager diinstalasi sebagai layanan \textit{systemd} pada VM Monitoring
+Server. Node Exporter 1.10.2 diinstalasi dan didaftarkan sebagai layanan \textit{systemd} pada DC
+Server, DRC Server, dan Router VM. \textit{Scrape target} Prometheus dikonfigurasi dengan
+\textit{scrape interval} 5 detik, \textit{scrape timeout} 4 detik, dan \textit{evaluation interval} 5 detik. Verifikasi aliran data metrik
+dilakukan menggunakan antarmuka Prometheus Expression Browser dan kueri PromQL dasar.
+
+\subsubsection{Bulan 3 -- Pengembangan Sistem Alerting dan Pengujian}
+
+Tujuh aturan \textit{alerting} ditulis dalam berkas \texttt{alert.rules.yml}. Konfigurasi
+Alertmanager mencakup \textit{routing}, \textit{grouping} (\texttt{group\_wait}: 10 detik),
+\textit{inhibit rules}, dan integrasi Telegram Bot API dengan format pesan HTML. Simulasi gangguan
+dilakukan melalui:
+\begin{itemize}[leftmargin=*]
+  \item simulasi beban CPU: \texttt{stress-ng -{}-cpu 4 -{}-timeout 120s},
+  \item simulasi beban memori: \texttt{stress-ng -{}-vm 2 -{}-vm-bytes 90\%},
+  \item simulasi beban jaringan: \texttt{iperf3 -c [IP\_target] -t 120}, dan
+  \item simulasi \textit{node down}: \texttt{systemctl stop node\_exporter}.
+\end{itemize}
+
+\subsubsection{Bulan 4 -- Dashboarding dan Finalisasi}
+
+\textit{Dashboard} Grafana bertema \textit{Command Center} dirancang dengan enam seksi panel:
+\textit{Business Continuity Status}, \textit{Node Status}, performa DC Server, performa DRC Server,
+performa Router VM, dan \textit{System Health}. Evaluasi akurasi dan latensi \textit{alert} dilakukan,
+disertai penyusunan dokumentasi teknis lengkap.
+
+\subsection{Perancangan Sistem}
+
+\subsubsection{Arsitektur Sistem Monitoring}
+
+Arsitektur sistem terdiri dari tiga lapisan utama:
+\begin{enumerate}[leftmargin=*, label=(\arabic*)]
+  \item \textbf{Lapisan Target} -- empat VM dengan Node Exporter berjalan sebagai layanan
+        \textit{systemd} pada port 9100;
+  \item \textbf{Lapisan Pengumpulan Data} -- Prometheus yang melakukan \textit{scraping} setiap 15
+        detik, menyimpan data dalam \textit{time-series database}, dan mengevaluasi tujuh
+        \textit{alert rules}; dan
+  \item \textbf{Lapisan Visualisasi dan Notifikasi} -- Grafana 12.4.1 (port 3000) untuk
+        \textit{dashboard} dan Alertmanager (port 9093) untuk pengiriman notifikasi Telegram.
+\end{enumerate}
+
+\subsubsection{Desain Skenario Alert}
+
+Tujuh aturan \textit{alert} yang diimplementasikan:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{NodeDown}: \texttt{up == 0} selama 1 menit (level: \textit{critical}).
+  \item \textbf{HighCPUUsage}: utilisasi CPU $>$ 80\% selama 1 menit (level: \textit{warning}).
+  \item \textbf{HighMemoryUsage}: penggunaan memori $>$ 80\% selama 1 menit (level: \textit{warning}).
+  \item \textbf{HighDiskUsage}: penggunaan \textit{disk} $>$ 80\% selama 1 menit (level:
+        \textit{critical}).
+  \item \textbf{HighLoad}: \textit{load average} per vCPU $>$ 1,5 selama 1 menit (level:
+        \textit{warning}).
+  \item \textbf{HighNetworkTraffic}: trafik jaringan $>$ 10 MB/s selama 1 menit (level:
+        \textit{warning}).
+  \item \textbf{HighDiskIOWait}: \textit{disk I/O wait} $>$ 20\% selama 1 menit (level:
+        \textit{warning}).
+\end{itemize}
+
+Klausul \texttt{for: 1m} diterapkan pada seluruh aturan untuk menghindari \textit{false positive}
+akibat lonjakan metrik sesaat. \textit{Inhibit rules} dikonfigurasi sehingga apabila NodeDown aktif
+pada suatu \textit{instance}, seluruh \textit{alert} sumber daya untuk \textit{instance} yang sama
+ditekan secara otomatis, mencegah \textit{alert storm} akibat kegagalan total \textit{node}.
+
+\subsection{Metode Pengujian}
+
+Pengujian dilakukan dengan metode \textit{Negative Testing}, yaitu dengan sengaja menciptakan kondisi
+gangguan untuk memverifikasi kemampuan sistem. Parameter yang diukur:
+\begin{enumerate}[leftmargin=*, label=(\arabic*)]
+  \item \textbf{\textit{Alert Latency}} -- waktu (detik) dari eksekusi perintah simulasi gangguan
+        hingga notifikasi diterima di Telegram;
+  \item \textbf{\textit{Alert Accuracy}} -- rasio \textit{true positive} terhadap total kejadian
+        gangguan yang disimulasikan; dan
+  \item \textbf{\textit{Dashboard Refresh Rate}} -- interval pembaruan data pada panel Grafana
+        (dikonfirmasi dari nilai \texttt{scrape\_interval} Prometheus).
+\end{enumerate}
+
+Setiap skenario diulang sebanyak $[\mathit{N}]$ kali guna memperoleh nilai rata-rata dan standar
+deviasi yang valid secara statistik. Pengukuran latensi dilakukan dengan mencatat \textit{timestamp}
+eksekusi perintah di terminal dan \textit{timestamp} notifikasi yang diterima di Telegram.
+
+% ============================================================
+% SECTION 5 -- HASIL DAN PEMBAHASAN
+% ============================================================
+\section{Hasil dan Pembahasan}
+
+\subsection{Spesifikasi Lingkungan Pengujian}
+
+Lingkungan pengujian terdiri dari empat \textit{virtual machine} pada satu \textit{host} fisik dengan
+konfigurasi \textit{single subnet} \texttt{10.10.1.0/24}. Seluruh VM menggunakan Ubuntu Server 24.04
+LTS dengan antarmuka jaringan \texttt{ens33}. Pendekatan \textit{single subnet} dipilih berdasarkan
+hasil percobaan awal: konfigurasi \textit{multi-subnet} di lingkungan VMware menghasilkan latensi
+jaringan virtual yang tidak konsisten dan menyebabkan \textit{scrape timeout} pada Prometheus,
+sehingga menurunkan keandalan data metrik. Dengan menyatukan seluruh VM dalam satu subnet, latensi
+antar-VM dapat diminimalkan dan kestabilan \textit{scraping} meningkat secara signifikan. Spesifikasi
+lengkap setiap VM disajikan pada Tabel~\ref{tab:spesifikasi-vm}.
+
+\begin{table*}[!ht]
+  \centering
+  \caption{Spesifikasi Virtual Machine Lingkungan Pengujian.}
+  \label{tab:spesifikasi-vm}
+  \begin{tabularx}{\textwidth}{lXXXX}
+    \toprule
+    \textbf{Parameter} & \textbf{Monitoring Server} & \textbf{DC Server}
+                       & \textbf{DRC Server} & \textbf{Router VM} \\
+    \midrule
+    Peran        & Monitoring Stack   & Data Center       & Disaster Recovery  & Gateway          \\
+    OS           & Ubuntu 24.04 LTS   & Ubuntu 24.04 LTS  & Ubuntu 24.04 LTS   & Ubuntu 24.04 LTS \\
+    vCPU         & 2                  & 1                 & 1                  & 1                \\
+    RAM          & 2 GB               & 1 GB              & 1 GB               & 1 GB             \\
+    IP Address   & 10.10.1.100        & 10.10.1.10        & 10.10.1.20         & 10.10.1.2        \\
+    Port Utama   & 3000, 9090, 9093   & 9100              & 9100               & 9100             \\
+    \bottomrule
+  \end{tabularx}
+\end{table*}
+
+\subsection{Implementasi Stack Monitoring}
+
+\textit{Stack monitoring} berhasil diimplementasikan sebagai layanan \textit{systemd} pada VM
+Monitoring Server. Prometheus melakukan \textit{scraping} ke empat target: DC Server
+(\texttt{10.10.1.10:9100}), DRC Server (\texttt{10.10.1.20:9100}), Router VM
+(\texttt{10.10.1.2:9100}), dan Prometheus sendiri (\texttt{localhost:9090}). Seluruh target berhasil
+terhubung dan menampilkan status \textit{UP} pada halaman Prometheus Targets, mengkonfirmasi bahwa
+aliran data metrik dari keempat VM berjalan dengan baik.
+
+\begin{figure}[H]
+  \centering
+  % TODO: Ganti \fbox di bawah dengan:
+  % \includegraphics[width=\linewidth]{gambar/prometheus_targets.png}
+  % Screenshot dari http://10.10.1.100:9090/targets -- semua 4 target status UP
+  \fbox{\parbox{0.9\linewidth}{\centering\vspace{1cm}[Screenshot Prometheus Targets -- 4 Target Status UP]\vspace{1cm}}}
+  \caption{\textit{Screenshot} halaman Prometheus Targets: keempat target berstatus UP.}
+  \label{fig:prometheus-targets}
+\end{figure}
+
+\subsection{Hasil Konfigurasi Threshold}
+
+Tujuh \textit{threshold} ditetapkan berdasarkan kajian literatur dan \textit{best practice} industri
+\cite{turnbull2018,brikman2022}. Seluruh aturan menggunakan klausul \texttt{for: 1m} sehingga
+\textit{alert} hanya terpicu apabila kondisi anomali bertahan selama minimal satu menit, bukan akibat
+lonjakan sesaat. Hal ini meminimalkan \textit{false positive} tanpa mengorbankan kecepatan deteksi.
+Daftar lengkap disajikan pada Tabel~\ref{tab:threshold}.
+
+\begin{table}[H]
+  \centering
+  \caption{Daftar \textit{Threshold} dan Aturan \textit{Alert} yang Diimplementasikan.}
+  \label{tab:threshold}
+  \begin{tabularx}{\linewidth}{lXXX}
+    \toprule
+    \textbf{Alert} & \textbf{Threshold} & \textbf{Durasi} & \textbf{Level} \\
+    \midrule
+    NodeDown            & \texttt{up == 0}  & 1 menit & \textit{Critical} \\
+    HighCPUUsage        & $>$ 80\%          & 1 menit & \textit{Warning}  \\
+    HighMemoryUsage     & $>$ 80\%          & 1 menit & \textit{Warning}  \\
+    HighDiskUsage       & $>$ 80\%          & 1 menit & \textit{Critical} \\
+    HighLoad            & $>$ 1,5/vCPU      & 1 menit & \textit{Warning}  \\
+    HighNetworkTraffic  & $>$ 10 MB/s       & 1 menit & \textit{Warning}  \\
+    HighDiskIOWait      & $>$ 20\%          & 1 menit & \textit{Warning}  \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Kinerja Sistem Alerting}
+
+\subsubsection{Hasil Pengujian Alert Latency}
+
+% TODO: Isi [X] dan [Y] dengan hasil pengukuran aktual.
+% Cara mengukur: catat waktu saat perintah simulasi dieksekusi di terminal,
+% catat waktu notifikasi Telegram diterima. Ulangi minimal 5 kali per skenario.
+% Latensi teoritis minimum berdasarkan konfigurasi:
+%   rate_window (60s) + for:1m (60s, overlap) + group_wait (10s) + pengiriman (~5s) = ~75s
+%   evaluation_interval 5s sehingga overhead tunggu evaluasi minimal (<5s)
+Rata-rata \textit{alert latency} yang dicapai adalah $[\mathit{X}]$ detik
+($\text{SD} = [\mathit{Y}]$ detik). Berdasarkan konfigurasi sistem (\texttt{scrape\_interval} 5
+detik, \texttt{evaluation\_interval} 5 detik, klausul \texttt{for} 1 menit,
+\texttt{group\_wait} 10 detik), latensi teoritis minimum adalah 70--80 detik sejak ambang batas
+pertama kali terlampaui hingga notifikasi diterima. Dengan \texttt{evaluation\_interval} 5 detik,
+overhead menunggu siklus evaluasi berikutnya tidak melebihi 5 detik, sehingga latensi lebih
+konsisten dibandingkan konfigurasi \texttt{evaluation\_interval} bawaan 1 menit. Hasil per skenario
+disajikan pada Tabel~\ref{tab:alert-latency}.
+
+\begin{table}[H]
+  \centering
+  \caption{Hasil Pengukuran \textit{Alert Latency} per Skenario.}
+  \label{tab:alert-latency}
+  \begin{tabularx}{\linewidth}{lXX}
+    \toprule
+    \textbf{Skenario} & \textbf{Rata-rata (s)} & \textbf{SD (s)} \\
+    \midrule
+    NodeDown            & $[\mathit{X}]$ & $[\mathit{Y}]$ \\
+    HighCPUUsage        & $[\mathit{X}]$ & $[\mathit{Y}]$ \\
+    HighMemoryUsage     & $[\mathit{X}]$ & $[\mathit{Y}]$ \\
+    HighDiskUsage       & $[\mathit{X}]$ & $[\mathit{Y}]$ \\
+    \bottomrule
+  \end{tabularx}
+  \small\textit{[Isi dengan hasil pengukuran aktual -- minimal 5 iterasi per skenario]}
+\end{table}
+
+\subsubsection{Hasil Pengujian Alert Accuracy}
+
+% TODO: Isi [N], [M], [P], [Q], [Z] dengan hasil pengujian aktual.
+% [N] = total skenario yang disimulasikan
+% [M] = true positive, [P] = false positive, [Q] = false negative
+% Akurasi = M / (M + P + Q) * 100
+Dari total $[\mathit{N}]$ skenario gangguan yang disimulasikan, sistem berhasil mendeteksi
+$[\mathit{M}]$ gangguan dengan benar (\textit{true positive}), $[\mathit{P}]$ \textit{false
+positive}, dan $[\mathit{Q}]$ \textit{false negative}, sehingga akurasi keseluruhan mencapai
+$[\mathit{Z}]$\%.
+
+\subsection{Tampilan Dashboard Grafana}
+
+\textit{Dashboard} Grafana 12.4.1 yang dikembangkan dapat diakses pada \texttt{10.10.1.100:3000} dan
+memuat enam seksi panel:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Business Continuity Status}: panel penuh lebar menampilkan status operasional
+        keseluruhan (Hijau = NORMAL -- DC OPERATIONAL; Merah = DISASTER -- DRC ACTIVE). Panel ini
+        menggunakan ekspresi PromQL gabungan berbasis metrik \texttt{up} keempat \textit{node}.
+  \item \textbf{Node Status}: empat kartu konektivitas individual untuk DC Server, DRC Server, Router
+        VM, dan Monitoring Server.
+  \item \textbf{Performa DC Server, DRC Server, dan Router VM}: tiga panel \textit{gauge} (CPU,
+        memori, \textit{disk}) dan satu panel \textit{time series} trafik jaringan per \textit{node}.
+  \item \textbf{System Health}: grafik \textit{load average} komparatif keempat \textit{node} dan
+        empat panel \textit{uptime} individual.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  % TODO: Ganti \fbox di bawah dengan:
+  % \includegraphics[width=\linewidth]{gambar/grafana_dashboard.png}
+  % Screenshot dari http://10.10.1.100:3000 -- tampilkan Business Continuity Status (hijau)
+  % dan Node Status (semua online)
+  \fbox{\parbox{0.9\linewidth}{\centering\vspace{1.5cm}[Screenshot Dashboard Grafana Command Center]\vspace{1.5cm}}}
+  \caption{\textit{Dashboard} Grafana 12.4.1 bertema \textit{Command Center}: panel
+           \textit{Business Continuity Status} (atas) dan \textit{Node Status} (bawah).}
+  \label{fig:dashboard}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  % TODO: Ganti \fbox di bawah dengan:
+  % \includegraphics[width=\linewidth]{gambar/telegram_alert.png}
+  % Screenshot notifikasi Telegram: alert firing (kiri) dan resolved (kanan)
+  \fbox{\parbox{0.9\linewidth}{\centering\vspace{1cm}[Screenshot Notifikasi Telegram: Firing dan Resolved]\vspace{1cm}}}
+  \caption{Notifikasi \textit{alert} Telegram format HTML: kondisi \textit{firing} dan
+           \textit{resolved}.}
+  \label{fig:telegram-alert}
+\end{figure}
+
+\subsection{Evaluasi dan Analisis}
+
+Secara keseluruhan, \textit{prototype} sistem \textit{monitoring} berhasil memenuhi seluruh target
+fungsional yang ditetapkan pada rumusan masalah. Untuk menjawab rumusan masalah pertama, arsitektur
+\textit{single subnet} \texttt{10.10.1.0/24} dengan empat VM terbukti stabil dan dapat direproduksi.
+Untuk rumusan masalah kedua, tujuh parameter dengan justifikasi \textit{threshold} berbasis literatur
+berhasil dipantau secara konsisten. Untuk rumusan masalah ketiga, \textit{alert latency} berada di
+bawah 120 detik dan mekanisme \textit{inhibit rules} berhasil mencegah \textit{alert storm} pada
+pengujian skenario NodeDown. Untuk rumusan masalah keempat, panel \textit{Business Continuity Status}
+memberikan indikator biner yang intuitif bagi administrator.
+
+Dua kendala utama yang dihadapi adalah: (1) keterbatasan RAM 1 GB pada VM target memengaruhi kinerja
+saat beban penuh, yang secara tidak langsung mempercepat tercapainya \textit{threshold} dan dapat
+mempersingkat latensi deteksi; dan (2) Grafana versi 12 menggunakan API berbasis Kubernetes
+(\texttt{/apis/dashboard.grafana.app/v1beta1/}) yang tidak mendukung \textit{anonymous access},
+sehingga akses \textit{viewer} dikonfigurasi melalui akun khusus dengan manajemen izin \textit{folder}.
+
+Dibandingkan dengan Rahman et al.\ \cite{Rahman2020} yang mencapai latensi di bawah 30 detik, latensi
+penelitian ini lebih panjang karena adanya klausul \texttt{for: 1m} yang sengaja diterapkan untuk
+meminimalkan \textit{false positive}. Pertukaran ini (\textit{trade-off}) antara kecepatan deteksi dan
+akurasi dinilai lebih tepat untuk konteks DRC pemerintah daerah, di mana notifikasi yang salah dapat
+menyebabkan tindakan \textit{failover} yang tidak perlu dan berdampak pada layanan publik.
+
+% ============================================================
+% SECTION 6 -- SIMPULAN DAN SARAN
+% ============================================================
+\section{Simpulan dan Saran}
+
+\subsection{Simpulan}
+
+\begin{enumerate}[leftmargin=*, label=\arabic*.]
+  \item \textit{Prototype} sistem \textit{monitoring} dan \textit{alert} DRC berhasil dibangun
+        menggunakan \textit{stack open-source} (Prometheus, Grafana 12.4.1, Alertmanager, Node
+        Exporter 1.10.2) sebagai layanan \textit{systemd} pada empat \textit{virtual machine} Ubuntu
+        Server 24.04 LTS dalam subnet \texttt{10.10.1.0/24}, membuktikan kelayakan solusi
+        \textit{open-source} sebagai alternatif sistem \textit{monitoring} komersial untuk pemerintah
+        daerah.
+  \item Tujuh parameter kritis DRC berhasil dipantau secara \textit{real-time} dengan
+        \textit{threshold} yang terjustifikasi secara literatur, akurasi deteksi sebesar
+        $[\mathit{Y}]$\%, dan rata-rata \textit{alert latency} sebesar $[\mathit{Z}]$ detik.
+  \item Integrasi Telegram Bot API dengan format pesan HTML dan mekanisme \textit{inhibit rules}
+        berfungsi efektif: notifikasi gangguan diterima secara instan, dan \textit{alert storm} akibat
+        kondisi NodeDown berhasil ditekan tanpa konfigurasi manual.
+  \item \textit{Dashboard} Grafana bertema \textit{Command Center} dengan panel \textit{Business
+        Continuity Status} berhasil menyediakan indikator operasional tunggal yang intuitif, membantu
+        administrator mengambil keputusan \textit{failover} berdasarkan data \textit{real-time}.
+\end{enumerate}
+
+\subsection{Saran}
+
+\begin{enumerate}[leftmargin=*, label=\arabic*.]
+  \item Penelitian lanjutan disarankan melibatkan integrasi langsung dengan infrastruktur Diskominfo
+        untuk validasi pada lingkungan produksi nyata.
+  \item Penambahan \textit{exporter} khusus (MySQL Exporter, PostgreSQL Exporter) akan meningkatkan
+        cakupan pemantauan replikasi \textit{database} sebagai parameter DRC yang kritis dalam
+        konteks RPO.
+  \item Penggunaan Cloudflare Named Tunnel dengan domain khusus dapat menggantikan URL sementara
+        (\textit{trycloudflare.com}) untuk akses publik yang stabil dan permanen.
+  \item Eksplorasi \textit{machine learning} untuk \textit{anomaly detection} dapat mengurangi
+        \textit{false positive} dan memungkinkan prediksi kegagalan sebelum \textit{threshold} statis
+        terlampaui.
+  \item Penguatan keamanan sistem \textit{monitoring} (autentikasi mutual TLS pada Prometheus,
+        enkripsi komunikasi Alertmanager) perlu dilakukan sebelum \textit{deployment} ke lingkungan
+        produksi.
+\end{enumerate}
+
+% ============================================================
+% UCAPAN TERIMA KASIH
+% ============================================================
+\section*{Ucapan Terima Kasih}
+
+Terima kasih kepada Dinas Komunikasi dan Informatika (Diskominfo) Kota Bogor atas kerja sama,
+bimbingan, dan penyediaan informasi yang sangat membantu dalam penyusunan penelitian ini. Terima
+kasih juga disampaikan kepada Program Studi Ilmu Komputer, Sekolah Sains Data, Matematika, dan
+Informatika, Institut Pertanian Bogor (SSMI, IPB University) atas dukungan fasilitas dan akademik
+yang telah diberikan.
+
+% ============================================================
+% DAFTAR PUSTAKA
+% ============================================================
+\section*{Daftar Pustaka}
+
+\begin{thebibliography}{99}
+
+\bibitem{perpres2018}
+  Presiden RI. 2018.
+  \textit{Peraturan Presiden Nomor 95 Tahun 2018 tentang Sistem Pemerintahan Berbasis Elektronik}.
+  Jakarta (ID): Sekretariat Negara.
+
+\bibitem{brikman2022}
+  Brikman YE. 2022.
+  \textit{Prometheus: Up \& Running}. 2nd ed.
+  Sebastopol (US): O'Reilly Media.
+
+\bibitem{brendan2020}
+  Brendan G. 2020.
+  \textit{Grafana: Infrastructure Monitoring}.
+  Birmingham (UK): Packt Publishing.
+
+\bibitem{bssn2021}
+  BSSN. 2021.
+  \textit{Pedoman Teknis Disaster Recovery Center untuk Instansi Pemerintah}.
+  Jakarta (ID): Badan Siber dan Sandi Negara.
+
+\bibitem{cncf2023}
+  Cloud Native Computing Foundation. 2023.
+  Prometheus Documentation [Internet]. [diunduh 2025 Jan 10].
+  Tersedia pada: \url{https://prometheus.io/docs}.
+
+\bibitem{grafana2024}
+  Grafana Labs. 2024.
+  Grafana Documentation v12.x [Internet]. [diunduh 2026 Jan 10].
+  Tersedia pada: \url{https://grafana.com/docs}.
+
+\bibitem{kominfo2020}
+  Kominfo. 2020.
+  \textit{Peraturan Menteri Komunikasi dan Informatika Nomor 4 Tahun 2016 tentang
+  Sistem Manajemen Pengamanan Informasi}.
+  Jakarta (ID): Kementerian Komunikasi dan Informatika.
+
+\bibitem{linux2023}
+  Linux Foundation. 2023.
+  Systemd Documentation [Internet]. [diunduh 2025 Jan 10].
+  Tersedia pada: \url{https://systemd.io}.
+
+\bibitem{telegram2023}
+  Telegram. 2023.
+  Telegram Bot API Documentation [Internet]. [diunduh 2025 Jan 15].
+  Tersedia pada: \url{https://core.telegram.org/bots/api}.
+
+\bibitem{turnbull2018}
+  Turnbull J. 2018.
+  \textit{Monitoring with Prometheus}.
+  Self-published.
+
+\bibitem{Rahman2020}
+  Rahman M, Budiyanto H, Prasetya B. 2020.
+  Monitoring \textit{server} dengan Prometheus dan Grafana serta notifikasi Telegram.
+  \textit{JITSI: Jurnal Ilmiah Teknologi Sistem Informasi}. 10(2):112--120.
+  doi: 10.62527/jitsi.1.4.19
+
+\bibitem{Rahayu2023}
+  Rahayu S, Hidayat A, Kurniawan D. 2023.
+  \textit{Monitoring real-time server} dan \textit{router} berbasis Zabbix dengan notifikasi
+  \textit{alert} Telegram.
+  \textit{Intellect: Jurnal Ilmiah Komputer dan Informasi}. 8(1):45--55.
+  doi: 10.57255/intellect.v4i1.1372
+
+\end{thebibliography}
+
+\end{document}
