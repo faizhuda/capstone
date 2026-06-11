@@ -26,7 +26,7 @@ receivers:
       {{ if eq .Status "firing" }}🚨 <b>INFRASTRUCTURE ALERT</b>{{ else }}✅ <b>ALERT RESOLVED</b>{{ end }}
       ━━━━━━━━━━━━━━━━━━━━━━━━
       {{ range .Alerts -}}
-      🖥  <b>Server</b>    :  <code>{{ .Labels.job }}</code>
+      🖥  <b>Server</b>    :  <code>{{ if .Labels.server }}{{ .Labels.server }}{{ else }}{{ .Labels.job }}{{ end }}</code>
       {{ if eq .Labels.severity "critical" }}🔴{{ else }}🟡{{ end }}  <b>Severity</b>  :  {{ .Labels.severity | title }}
 
       📋  <b>{{ .Annotations.summary }}</b>
