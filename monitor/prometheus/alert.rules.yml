@@ -19,7 +19,7 @@ groups:
       # Trigger jika CPU > 80% selama 1 menit
       # =====================================================
       - alert: HighCPUUsage
-        expr: 100 - (avg by(instance, job) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 80
+        expr: 100 - (avg by(instance, job) (rate(node_cpu_seconds_total{mode="idle"}[15s])) * 100) > 80
         for: 15s
         labels:
           severity: warning
@@ -73,7 +73,7 @@ groups:
       # Trigger jika traffic > 80 Mbps selama 1 menit
       # =====================================================
       - alert: HighNetworkTraffic
-        expr: rate(node_network_receive_bytes_total[1m]) > 10000000
+        expr: rate(node_network_receive_bytes_total[15s]) > 10000000
         for: 15s
         labels:
           severity: warning
@@ -86,7 +86,7 @@ groups:
       # Trigger jika iowait > 20% selama 1 menit
       # =====================================================
       - alert: HighDiskIOWait
-        expr: avg by(instance, job) (rate(node_cpu_seconds_total{mode="iowait"}[1m])) * 100 > 20
+        expr: avg by(instance, job) (rate(node_cpu_seconds_total{mode="iowait"}[15s])) * 100 > 20
         for: 15s
         labels:
           severity: warning
