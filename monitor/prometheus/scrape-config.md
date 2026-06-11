@@ -3,13 +3,7 @@
 Prometheus melakukan scraping metrics setiap:
 
 ```text
-5 detik
-```
-
-Rule evaluation interval:
-
-```text
-5 detik
+15 detik
 ```
 
 Target yang dimonitor:

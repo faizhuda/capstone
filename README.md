@@ -142,13 +142,7 @@ Digunakan untuk:
 Scrape interval:
 
 ```yaml
-5s
-```
-
-Evaluation interval:
-
-```yaml
-5s
+15s
 ```
 
 Contoh target:

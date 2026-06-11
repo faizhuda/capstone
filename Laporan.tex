@@ -161,7 +161,7 @@
   mensimulasikan lingkungan DC-DRC, dan mengirimkan notifikasi otomatis melalui Telegram Bot API.
   Mekanisme \textit{inhibit rules} menekan \textit{alert} sumber daya yang redundan saat kondisi
   NodeDown aktif, mencegah \textit{alert storm}. Seluruh komponen berjalan sebagai layanan
-  \textit{systemd} dengan \textit{scrape interval} 5 detik dan \textit{evaluation interval} 5 detik. Pengujian dilakukan melalui simulasi
+  \textit{systemd} dengan \textit{scrape interval} 15 detik. Pengujian dilakukan melalui simulasi
   beban menggunakan \texttt{iperf3} dan \texttt{stress-ng} pada lingkungan VMware Workstation. Hasil
   pengujian menunjukkan sistem berhasil mendeteksi dan mengirimkan \textit{alert} dalam rentang waktu
   $[\mathit{X}]$ detik, dengan akurasi deteksi \textit{threshold} sebesar $[\mathit{Y}]$\%.\\[4pt]
@@ -449,7 +449,7 @@ Empat \textit{virtual machine} disiapkan dalam satu subnet \texttt{10.10.1.0/24}
 Prometheus, Grafana, dan Alertmanager diinstalasi sebagai layanan \textit{systemd} pada VM Monitoring
 Server. Node Exporter 1.10.2 diinstalasi dan didaftarkan sebagai layanan \textit{systemd} pada DC
 Server, DRC Server, dan Router VM. \textit{Scrape target} Prometheus dikonfigurasi dengan
-\textit{scrape interval} 5 detik, \textit{scrape timeout} 4 detik, dan \textit{evaluation interval} 5 detik. Verifikasi aliran data metrik
+\textit{scrape interval} 15 detik dan \textit{scrape timeout} 10 detik. Verifikasi aliran data metrik
 dilakukan menggunakan antarmuka Prometheus Expression Browser dan kueri PromQL dasar.
 
 \subsubsection{Bulan 3 -- Pengembangan Sistem Alerting dan Pengujian}
@@ -615,15 +615,11 @@ Daftar lengkap disajikan pada Tabel~\ref{tab:threshold}.
 % Cara mengukur: catat waktu saat perintah simulasi dieksekusi di terminal,
 % catat waktu notifikasi Telegram diterima. Ulangi minimal 5 kali per skenario.
 % Latensi teoritis minimum berdasarkan konfigurasi:
-%   rate_window (60s) + for:1m (60s, overlap) + group_wait (10s) + pengiriman (~5s) = ~75s
-%   evaluation_interval 5s sehingga overhead tunggu evaluasi minimal (<5s)
+%   scrape_interval (15s) + for:1m (60s) + group_wait (10s) + pengiriman (~5s) = ~90s
 Rata-rata \textit{alert latency} yang dicapai adalah $[\mathit{X}]$ detik
-($\text{SD} = [\mathit{Y}]$ detik). Berdasarkan konfigurasi sistem (\texttt{scrape\_interval} 5
-detik, \texttt{evaluation\_interval} 5 detik, klausul \texttt{for} 1 menit,
-\texttt{group\_wait} 10 detik), latensi teoritis minimum adalah 70--80 detik sejak ambang batas
-pertama kali terlampaui hingga notifikasi diterima. Dengan \texttt{evaluation\_interval} 5 detik,
-overhead menunggu siklus evaluasi berikutnya tidak melebihi 5 detik, sehingga latensi lebih
-konsisten dibandingkan konfigurasi \texttt{evaluation\_interval} bawaan 1 menit. Hasil per skenario
+($\text{SD} = [\mathit{Y}]$ detik). Berdasarkan konfigurasi sistem (\texttt{scrape\_interval} 15
+detik, klausul \texttt{for} 1 menit, \texttt{group\_wait} 10 detik), latensi teoritis minimum adalah
+75--90 detik sejak ambang batas pertama kali terlampaui hingga notifikasi diterima. Hasil per skenario
 disajikan pada Tabel~\ref{tab:alert-latency}.
 
 \begin{table}[H]
