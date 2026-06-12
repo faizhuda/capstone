@@ -321,15 +321,11 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 0, "y": 10 },
+      "gridPos": { "h": 8, "w": 3, "x": 0, "y": 10 },
       "id": 6,
       "options": {
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
@@ -365,15 +361,11 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 4, "y": 10 },
+      "gridPos": { "h": 8, "w": 3, "x": 3, "y": 10 },
       "id": 7,
       "options": {
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
@@ -409,15 +401,11 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 8, "y": 10 },
+      "gridPos": { "h": 8, "w": 3, "x": 6, "y": 10 },
       "id": 8,
       "options": {
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
@@ -435,7 +423,47 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "Inbound (RX) and outbound (TX) network traffic on all active interfaces. Alert threshold: 80 Mbps for 1 minute.",
+      "description": "Percentage of CPU time spent waiting for I/O. Alert threshold: 20%.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#10B981", "value": null },
+              { "color": "#F59E0B", "value": 10 },
+              { "color": "#EF4444", "value": 20 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 3, "x": 9, "y": 10 },
+      "id": 40,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "avg(rate(node_cpu_seconds_total{mode=\"iowait\", job=\"dc-server\"}[1m])) * 100",
+          "legendFormat": "I/O Wait",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk I/O Wait",
+      "type": "gauge"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Inbound (RX) and outbound (TX) network traffic on all active interfaces. Alert threshold: 10 MB/s for 1 minute.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -462,46 +490,19 @@
         },
         "overrides": [
           {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/^RX -/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#10B981",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byRegexp", "options": "/^RX -/" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#10B981", "mode": "fixed" } }]
           },
           {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/^TX -/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#3B82F6",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byRegexp", "options": "/^TX -/" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#3B82F6", "mode": "fixed" } }]
           }
         ]
       },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 },
       "id": 9,
       "options": {
-        "legend": {
-          "calcs": ["mean", "max"],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
         "tooltip": { "mode": "multi", "sort": "none" }
       },
       "targets": [
@@ -550,15 +551,11 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 0, "y": 19 },
+      "gridPos": { "h": 8, "w": 3, "x": 0, "y": 19 },
       "id": 10,
       "options": {
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
@@ -594,15 +591,11 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 4, "y": 19 },
+      "gridPos": { "h": 8, "w": 3, "x": 3, "y": 19 },
       "id": 11,
       "options": {
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
@@ -638,15 +631,11 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 8, "y": 19 },
+      "gridPos": { "h": 8, "w": 3, "x": 6, "y": 19 },
       "id": 12,
       "options": {
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
@@ -664,7 +653,47 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "Inbound (RX) and outbound (TX) network traffic on all active interfaces. Alert threshold: 80 Mbps for 1 minute.",
+      "description": "Percentage of CPU time spent waiting for I/O. Alert threshold: 20%.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#10B981", "value": null },
+              { "color": "#F59E0B", "value": 10 },
+              { "color": "#EF4444", "value": 20 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 3, "x": 9, "y": 19 },
+      "id": 41,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "avg(rate(node_cpu_seconds_total{mode=\"iowait\", job=\"drc-server\"}[1m])) * 100",
+          "legendFormat": "I/O Wait",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk I/O Wait",
+      "type": "gauge"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Inbound (RX) and outbound (TX) network traffic on all active interfaces. Alert threshold: 10 MB/s for 1 minute.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -691,46 +720,19 @@
         },
         "overrides": [
           {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/^RX -/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#10B981",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byRegexp", "options": "/^RX -/" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#10B981", "mode": "fixed" } }]
           },
           {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/^TX -/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#3B82F6",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byRegexp", "options": "/^TX -/" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#3B82F6", "mode": "fixed" } }]
           }
         ]
       },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 19 },
       "id": 13,
       "options": {
-        "legend": {
-          "calcs": ["mean", "max"],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
         "tooltip": { "mode": "multi", "sort": "none" }
       },
       "targets": [
@@ -779,15 +781,11 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 0, "y": 28 },
+      "gridPos": { "h": 8, "w": 3, "x": 0, "y": 28 },
       "id": 31,
       "options": {
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
@@ -823,15 +821,11 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 4, "y": 28 },
+      "gridPos": { "h": 8, "w": 3, "x": 3, "y": 28 },
       "id": 32,
       "options": {
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
@@ -867,15 +861,11 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 4, "x": 8, "y": 28 },
+      "gridPos": { "h": 8, "w": 3, "x": 6, "y": 28 },
       "id": 33,
       "options": {
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
@@ -893,7 +883,47 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "Inbound (RX) and outbound (TX) network traffic on Router VM active interfaces.",
+      "description": "Percentage of CPU time spent waiting for I/O. Alert threshold: 20%.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#10B981", "value": null },
+              { "color": "#F59E0B", "value": 10 },
+              { "color": "#EF4444", "value": 20 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 3, "x": 9, "y": 28 },
+      "id": 42,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "avg(rate(node_cpu_seconds_total{mode=\"iowait\", job=\"router\"}[1m])) * 100",
+          "legendFormat": "I/O Wait",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk I/O Wait",
+      "type": "gauge"
+    },
+
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Inbound (RX) and outbound (TX) network traffic on Router VM active interfaces. Alert threshold: 10 MB/s for 1 minute.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -920,46 +950,19 @@
         },
         "overrides": [
           {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/^RX -/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#10B981",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byRegexp", "options": "/^RX -/" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#10B981", "mode": "fixed" } }]
           },
           {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/^TX -/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#3B82F6",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byRegexp", "options": "/^TX -/" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#3B82F6", "mode": "fixed" } }]
           }
         ]
       },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
       "id": 34,
       "options": {
-        "legend": {
-          "calcs": ["mean", "max"],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
         "tooltip": { "mode": "multi", "sort": "none" }
       },
       "targets": [
@@ -990,7 +993,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "1-minute and 5-minute load average comparison between DC and DRC. Threshold line at 2.0 (above 2x vCPU capacity).",
+      "description": "1-minute load average comparison across DC, DRC, and Router VM. Threshold line at 1.5 (alert fires when load per vCPU exceeds 1.5).",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -1017,83 +1020,42 @@
             "mode": "absolute",
             "steps": [
               { "color": "#10B981", "value": null },
-              { "color": "#EF4444", "value": 2 }
+              { "color": "#EF4444", "value": 1.5 }
             ]
           },
           "unit": "short"
         },
         "overrides": [
           {
-            "matcher": {
-              "id": "byName",
-              "options": "DC - Load 1m"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#6366F1",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byName", "options": "DC - Load 1m" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#6366F1", "mode": "fixed" } }]
           },
           {
-            "matcher": {
-              "id": "byName",
-              "options": "DRC - Load 1m"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#0D9488",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byName", "options": "DRC - Load 1m" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#0D9488", "mode": "fixed" } }]
           },
           {
-            "matcher": {
-              "id": "byName",
-              "options": "DC - Load 5m"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#4F46E5",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byName", "options": "Router - Load 1m" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#F59E0B", "mode": "fixed" } }]
           },
           {
-            "matcher": {
-              "id": "byName",
-              "options": "DRC - Load 5m"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#0F766E",
-                  "mode": "fixed"
-                }
-              }
-            ]
+            "matcher": { "id": "byName", "options": "DC - Load 5m" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#4F46E5", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "DRC - Load 5m" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#0F766E", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Router - Load 5m" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#D97706", "mode": "fixed" } }]
           }
         ]
       },
       "gridPos": { "h": 8, "w": 14, "x": 0, "y": 37 },
       "id": 14,
       "options": {
-        "legend": {
-          "calcs": ["mean", "max", "lastNotNull"],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
+        "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true },
         "tooltip": { "mode": "multi", "sort": "none" }
       },
       "targets": [
@@ -1111,18 +1073,30 @@
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "node_load1{job=\"router\"}",
+          "legendFormat": "Router - Load 1m",
+          "refId": "C"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "node_load5{job=\"dc-server\"}",
           "legendFormat": "DC - Load 5m",
-          "refId": "C"
+          "refId": "D"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "node_load5{job=\"drc-server\"}",
           "legendFormat": "DRC - Load 5m",
-          "refId": "D"
+          "refId": "E"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "node_load5{job=\"router\"}",
+          "legendFormat": "Router - Load 5m",
+          "refId": "F"
         }
       ],
-      "title": "Load Average - DC vs DRC",
+      "title": "Load Average - DC vs DRC vs Router",
       "type": "timeseries"
     },
 
@@ -1132,10 +1106,7 @@
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "#3B82F6", "value": null }]
-          },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#3B82F6", "value": null }] },
           "unit": "dtdurations"
         },
         "overrides": []
@@ -1147,11 +1118,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "text": { "valueSize": 18 },
         "textMode": "auto"
       },
@@ -1174,10 +1141,7 @@
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "#3B82F6", "value": null }]
-          },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#3B82F6", "value": null }] },
           "unit": "dtdurations"
         },
         "overrides": []
@@ -1189,11 +1153,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "text": { "valueSize": 18 },
         "textMode": "auto"
       },
@@ -1216,10 +1176,7 @@
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "#3B82F6", "value": null }]
-          },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#3B82F6", "value": null }] },
           "unit": "dtdurations"
         },
         "overrides": []
@@ -1231,11 +1188,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "text": { "valueSize": 18 },
         "textMode": "auto"
       },
@@ -1258,10 +1211,7 @@
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "#3B82F6", "value": null }]
-          },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#3B82F6", "value": null }] },
           "unit": "dtdurations"
         },
         "overrides": []
@@ -1273,11 +1223,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "text": { "valueSize": 18 },
         "textMode": "auto"
       },
@@ -1319,5 +1265,5 @@
   "timezone": "Asia/Jakarta",
   "title": "Infrastructure Monitoring DC-DRC",
   "uid": "capstone-infra-v1",
-  "version": 2
+  "version": 3
 }
