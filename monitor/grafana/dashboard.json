@@ -327,7 +327,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -367,7 +370,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -407,7 +413,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -447,7 +456,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -557,7 +569,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -597,7 +612,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -637,7 +655,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -677,7 +698,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -787,7 +811,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -827,7 +854,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -867,7 +897,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
@@ -907,7 +940,10 @@
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
-        "showThresholdMarkers": false
+        "showThresholdMarkers": false,
+        "text": {
+          "valueSize": 20
+        }
       },
       "targets": [
         {
