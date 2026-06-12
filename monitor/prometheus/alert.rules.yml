@@ -70,7 +70,7 @@ groups:
 
       # =====================================================
       # HIGH NETWORK TRAFFIC
-      # Trigger jika traffic > 80 Mbps selama 1 menit
+      # Trigger jika traffic > 10 MB/s selama 1 menit
       # =====================================================
       - alert: HighNetworkTraffic
         expr: rate(node_network_receive_bytes_total[1m]) > 10000000
@@ -79,7 +79,7 @@ groups:
           severity: warning
         annotations:
           summary: "Traffic Jaringan Tinggi"
-          description: "{{ $labels.job }} mengalami lonjakan traffic jaringan lebih dari 80 Mbps selama 1 menit."
+          description: "{{ $labels.job }} mengalami lonjakan traffic jaringan lebih dari 10 MB/s selama 1 menit."
 
       # =====================================================
       # HIGH DISK I/O WAIT

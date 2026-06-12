@@ -208,7 +208,7 @@ Digunakan untuk:
 | HighCPUUsage | CPU > 80% selama 1 menit |
 | HighMemoryUsage | RAM > 80% selama 1 menit |
 | HighDiskUsage | Storage > 80% |
-| HighNetworkTraffic | Traffic > 80 Mbps selama 1 menit |
+| HighNetworkTraffic | Traffic > 10 MB/s selama 1 menit |
 | HighLoad | Load average per core > 1.5 selama 1 menit |
 | HighDiskIOWait | Disk I/O wait > 20% selama 1 menit |
 | NodeDown | Server tidak dapat diakses |
