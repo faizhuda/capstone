@@ -196,7 +196,7 @@ Sistem \textit{monitoring} yang andal sangat dibutuhkan untuk mendeteksi anomali
 kegagalan layanan. Tanpa pemantauan \textit{real-time}, administrator hanya mengetahui kegagalan
 setelah dampaknya dirasakan pengguna, bukan sebelumnya. \textit{Stack monitoring open-source} seperti
 Prometheus dan Grafana menawarkan solusi yang fleksibel, skalabel, dan tidak memerlukan biaya lisensi,
-sehingga sesuai dengan kendala anggaran pemerintah daerah \cite{brikman2022}. Penelitian ini merancang
+sehingga sesuai dengan kendala anggaran pemerintah daerah \cite{pivotto2023}. Penelitian ini merancang
 \textit{prototype} sistem \textit{monitoring} dan \textit{alert} yang memantau tujuh parameter kritis
 (ketersediaan \textit{node}, CPU, memori, \textit{disk}, \textit{load average}, trafik jaringan, dan
 I/O \textit{disk}) secara \textit{real-time}, serta mengirimkan notifikasi otomatis kepada
@@ -251,7 +251,7 @@ jaringan, dan layanan secara berkelanjutan \cite{turnbull2018}. Terdapat dua pen
 \textit{push-based monitoring} di mana target mengirimkan data ke \textit{server}. Pendekatan
 \textit{pull-based} lebih mudah dikonfigurasi pada lingkungan VM terisolasi karena tidak memerlukan
 konfigurasi pengiriman data dari tiap target, melainkan cukup mengekspos \textit{endpoint} HTTP yang
-dapat diakses oleh \textit{server} Prometheus \cite{brikman2022}.
+dapat diakses oleh \textit{server} Prometheus \cite{pivotto2023}.
 
 \subsection{Prometheus}
 
@@ -263,7 +263,7 @@ dapat dikonfigurasi (\textit{scrape interval}) \cite{turnbull2018}. Prometheus d
 ini karena mendukung evaluasi \textit{alert rules} berbasis PromQL secara \textit{native},
 terintegrasi langsung dengan Alertmanager, dan menyediakan ekspresi yang fleksibel untuk mendefinisikan
 \textit{threshold} kompleks seperti \textit{load average} relatif per-vCPU
-\cite{brikman2022,cncf2023}.
+\cite{pivotto2023,cncf2023}.
 
 \subsection{Grafana}
 
@@ -318,7 +318,7 @@ informasi terstruktur, dan telah terbukti efektif pada penelitian serupa \cite{R
 \subsection{Traffic Generator (\texttt{iperf3} dan \texttt{stress-ng})}
 
 \texttt{iperf3} adalah alat \textit{benchmark} jaringan yang menghasilkan trafik TCP/UDP sintetis
-untuk mengukur \textit{throughput} \cite{Rahayu2023}. \texttt{stress-ng} adalah utilitas pengujian
+untuk mengukur \textit{throughput} \cite{Rahayu2025}. \texttt{stress-ng} adalah utilitas pengujian
 beban sistem yang mensimulasikan penggunaan CPU, memori, dan I/O secara terprogram. Kedua alat ini
 dipilih karena dapat menghasilkan beban yang terkontrol dan terulang (\textit{reproducible}), sehingga
 memungkinkan pengukuran latensi \textit{alert} yang konsisten antar iterasi pengujian.
@@ -327,7 +327,7 @@ memungkinkan pengukuran latensi \textit{alert} yang konsisten antar iterasi peng
 
 Rahman et al.\ \cite{Rahman2020} mengimplementasikan Prometheus dan Grafana untuk \textit{monitoring
 server} universitas dengan notifikasi Telegram, mencapai latensi deteksi di bawah 30 detik. Rahayu
-et al.\ \cite{Rahayu2023} mengembangkan sistem \textit{monitoring real-time} berbasis Zabbix dengan
+et al.\ \cite{Rahayu2025} mengembangkan sistem \textit{monitoring real-time} berbasis Zabbix dengan
 notifikasi \textit{alert} Telegram pada lingkungan jaringan kampus.
 
 Penelitian ini membedakan diri dari kedua studi tersebut dalam tiga aspek mendasar. Pertama, konteks
@@ -350,7 +350,7 @@ Penelitian ini dibangun di atas tiga premis yang saling terhubung. \textbf{Premi
 SPBE mewajibkan ketersediaan layanan digital, namun tidak menyertakan panduan teknis pemantauan DRC
 secara \textit{real-time}, sehingga terdapat kesenjangan antara kewajiban regulasi dan kapabilitas
 teknis yang tersedia. \textbf{Premis kedua}: \textit{stack} teknologi \textit{open-source} (Prometheus
-+ Grafana + Alertmanager) telah terbukti andal pada lingkungan serupa \cite{Rahman2020,Rahayu2023},
++ Grafana + Alertmanager) telah terbukti andal pada lingkungan serupa \cite{Rahman2020,Rahayu2025},
 tidak memerlukan biaya lisensi, dan dapat dikustomisasi sesuai kebutuhan spesifik DRC. \textbf{Premis
 ketiga}: simulasi berbasis \textit{virtual machine} memungkinkan pengembangan dan pengujian
 \textit{prototype} secara terkontrol tanpa harus mengakses infrastruktur produksi Diskominfo yang
@@ -420,7 +420,7 @@ infrastruktur Diskominfo Kota Bogor.
 
 Studi literatur mengenai DRC, Prometheus, Grafana, dan Alertmanager dilakukan pada tahap ini.
 Pemilihan tujuh parameter \textit{threshold} didasarkan pada rekomendasi \textit{best practice}
-industri \cite{turnbull2018,brikman2022}. Nilai CPU dan memori sebesar 80\% ditetapkan untuk
+industri \cite{turnbull2018,pivotto2023}. Nilai CPU dan memori sebesar 80\% ditetapkan untuk
 menyisakan \textit{headroom} 20\% bagi operasi sistem operasi dan proses latar belakang, sesuai
 dengan yang diterapkan Rahman et al.\ \cite{Rahman2020} pada sistem serupa. Nilai \textit{load
 average} 1,5 per vCPU mengindikasikan antrean proses yang mulai melebihi kapasitas pemrosesan,
@@ -583,7 +583,7 @@ aliran data metrik dari keempat VM berjalan dengan baik.
 \subsection{Hasil Konfigurasi Threshold}
 
 Tujuh \textit{threshold} ditetapkan berdasarkan kajian literatur dan \textit{best practice} industri
-\cite{turnbull2018,brikman2022}. Seluruh aturan menggunakan klausul \texttt{for: 1m} sehingga
+\cite{turnbull2018,pivotto2023}. Seluruh aturan menggunakan klausul \texttt{for: 1m} sehingga
 \textit{alert} hanya terpicu apabila kondisi anomali bertahan selama minimal satu menit, bukan akibat
 lonjakan sesaat. Hal ini meminimalkan \textit{false positive} tanpa mengorbankan kecepatan deteksi.
 Daftar lengkap disajikan pada Tabel~\ref{tab:threshold}.
@@ -778,7 +778,7 @@ yang telah diberikan.
   \textit{Peraturan Presiden Nomor 95 Tahun 2018 tentang Sistem Pemerintahan Berbasis Elektronik}.
   Jakarta (ID): Sekretariat Negara.
 
-\bibitem{brikman2022}
+\bibitem{pivotto2023}
   Pivotto J, Brazil B. 2023.
   \textit{Prometheus: Up \& Running}. 2nd ed.
   Sebastopol (US): O'Reilly Media.
@@ -807,7 +807,7 @@ yang telah diberikan.
   Jakarta (ID): Kementerian Komunikasi dan Informatika.
 
 \bibitem{linux2023}
-  Linux Foundation. 2023.
+  The systemd Project. 2023.
   Systemd Documentation [Internet]. [diunduh 2025 Jan 10].
   Tersedia pada: \url{https://systemd.io}.
 
@@ -827,8 +827,8 @@ yang telah diberikan.
   \textit{JITSI: Jurnal Ilmiah Teknologi Sistem Informasi}. 1(4):133--138.
   Tersedia pada: \url{https://jurnal-itsi.org/index.php/jitsi/article/view/19}
 
-\bibitem{Rahayu2023}
-  Rahayu PD, Dahlan AA, Vitria R. 2023.
+\bibitem{Rahayu2025}
+  Rahayu PD, Dahlan AA, Vitria R. 2025.
   Monitoring \textit{real-time server} dan \textit{router} berbasis Zabbix dengan notifikasi
   \textit{alert} Telegram: studi pra-pasca di SDIT Raudhatul As-Salimy Gobah.
   \textit{Intellect: Indonesian Journal of Learning and Technological Innovation}. 4(1):107--116.
