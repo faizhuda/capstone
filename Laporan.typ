@@ -410,12 +410,15 @@ Expression Browser dan kueri PromQL dasar.
 
 Tujuh aturan _alerting_ ditulis dalam berkas `alert.rules.yml`. Konfigurasi Alertmanager mencakup
 _routing_, _grouping_ (`group_wait`: 10 detik), _inhibit rules_, dan integrasi Telegram Bot API
-dengan format pesan HTML. Simulasi gangguan dilakukan melalui:
+dengan format pesan HTML. Simulasi gangguan dilakukan melalui empat
+skenario: beban CPU, beban memori, beban jaringan, dan _node down_.
+Perintah yang dieksekusi pada VM target:
 
-- simulasi beban CPU: `stress-ng --cpu 4 --timeout 120s`,
-- simulasi beban memori: `stress-ng --vm 2 --vm-bytes 90%`,
-- simulasi beban jaringan: `iperf3 -c [IP_target] -t 120`, dan
-- simulasi _node down_: `systemctl stop node_exporter`.
+#raw(block: true, lang: "sh",
+"stress-ng --cpu 4 --timeout 120s
+stress-ng --vm 2 --vm-bytes 90%
+iperf3 -c [IP_target] -t 120
+systemctl stop node_exporter")
 
 === Juni 2026 --- Dashboarding dan Finalisasi
 
@@ -540,22 +543,25 @@ meminimalkan _false positive_ tanpa mengorbankan kecepatan deteksi. Daftar lengk
 @tab-threshold.
 
 #figure(
-  table(
-    columns: (auto, auto, auto, auto),
-    align: left,
-    stroke: 0.5pt,
-    inset: 5pt,
-    table.header(
-      [*Alert*], [*Threshold*], [*Durasi*], [*Level*],
-    ),
-    [NodeDown],           [`up == 0`],  [1 menit], [_Critical_],
-    [HighCPUUsage],       [> 80%],      [1 menit], [_Warning_],
-    [HighMemoryUsage],    [> 80%],      [1 menit], [_Warning_],
-    [HighDiskUsage],      [> 80%],      [1 menit], [_Critical_],
-    [HighLoad],           [> 1,5/vCPU], [1 menit], [_Warning_],
-    [HighNetworkTraffic], [> 10 MB/s],  [1 menit], [_Warning_],
-    [HighDiskIOWait],     [> 20%],      [1 menit], [_Warning_],
-  ),
+  {
+    set text(size: 8pt)
+    table(
+      columns: (auto, auto, auto, auto),
+      align: (left, center, center, center),
+      stroke: 0.5pt,
+      inset: 5pt,
+      table.header(
+        [*Alert*], [*Threshold*], [*Durasi*], [*Level*],
+      ),
+      [NodeDown],           [`up == 0`],  [1 menit], [_Critical_],
+      [HighCPUUsage],       [> 80%],      [1 menit], [_Warning_],
+      [HighMemoryUsage],    [> 80%],      [1 menit], [_Warning_],
+      [HighDiskUsage],      [> 80%],      [1 menit], [_Critical_],
+      [HighLoad],           [> 1,5/vCPU], [1 menit], [_Warning_],
+      [HighNetworkTraffic], [> 10 MB/s],  [1 menit], [_Warning_],
+      [HighDiskIOWait],     [> 20%],      [1 menit], [_Warning_],
+    )
+  },
   caption: [Daftar _Threshold_ dan Aturan _Alert_ yang Diimplementasikan.],
 ) <tab-threshold>
 
@@ -569,22 +575,25 @@ latensi teoritis minimum adalah 75--90 detik sejak ambang batas pertama kali ter
 notifikasi diterima. Hasil per skenario disajikan pada @tab-alert-latency.
 
 #figure(
-  table(
-    columns: (auto, auto, auto),
-    align: left,
-    stroke: 0.5pt,
-    inset: 5pt,
-    table.header(
-      [*Skenario*], [*Rata-rata (s)*], [*SD (s)*],
-    ),
-    [NodeDown],        [79], [4],
-    [HighCPUUsage],    [83], [5],
-    [HighMemoryUsage], [81], [4],
-    [HighDiskUsage],      [87], [7],
-    [HighLoad],           [84], [5],
-    [HighNetworkTraffic], [81], [4],
-    [HighDiskIOWait],     [86], [7],
-  ),
+  {
+    set text(size: 8pt)
+    table(
+      columns: (auto, auto, auto),
+      align: (left, center, center),
+      stroke: 0.5pt,
+      inset: 5pt,
+      table.header(
+        [*Skenario*], [*Rata-rata (s)*], [*SD (s)*],
+      ),
+      [NodeDown],           [79], [4],
+      [HighCPUUsage],       [83], [5],
+      [HighMemoryUsage],    [81], [4],
+      [HighDiskUsage],      [87], [7],
+      [HighLoad],           [84], [5],
+      [HighNetworkTraffic], [81], [4],
+      [HighDiskIOWait],     [86], [7],
+    )
+  },
   caption: [Hasil Pengukuran _Alert Latency_ per Skenario.],
 ) <tab-alert-latency>
 
@@ -689,10 +698,6 @@ kasih juga disampaikan kepada Program Studi Ilmu Komputer, Sekolah Sains Data, M
 Informatika, Institut Pertanian Bogor (SSMI, IPB University) atas dukungan fasilitas dan akademik
 yang telah diberikan.
 
-] // end columns block 2
-
-// ============================================================
-// BIBLIOGRAPHY — IEEE style, auto-formatted from docs/refs.bib
-// ============================================================
-
 #bibliography("docs/refs.bib", style: "ieee", title: "Daftar Pustaka")
+
+] // end columns block 2
