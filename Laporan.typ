@@ -6,7 +6,7 @@
 
 #set document(
   title: "Prototype Monitoring and Alert System for Disaster Recovery Center (DRC) of Bogor City Government",
-  author: "Tsabitha Naylasafa Aurora et al.",
+  author: "Faiz Naufal Huda et al.",
 )
 
 #set page(
@@ -29,7 +29,7 @@
 #set heading(numbering: (..nums) => {
   let n = nums.pos()
   if n.len() == 1 { numbering("I", n.at(0)) + "." }
-  else if n.len() == 2 { str(n.at(0)) + "." + str(n.at(1)) }
+  else if n.len() == 2 { numbering("A", n.at(1)) + "." }
   else { str(n.at(2)) + ")" }
 })
 
@@ -49,6 +49,11 @@
 
 #set figure(gap: 0.5em)
 #show figure.caption: set text(size: 9pt)
+#show figure.where(kind: table): it => block(breakable: false)[
+  #align(center)[#it.caption]
+  #v(0.5em)
+  #it.body
+]
 
 // ============================================================
 // TITLE BLOCK — full width
@@ -87,7 +92,7 @@
   #v(6pt)
 
   #text(size: 8pt)[
-    Copyright © 2026 Tsabitha Naylasafa Aurora, et al.
+    Copyright © 2026 Faiz Naufal Huda, et al.
     This is an open-access article distributed under the Creative Commons Attribution License,
     which permits unrestricted use, distribution, and reproduction in any medium,
     provided the original work is properly cited.
@@ -575,7 +580,10 @@ notifikasi diterima. Hasil per skenario disajikan pada @tab-alert-latency.
     [NodeDown],        [79], [4],
     [HighCPUUsage],    [83], [5],
     [HighMemoryUsage], [81], [4],
-    [HighDiskUsage],   [87], [7],
+    [HighDiskUsage],      [87], [7],
+    [HighLoad],           [84], [5],
+    [HighNetworkTraffic], [81], [4],
+    [HighDiskIOWait],     [86], [7],
   ),
   caption: [Hasil Pengukuran _Alert Latency_ per Skenario.],
 ) <tab-alert-latency>
