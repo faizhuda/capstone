@@ -26,10 +26,17 @@
 #set par(justify: true, leading: 0.65em)
 #show link: underline
 
-#set heading(numbering: "1.1")
+#set heading(numbering: (..nums) => {
+  let n = nums.pos()
+  if n.len() == 1 { numbering("I", n.at(0)) + "." }
+  else if n.len() == 2 { str(n.at(0)) + "." + str(n.at(1)) }
+  else { str(n.at(2)) + ")" }
+})
+
 #show heading.where(level: 1): it => block(
   above: 1em, below: 0.4em,
-  text(size: 10pt, weight: "bold")[#it],
+  width: 100%,
+  align(center, text(size: 10pt, weight: "bold")[#upper(it)]),
 )
 #show heading.where(level: 2): it => block(
   above: 0.8em, below: 0.3em,
@@ -91,12 +98,9 @@
 #line(length: 100%)
 #v(6pt)
 
-*Abstract*
-
-#v(4pt)
 #text(size: 9pt)[
-  Digital services of Bogor City Government increasingly depend on reliable information technology
-  infrastructure, as mandated by Presidential Regulation No. 95 of 2018 on Electronic-Based
+  *Abstract*---Digital services of Bogor City Government increasingly depend on reliable information
+  technology infrastructure, as mandated by Presidential Regulation No. 95 of 2018 on Electronic-Based
   Government Systems (SPBE). However, no standardized real-time monitoring mechanism currently exists
   for government-owned Disaster Recovery Centers (DRC) at the regional level. This research designs
   and implements a prototype real-time monitoring and alerting system for a DRC using an open-source
@@ -111,36 +115,33 @@
 ]
 
 #v(4pt)
-*Keywords:* alert, disaster recovery center, Grafana, inhibit rules, monitoring, Prometheus, systemd,
-virtual machine.
+#text(size: 9pt)[_Index Terms_---alert, disaster recovery center, Grafana, inhibit rules, monitoring,
+Prometheus, systemd, virtual machine.]
 
 #v(8pt)
 #line(length: 100%)
 #v(6pt)
 
-*Abstrak*
-
-#v(4pt)
 #text(size: 9pt)[
-  Layanan digital Pemerintah Kota Bogor semakin bergantung pada infrastruktur teknologi informasi yang
-  handal, sebagaimana diamanatkan oleh Peraturan Presiden Nomor 95 Tahun 2018 tentang Sistem
-  Pemerintahan Berbasis Elektronik (SPBE). Namun, belum terdapat mekanisme pemantauan _real-time_ yang
-  terstandarisasi untuk _Disaster Recovery Center_ (DRC) milik pemerintah daerah. Penelitian ini
-  merancang dan mengimplementasikan _prototype_ sistem _monitoring_ dan _alerting real-time_ untuk DRC
-  menggunakan _stack_ teknologi _open-source_: Prometheus, Grafana 12.4.1, Alertmanager, dan Node
-  Exporter 1.10.2. Sistem memantau tujuh parameter kritis pada empat _virtual machine_ Ubuntu Server
-  24.04 LTS yang mensimulasikan lingkungan DC-DRC, dan mengirimkan notifikasi otomatis melalui Telegram
-  Bot API. Mekanisme _inhibit rules_ menekan _alert_ sumber daya yang redundan saat kondisi NodeDown
-  aktif, mencegah _alert storm_. Seluruh komponen berjalan sebagai layanan _systemd_ dengan _scrape
-  interval_ 15 detik. Pengujian dilakukan melalui simulasi beban menggunakan `iperf3` dan `stress-ng`
-  pada lingkungan VMware Workstation. Hasil pengujian menunjukkan sistem berhasil mendeteksi dan
-  mengirimkan _alert_ dalam rentang waktu [_X_] detik, dengan akurasi deteksi _threshold_ sebesar
-  [_Y_]%.
+  *Abstrak*---Layanan digital Pemerintah Kota Bogor semakin bergantung pada infrastruktur teknologi
+  informasi yang handal, sebagaimana diamanatkan oleh Peraturan Presiden Nomor 95 Tahun 2018 tentang
+  Sistem Pemerintahan Berbasis Elektronik (SPBE). Namun, belum terdapat mekanisme pemantauan
+  _real-time_ yang terstandarisasi untuk _Disaster Recovery Center_ (DRC) milik pemerintah daerah.
+  Penelitian ini merancang dan mengimplementasikan _prototype_ sistem _monitoring_ dan _alerting
+  real-time_ untuk DRC menggunakan _stack_ teknologi _open-source_: Prometheus, Grafana 12.4.1,
+  Alertmanager, dan Node Exporter 1.10.2. Sistem memantau tujuh parameter kritis pada empat _virtual
+  machine_ Ubuntu Server 24.04 LTS yang mensimulasikan lingkungan DC-DRC, dan mengirimkan notifikasi
+  otomatis melalui Telegram Bot API. Mekanisme _inhibit rules_ menekan _alert_ sumber daya yang
+  redundan saat kondisi NodeDown aktif, mencegah _alert storm_. Seluruh komponen berjalan sebagai
+  layanan _systemd_ dengan _scrape interval_ 15 detik. Pengujian dilakukan melalui simulasi beban
+  menggunakan `iperf3` dan `stress-ng` pada lingkungan VMware Workstation. Hasil pengujian menunjukkan
+  sistem berhasil mendeteksi dan mengirimkan _alert_ dalam rentang waktu [_X_] detik, dengan akurasi
+  deteksi _threshold_ sebesar [_Y_]%.
 ]
 
 #v(4pt)
-*Kata Kunci:* _alert_, _disaster recovery center_, Grafana, _inhibit rules_, _monitoring_, Prometheus,
-_systemd_, _virtual machine_.
+#text(size: 9pt)[*Kata Kunci:* _alert_, _disaster recovery center_, Grafana, _inhibit rules_,
+_monitoring_, Prometheus, _systemd_, _virtual machine_.]
 
 #v(8pt)
 #line(length: 100%)
