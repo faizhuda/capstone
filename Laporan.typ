@@ -86,7 +86,7 @@
     #text(size: 0.65em, baseline: -0.4em)[1,2,3,4]Program Studi Ilmu Komputer, Sekolah Sains Data, Matematika, dan Informatika,\
     Institut Pertanian Bogor, Indonesia\
     #text(size: 0.65em, baseline: -0.4em)[5]Departemen Ilmu Komputer, Institut Pertanian Bogor, Indonesia\
-    _corresponding author:_ faizhuda\@apps.ipb.ac.id
+    corresponding author: faizhuda\@apps.ipb.ac.id
   ]
 
   #v(6pt)
@@ -114,7 +114,7 @@
   24.04 LTS in a simulated DC-DRC environment, and delivers automatic notifications via Telegram Bot
   API. An inhibit rules mechanism suppresses redundant resource alerts when a NodeDown event is active,
   preventing alert storms. All components run as systemd services with a 15-second scrape interval.
-  Testing was conducted through load simulation using `iperf3` and `stress-ng` in a VMware Workstation
+  Testing was conducted through load simulation using iperf3 and stress-ng in a VMware Workstation
   environment. The results show that the system successfully detects and delivers alerts within 83
   seconds of the incident occurring, with threshold detection accuracy of 97.1%.
 ]
@@ -139,7 +139,7 @@ Prometheus, systemd, virtual machine.]
   otomatis melalui Telegram Bot API. Mekanisme _inhibit rules_ menekan _alert_ sumber daya yang
   redundan saat kondisi NodeDown aktif, mencegah _alert storm_. Seluruh komponen berjalan sebagai
   layanan _systemd_ dengan _scrape interval_ 15 detik. Pengujian dilakukan melalui simulasi beban
-  menggunakan `iperf3` dan `stress-ng` pada lingkungan VMware Workstation. Hasil pengujian menunjukkan
+  menggunakan iperf3 dan stress-ng pada lingkungan VMware Workstation. Hasil pengujian menunjukkan
   sistem berhasil mendeteksi dan mengirimkan _alert_ dalam rentang waktu 83 detik, dengan akurasi
   deteksi _threshold_ sebesar 97,1%.
 ]
@@ -283,10 +283,10 @@ _mobile_. Telegram dipilih sebagai saluran notifikasi karena tidak memerlukan ko
 atau berlangganan layanan berbayar, mendukung format HTML untuk penyajian informasi terstruktur, dan
 telah terbukti efektif pada penelitian serupa @Rahman2020.
 
-== Traffic Generator (`iperf3` dan `stress-ng`)
+== Traffic Generator (iperf3 dan stress-ng)
 
 `iperf3` adalah alat _benchmark_ jaringan yang menghasilkan trafik TCP/UDP sintetis untuk mengukur
-_throughput_ @Rahayu2025. `stress-ng` adalah utilitas pengujian beban sistem yang mensimulasikan
+_throughput_. `stress-ng` adalah utilitas pengujian beban sistem yang mensimulasikan
 penggunaan CPU, memori, dan I/O secara terprogram. Kedua alat ini dipilih karena dapat menghasilkan
 beban yang terkontrol dan terulang (_reproducible_), sehingga memungkinkan pengukuran latensi _alert_
 yang konsisten antar iterasi pengujian.
@@ -601,12 +601,20 @@ notifikasi diterima. Hasil per skenario disajikan pada @tab-alert-latency.
 
 Dari total 35 skenario gangguan yang disimulasikan, sistem berhasil mendeteksi 34 gangguan
 dengan benar (_true positive_), 1 _false positive_, dan 0 _false negative_, sehingga akurasi
-keseluruhan mencapai 97,1%.
+keseluruhan mencapai 97,1%. Satu _false positive_ yang tercatat terjadi pada skenario
+HighNetworkTraffic, dipicu oleh lonjakan trafik latar belakang VMware yang sesaat melebihi
+_threshold_ 10 MB/s di luar konteks skenario pengujian.
+
+=== Hasil Pengujian Dashboard Refresh Rate
+
+_Dashboard refresh rate_ dikonfirmasi sebesar 15 detik, sesuai dengan nilai `scrape_interval`
+yang dikonfigurasi pada Prometheus. Pembaruan panel Grafana terjadi secara otomatis mengikuti
+siklus _scraping_ metrik setiap 15 detik.
 
 == Tampilan Dashboard Grafana
 
 _Dashboard_ Grafana 12.4.1 yang dikembangkan dapat diakses pada `10.10.1.100:3000` dan memuat enam
-seksi panel:
+seksi panel yang dikelompokkan dalam empat area visualisasi:
 
 - *Business Continuity Status*: panel penuh lebar menampilkan status operasional keseluruhan (Hijau =
   NORMAL --- DC OPERATIONAL; Merah = DISASTER --- DRC ACTIVE). Panel ini menggunakan ekspresi PromQL
@@ -670,7 +678,7 @@ menyebabkan tindakan _failover_ yang tidak perlu dan berdampak pada layanan publ
   terjustifikasi secara literatur, akurasi deteksi sebesar 97,1%, dan rata-rata _alert latency_
   sebesar 83 detik.
 + Integrasi Telegram Bot API dengan format pesan HTML dan mekanisme _inhibit rules_ berfungsi efektif:
-  notifikasi gangguan diterima secara instan, dan _alert storm_ akibat kondisi NodeDown berhasil
+  notifikasi gangguan diterima secara otomatis dalam rata-rata 83 detik, dan _alert storm_ akibat kondisi NodeDown berhasil
   ditekan tanpa konfigurasi manual.
 + _Dashboard_ Grafana bertema _Command Center_ dengan panel _Business Continuity Status_ berhasil
   menyediakan indikator operasional tunggal yang intuitif, membantu administrator mengambil keputusan
