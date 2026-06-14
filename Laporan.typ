@@ -69,8 +69,8 @@
 
   #v(10pt)
 
-  Tsabitha Naylasafa Aurora#text(size: 0.65em, baseline: -0.4em)[1],
-  Faiz Naufal Huda#text(size: 0.65em, baseline: -0.4em)[2],
+  Faiz Naufal Huda#text(size: 0.65em, baseline: -0.4em)[1],
+  Tsabitha Naylasafa Aurora#text(size: 0.65em, baseline: -0.4em)[2],
   Daffa Kautsar Falih#text(size: 0.65em, baseline: -0.4em)[3],
   Muhammad Naufal Fathurrahman#text(size: 0.65em, baseline: -0.4em)[4],
   Dr. Shelvie Nidya Neyman#text(size: 0.65em, baseline: -0.4em)[5]
@@ -81,7 +81,7 @@
     #text(size: 0.65em, baseline: -0.4em)[1,2,3,4]Program Studi Ilmu Komputer, Sekolah Sains Data, Matematika, dan Informatika,\
     Institut Pertanian Bogor, Indonesia\
     #text(size: 0.65em, baseline: -0.4em)[5]Departemen Ilmu Komputer, Institut Pertanian Bogor, Indonesia\
-    _corresponding author:_ tsabitha06nayla\@apps.ipb.ac.id
+    _corresponding author:_ faizhuda\@apps.ipb.ac.id
   ]
 
   #v(6pt)
