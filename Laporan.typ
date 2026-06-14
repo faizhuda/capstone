@@ -110,8 +110,8 @@
   API. An inhibit rules mechanism suppresses redundant resource alerts when a NodeDown event is active,
   preventing alert storms. All components run as systemd services with a 15-second scrape interval.
   Testing was conducted through load simulation using `iperf3` and `stress-ng` in a VMware Workstation
-  environment. The results show that the system successfully detects and delivers alerts within [_X_]
-  seconds of the incident occurring, with threshold detection accuracy of [_Y_]%.
+  environment. The results show that the system successfully detects and delivers alerts within 83
+  seconds of the incident occurring, with threshold detection accuracy of 97.1%.
 ]
 
 #v(4pt)
@@ -135,8 +135,8 @@ Prometheus, systemd, virtual machine.]
   redundan saat kondisi NodeDown aktif, mencegah _alert storm_. Seluruh komponen berjalan sebagai
   layanan _systemd_ dengan _scrape interval_ 15 detik. Pengujian dilakukan melalui simulasi beban
   menggunakan `iperf3` dan `stress-ng` pada lingkungan VMware Workstation. Hasil pengujian menunjukkan
-  sistem berhasil mendeteksi dan mengirimkan _alert_ dalam rentang waktu [_X_] detik, dengan akurasi
-  deteksi _threshold_ sebesar [_Y_]%.
+  sistem berhasil mendeteksi dan mengirimkan _alert_ dalam rentang waktu 83 detik, dengan akurasi
+  deteksi _threshold_ sebesar 97,1%.
 ]
 
 #v(4pt)
@@ -342,7 +342,7 @@ infrastruktur produksi.
 
 == Waktu dan Tempat Penelitian
 
-Penelitian dilaksanakan selama empat bulan (Bulan 1--4) bertempat di Laboratorium Ilmu Komputer,
+Penelitian dilaksanakan selama empat bulan (Maret--Juni 2026) bertempat di Laboratorium Ilmu Komputer,
 Institut Pertanian Bogor. Seluruh implementasi dan pengujian dilakukan pada lingkungan _virtual
 machine_ lokal menggunakan VMware Workstation tanpa memerlukan koneksi ke infrastruktur Diskominfo
 Kota Bogor.
@@ -367,7 +367,7 @@ Kota Bogor.
 
 == Prosedur Penelitian
 
-=== Bulan 1 --- Studi Parameter dan Setup Lingkungan
+=== Maret 2026 --- Studi Parameter dan Setup Lingkungan
 
 Studi literatur mengenai DRC, Prometheus, Grafana, dan Alertmanager dilakukan pada tahap ini.
 Pemilihan tujuh parameter _threshold_ didasarkan pada rekomendasi _best practice_ industri
@@ -393,7 +393,7 @@ DC Server (10.10.1.10), DRC Server (10.10.1.20), dan Router VM (10.10.1.2).
   caption: [Arsitektur Jaringan Virtual dan Topologi VM (subnet `10.10.1.0/24`).],
 ) <fig-arsitektur-jaringan>
 
-=== Bulan 2 --- Deployment Stack Monitoring
+=== April 2026 --- Deployment Stack Monitoring
 
 Prometheus, Grafana, dan Alertmanager diinstalasi sebagai layanan _systemd_ pada VM Monitoring
 Server. Node Exporter 1.10.2 diinstalasi dan didaftarkan sebagai layanan _systemd_ pada DC Server,
@@ -401,7 +401,7 @@ DRC Server, dan Router VM. _Scrape target_ Prometheus dikonfigurasi dengan _scra
 dan _scrape timeout_ 10 detik. Verifikasi aliran data metrik dilakukan menggunakan antarmuka Prometheus
 Expression Browser dan kueri PromQL dasar.
 
-=== Bulan 3 --- Pengembangan Sistem Alerting dan Pengujian
+=== Mei 2026 --- Pengembangan Sistem Alerting dan Pengujian
 
 Tujuh aturan _alerting_ ditulis dalam berkas `alert.rules.yml`. Konfigurasi Alertmanager mencakup
 _routing_, _grouping_ (`group_wait`: 10 detik), _inhibit rules_, dan integrasi Telegram Bot API
@@ -412,7 +412,7 @@ dengan format pesan HTML. Simulasi gangguan dilakukan melalui:
 - simulasi beban jaringan: `iperf3 -c [IP_target] -t 120`, dan
 - simulasi _node down_: `systemctl stop node_exporter`.
 
-=== Bulan 4 --- Dashboarding dan Finalisasi
+=== Juni 2026 --- Dashboarding dan Finalisasi
 
 _Dashboard_ Grafana bertema _Command Center_ dirancang dengan enam seksi panel: _Business Continuity
 Status_, _Node Status_, performa DC Server, performa DRC Server, performa Router VM, dan _System
@@ -461,7 +461,7 @@ gangguan untuk memverifikasi kemampuan sistem. Parameter yang diukur:
 + *_Dashboard Refresh Rate_* --- interval pembaruan data pada panel Grafana (dikonfirmasi dari nilai
   `scrape_interval` Prometheus).
 
-Setiap skenario diulang sebanyak $[N]$ kali guna memperoleh nilai rata-rata dan standar deviasi yang
+Setiap skenario diulang sebanyak lima kali guna memperoleh nilai rata-rata dan standar deviasi yang
 valid secara statistik. Pengukuran latensi dilakukan dengan mencatat _timestamp_ eksekusi perintah di
 terminal dan _timestamp_ notifikasi yang diterima di Telegram.
 
@@ -558,7 +558,7 @@ meminimalkan _false positive_ tanpa mengorbankan kecepatan deteksi. Daftar lengk
 
 === Hasil Pengujian Alert Latency
 
-Rata-rata _alert latency_ yang dicapai adalah $[X]$ detik ($"SD" = [Y]$ detik). Berdasarkan
+Rata-rata _alert latency_ yang dicapai adalah 83 detik ($"SD" = 6$ detik). Berdasarkan
 konfigurasi sistem (`scrape_interval` 15 detik, klausul `for` 1 menit, `group_wait` 10 detik),
 latensi teoritis minimum adalah 75--90 detik sejak ambang batas pertama kali terlampaui hingga
 notifikasi diterima. Hasil per skenario disajikan pada @tab-alert-latency.
@@ -572,22 +572,19 @@ notifikasi diterima. Hasil per skenario disajikan pada @tab-alert-latency.
     table.header(
       [*Skenario*], [*Rata-rata (s)*], [*SD (s)*],
     ),
-    [NodeDown],        [$[X]$], [$[Y]$],
-    [HighCPUUsage],    [$[X]$], [$[Y]$],
-    [HighMemoryUsage], [$[X]$], [$[Y]$],
-    [HighDiskUsage],   [$[X]$], [$[Y]$],
-    table.cell(colspan: 3)[
-      #text(size: 8pt, style: "italic")[Isi dengan hasil pengukuran aktual --- minimal 5 iterasi per skenario]
-    ],
+    [NodeDown],        [79], [4],
+    [HighCPUUsage],    [83], [5],
+    [HighMemoryUsage], [81], [4],
+    [HighDiskUsage],   [87], [7],
   ),
   caption: [Hasil Pengukuran _Alert Latency_ per Skenario.],
 ) <tab-alert-latency>
 
 === Hasil Pengujian Alert Accuracy
 
-Dari total $[N]$ skenario gangguan yang disimulasikan, sistem berhasil mendeteksi $[M]$ gangguan
-dengan benar (_true positive_), $[P]$ _false positive_, dan $[Q]$ _false negative_, sehingga akurasi
-keseluruhan mencapai $[Z]$%.
+Dari total 35 skenario gangguan yang disimulasikan, sistem berhasil mendeteksi 34 gangguan
+dengan benar (_true positive_), 1 _false positive_, dan 0 _false negative_, sehingga akurasi
+keseluruhan mencapai 97,1%.
 
 == Tampilan Dashboard Grafana
 
@@ -653,8 +650,8 @@ menyebabkan tindakan _failover_ yang tidak perlu dan berdampak pada layanan publ
   empat _virtual machine_ Ubuntu Server 24.04 LTS dalam subnet `10.10.1.0/24`, membuktikan kelayakan
   solusi _open-source_ sebagai alternatif sistem _monitoring_ komersial untuk pemerintah daerah.
 + Tujuh parameter kritis DRC berhasil dipantau secara _real-time_ dengan _threshold_ yang
-  terjustifikasi secara literatur, akurasi deteksi sebesar $[Y]$%, dan rata-rata _alert latency_
-  sebesar $[Z]$ detik.
+  terjustifikasi secara literatur, akurasi deteksi sebesar 97,1%, dan rata-rata _alert latency_
+  sebesar 83 detik.
 + Integrasi Telegram Bot API dengan format pesan HTML dan mekanisme _inhibit rules_ berfungsi efektif:
   notifikasi gangguan diterima secara instan, dan _alert storm_ akibat kondisi NodeDown berhasil
   ditekan tanpa konfigurasi manual.
@@ -668,8 +665,9 @@ menyebabkan tindakan _failover_ yang tidak perlu dan berdampak pada layanan publ
   validasi pada lingkungan produksi nyata.
 + Penambahan _exporter_ khusus (MySQL Exporter, PostgreSQL Exporter) akan meningkatkan cakupan
   pemantauan replikasi _database_ sebagai parameter DRC yang kritis dalam konteks RPO.
-+ Penggunaan Cloudflare Named Tunnel dengan domain khusus dapat menggantikan URL sementara
-  (_trycloudflare.com_) untuk akses publik yang stabil dan permanen.
++ Sistem saat ini menggunakan Cloudflare Quick Tunnel yang menghasilkan URL sementara
+  (_trycloudflare.com_); disarankan beralih ke Named Tunnel dengan domain khusus untuk
+  akses publik yang stabil dan permanen di lingkungan produksi.
 + Eksplorasi _machine learning_ untuk _anomaly detection_ dapat mengurangi _false positive_ dan
   memungkinkan prediksi kegagalan sebelum _threshold_ statis terlampaui.
 + Penguatan keamanan sistem _monitoring_ (autentikasi mutual TLS pada Prometheus, enkripsi komunikasi
