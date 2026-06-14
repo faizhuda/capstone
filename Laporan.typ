@@ -12,17 +12,14 @@
 #set page(
   paper: "a4",
   margin: (top: 2.5cm, bottom: 2.5cm, left: 2cm, right: 2cm),
-  header: context {
-    if counter(page).get().first() > 1 [
-      #set text(size: 9pt, style: "italic")
-      Prototype Monitoring dan Alert System DRC Pemerintah Kota Bogor
-      #h(1fr)
-      #counter(page).display()
-    ]
-  },
+  footer: context [
+    #h(1fr)
+    #text(size: 9pt)[#counter(page).display()]
+    #h(1fr)
+  ],
 )
 
-#set text(font: "Linux Libertine", size: 10pt, lang: "id")
+#set text(font: "Times New Roman", size: 10pt, lang: "id")
 #set par(justify: true, leading: 0.65em)
 #show link: underline
 
@@ -50,7 +47,10 @@
 #set figure(gap: 0.5em)
 #show figure.caption: set text(size: 9pt)
 #show figure.where(kind: table): it => block(breakable: false)[
-  #align(center)[#it.caption]
+  #align(center)[
+    #text(size: 9pt, weight: "bold")[TABLE #context counter(figure.where(kind: table)).display("I")] \
+    #text(size: 9pt)[#it.caption.body]
+  ]
   #v(0.5em)
   #it.body
 ]
