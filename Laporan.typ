@@ -660,7 +660,7 @@ seksi panel yang dikelompokkan dalam empat area visualisasi (@fig-dashboard):
 
 Setiap kondisi _alert_ menghasilkan notifikasi Telegram berformat HTML yang dikirim ke grup
 administrator (@fig-telegram-alert). Pesan _firing_ memuat nama _alert_, level (_critical_/_warning_),
-nilai metrik yang memicu kondisi, dan _instance_ yang terdampak. Pesan _resolved_ dikirim secara
+deskripsi kondisi anomali yang mencakup _threshold_ yang terlampaui, dan _instance_ yang terdampak. Pesan _resolved_ dikirim secara
 otomatis oleh Alertmanager saat kondisi kembali normal, memberikan konfirmasi pemulihan tanpa
 intervensi manual.
 

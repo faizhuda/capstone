@@ -51,7 +51,7 @@ groups:
           severity: critical
         annotations:
           summary: "Penyimpanan Hampir Penuh"
-          description: "Penggunaan storage pada {{ $labels.job }} melebihi 80%."
+          description: "Penggunaan storage pada {{ $labels.job }} melebihi 80% selama 1 menit."
 
       # =====================================================
       # HIGH LOAD AVERAGE
