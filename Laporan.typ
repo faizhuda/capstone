@@ -681,8 +681,10 @@ panel _Business Continuity Status_ memberikan indikator biner yang dapat dibaca 
 Dua kendala utama yang dihadapi adalah: (1) keterbatasan RAM 1 GB pada VM target memengaruhi kinerja
 saat beban penuh, yang secara tidak langsung mempercepat tercapainya _threshold_ dan dapat
 mempersingkat latensi deteksi; dan (2) Grafana versi 12 menggunakan API berbasis Kubernetes
-(`/apis/dashboard.grafana.app/v1beta1/`) yang tidak mendukung _anonymous access_, sehingga akses
-_viewer_ dikonfigurasi melalui akun khusus dengan manajemen izin _folder_.
+(`/apis/dashboard.grafana.app/v1beta1/`) yang pada konfigurasi _default_ tidak mengaktifkan
+_anonymous access_; kendala ini diatasi dengan mengaktifkan opsi `[auth.anonymous]` pada berkas
+`grafana.ini` dan menetapkan peran _viewer_ sebagai peran _default_ organisasi, sehingga
+_dashboard_ dapat diakses tanpa autentikasi.
 
 Dibandingkan dengan Rahman et al. @Rahman2020 yang mencapai latensi di bawah 30 detik, latensi
 penelitian ini lebih panjang karena adanya klausul `for: 1m` yang sengaja diterapkan untuk

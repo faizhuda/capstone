@@ -396,21 +396,23 @@ Ganti IP Router VM dari `10.10.1.1` ke `10.10.1.2` di `/etc/netplan/50-cloud-ini
 
 ---
 
-## ❌ Grafana anonymous access tidak berfungsi (Grafana 12)
+## ✅ Grafana anonymous access (Grafana 12)
 
-### Penyebab
-Grafana versi 12 menggunakan API baru berbasis Kubernetes (`/apis/dashboard.grafana.app/v1beta1/`) yang tidak mendukung anonymous access dengan benar.
+### Konfigurasi
+Grafana versi 12 tidak mengaktifkan anonymous access secara default. Aktifkan via `grafana.ini`:
 
-### Solusi
-Buat akun viewer khusus dan set folder permissions agar dapat diakses oleh role Viewer:
-
-```bash
-curl -X POST http://<admin>:<password>@localhost:3000/api/admin/users \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Viewer","login":"viewer","password":"viewer123","role":"Viewer"}'
+```ini
+[auth.anonymous]
+enabled = true
+org_name = Main Org.
+org_role = Viewer
 ```
 
-Kemudian set folder permissions via Grafana UI: Dashboards -> folder -> Manage permissions -> Add Viewer role.
+Restart Grafana setelah mengubah konfigurasi:
+
+```bash
+sudo systemctl restart grafana-server
+```
 
 ---
 
