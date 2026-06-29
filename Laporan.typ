@@ -388,7 +388,7 @@ DC Server (10.10.1.10), DRC Server (10.10.1.20), dan Router VM (10.10.1.2), sepe
 @fig-arsitektur-jaringan.
 
 #figure(
-  image("images/topology new.png", width: 100%),
+  image("images/Topology.png", width: 100%),
   caption: [Arsitektur Jaringan Virtual dan Topologi VM (subnet 10.10.1.0/24).],
 ) <fig-arsitektur-jaringan>
 
