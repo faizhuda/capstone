@@ -242,7 +242,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "Reachability status of the Monitoring Server itself (Prometheus self-scrape).",
+      "description": "Reachability status of Monitoring Server Node Exporter as seen by Prometheus scraper.",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -993,7 +993,7 @@
 
     {
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "1-minute load average comparison across DC, DRC, and Router VM. Threshold line at 1.5 (alert fires when load per vCPU exceeds 1.5).",
+      "description": "1-minute load average comparison across DC, DRC, Router VM, and Monitoring Server. Threshold line at 1.5 (alert fires when load per vCPU exceeds 1.5).",
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },

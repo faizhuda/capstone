@@ -231,7 +231,7 @@ Contoh alert Telegram (format aktual yang diterima):
 ```text
 🚨 INFRASTRUCTURE ALERT
 ━━━━━━━━━━━━━━━━━━━━━━━━
-🖥  Server    :  dc-server
+🖥  Server    :  DC Server
 🟡  Severity  :  Warning
 
 📋  Penggunaan CPU Tinggi
@@ -245,7 +245,7 @@ Contoh alert resolved:
 ```text
 ✅ ALERT RESOLVED
 ━━━━━━━━━━━━━━━━━━━━━━━━
-🖥  Server    :  dc-server
+🖥  Server    :  DC Server
 🟡  Severity  :  Warning
 
 📋  Penggunaan CPU Tinggi
