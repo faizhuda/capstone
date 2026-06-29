@@ -41,3 +41,11 @@ scrape_configs:
         labels:
           server: "Router VM"
           role: "gateway"
+
+  - job_name: "monitoring-server"
+    static_configs:
+      - targets:
+          - "localhost:9100"
+        labels:
+          server: "Monitoring Server"
+          role: "monitoring"

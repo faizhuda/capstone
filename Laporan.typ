@@ -11,7 +11,7 @@
 
 #set page(
   paper: "a4",
-  margin: (top: 2.5cm, bottom: 2.5cm, left: 2cm, right: 2cm),
+  margin: (top: 2cm, bottom: 2cm, left: 2cm, right: 2cm),
   footer: context [
     #h(1fr)
     #text(size: 9pt)[#counter(page).display()]
@@ -20,8 +20,11 @@
 )
 
 #set text(font: "Times New Roman", size: 10pt, lang: "id")
-#set par(justify: true, leading: 0.65em)
-#show link: underline
+#set par(justify: true, leading: 0.65em, spacing: 0.65em, first-line-indent: 1em)
+#set list(spacing: 0.65em, indent: 1em)
+#set enum(spacing: 0.65em, indent: 1em)
+#show raw.where(block: false): set text(font: "Courier New", size: 9pt)
+#show raw.where(block: true): set text(font: "Courier New", size: 8pt)
 
 #set heading(numbering: (..nums) => {
   let n = nums.pos()
@@ -31,27 +34,29 @@
 })
 
 #show heading.where(level: 1): it => block(
-  above: 1em, below: 0.4em,
+  above: 1.5em, below: 0.8em,
   width: 100%,
   align(center, text(size: 10pt, weight: "bold")[#upper(it)]),
 )
 #show heading.where(level: 2): it => block(
-  above: 0.8em, below: 0.3em,
+  above: 1.2em, below: 0.65em,
   text(size: 10pt, weight: "bold")[#it],
 )
 #show heading.where(level: 3): it => block(
-  above: 0.6em, below: 0.2em,
-  text(size: 10pt, weight: "bold", style: "italic")[#it],
+  above: 1.0em, below: 0.55em,
+  text(size: 10pt, style: "italic")[#it],
 )
 
 #set figure(gap: 0.5em)
+#set figure.caption(separator: [. ])
 #show figure.caption: set text(size: 9pt)
 #show figure.where(kind: table): it => block(breakable: false)[
   #align(center)[
-    #text(size: 9pt, weight: "bold")[TABLE #context counter(figure.where(kind: table)).display("I")] \
-    #text(size: 9pt)[#it.caption.body]
+    #text(size: 8pt, weight: "bold")[TABEL #context counter(figure.where(kind: table)).display("I")]
+    #v(-0.15em)
+    #text(size: 8pt)[#it.caption.body]
   ]
-  #v(0.5em)
+  #v(0.3em)
   #it.body
 ]
 
@@ -60,7 +65,7 @@
 // ============================================================
 
 #align(center)[
-  #text(size: 16pt, weight: "bold")[
+  #text(size: 20pt, weight: "bold")[
     Prototype Monitoring and Alert System for Disaster Recovery Center (DRC)\
     of Bogor City Government
   ]
@@ -89,14 +94,6 @@
     corresponding author: faizhuda\@apps.ipb.ac.id
   ]
 
-  #v(6pt)
-
-  #text(size: 8pt)[
-    Copyright © 2026 Faiz Naufal Huda, et al.
-    This is an open-access article distributed under the Creative Commons Attribution License,
-    which permits unrestricted use, distribution, and reproduction in any medium,
-    provided the original work is properly cited.
-  ]
 ]
 
 #v(6pt)
@@ -106,17 +103,18 @@
 #text(size: 9pt)[
   *Abstract*---Digital services of Bogor City Government increasingly depend on reliable information
   technology infrastructure, as mandated by Presidential Regulation No. 95 of 2018 on Electronic-Based
-  Government Systems (SPBE). However, no standardized real-time monitoring mechanism currently exists
-  for government-owned Disaster Recovery Centers (DRC) at the regional level. This research designs
+  Government Systems (SPBE). However, to the authors' knowledge, no standardized real-time monitoring
+  mechanism has been implemented for government-owned Disaster Recovery Centers (DRC) at the regional
+  level. This research designs
   and implements a prototype real-time monitoring and alerting system for a DRC using an open-source
-  technology stack: Prometheus, Grafana 12.4.1, Alertmanager, and Node Exporter 1.10.2. The system
+  technology stack: Prometheus 3.8.1, Grafana 12.4.1, Alertmanager 0.31.0, and Node Exporter 1.10.2. The system
   monitors seven critical infrastructure parameters across four virtual machines running Ubuntu Server
   24.04 LTS in a simulated DC-DRC environment, and delivers automatic notifications via Telegram Bot
   API. An inhibit rules mechanism suppresses redundant resource alerts when a NodeDown event is active,
   preventing alert storms. All components run as systemd services with a 15-second scrape interval.
   Testing was conducted through load simulation using iperf3 and stress-ng in a VMware Workstation
-  environment. The results show that the system successfully detects and delivers alerts within 83
-  seconds of the incident occurring, with threshold detection accuracy of 97.1%.
+  environment. The results show that the system successfully detects and delivers alerts with an
+  average latency of 83 seconds, with zero missed incidents and threshold detection accuracy of 97.1%.
 ]
 
 #v(4pt)
@@ -130,18 +128,19 @@ Prometheus, systemd, virtual machine.]
 #text(size: 9pt)[
   *Abstrak*---Layanan digital Pemerintah Kota Bogor semakin bergantung pada infrastruktur teknologi
   informasi yang handal, sebagaimana diamanatkan oleh Peraturan Presiden Nomor 95 Tahun 2018 tentang
-  Sistem Pemerintahan Berbasis Elektronik (SPBE). Namun, belum terdapat mekanisme pemantauan
-  _real-time_ yang terstandarisasi untuk _Disaster Recovery Center_ (DRC) milik pemerintah daerah.
+  Sistem Pemerintahan Berbasis Elektronik (SPBE). Namun, sepengetahuan peneliti, belum terdapat
+  mekanisme pemantauan _real-time_ yang terstandarisasi untuk _Disaster Recovery Center_ (DRC) milik
+  pemerintah daerah.
   Penelitian ini merancang dan mengimplementasikan _prototype_ sistem _monitoring_ dan _alerting
-  real-time_ untuk DRC menggunakan _stack_ teknologi _open-source_: Prometheus, Grafana 12.4.1,
-  Alertmanager, dan Node Exporter 1.10.2. Sistem memantau tujuh parameter kritis pada empat _virtual
+  real-time_ untuk DRC menggunakan _stack_ teknologi _open-source_: Prometheus 3.8.1, Grafana 12.4.1,
+  Alertmanager 0.31.0, dan Node Exporter 1.10.2. Sistem memantau tujuh parameter kritis pada empat _virtual
   machine_ Ubuntu Server 24.04 LTS yang mensimulasikan lingkungan DC-DRC, dan mengirimkan notifikasi
   otomatis melalui Telegram Bot API. Mekanisme _inhibit rules_ menekan _alert_ sumber daya yang
   redundan saat kondisi NodeDown aktif, mencegah _alert storm_. Seluruh komponen berjalan sebagai
   layanan _systemd_ dengan _scrape interval_ 15 detik. Pengujian dilakukan melalui simulasi beban
   menggunakan iperf3 dan stress-ng pada lingkungan VMware Workstation. Hasil pengujian menunjukkan
-  sistem berhasil mendeteksi dan mengirimkan _alert_ dalam rentang waktu 83 detik, dengan akurasi
-  deteksi _threshold_ sebesar 97,1%.
+  sistem berhasil mendeteksi dan mengirimkan _alert_ dengan rata-rata latensi 83 detik, tanpa ada
+  gangguan yang terlewat, dengan akurasi deteksi _threshold_ sebesar 97,1%.
 ]
 
 #v(4pt)
@@ -156,7 +155,7 @@ _monitoring_, Prometheus, _systemd_, _virtual machine_.]
 // BODY — columns block 1 (Pendahuluan → sebelum tabel lebar)
 // ============================================================
 
-#columns(2, gutter: 0.8cm)[
+#columns(2, gutter: 0.6cm)[
 
 = Pendahuluan
 
@@ -171,8 +170,8 @@ tidak menyertakan panduan teknis mengenai mekanisme pemantauan kondisi DRC secar
 inilah yang menjadi permasalahan utama penelitian ini.
 
 Sistem _monitoring_ yang andal sangat dibutuhkan untuk mendeteksi anomali sebelum terjadi kegagalan
-layanan. Tanpa pemantauan _real-time_, administrator hanya mengetahui kegagalan setelah dampaknya
-dirasakan pengguna, bukan sebelumnya. _Stack monitoring open-source_ seperti Prometheus dan Grafana
+layanan. Tanpa pemantauan _real-time_, administrator cenderung baru mengetahui kegagalan setelah dampaknya
+dirasakan pengguna. _Stack monitoring open-source_ seperti Prometheus dan Grafana
 menawarkan solusi yang fleksibel, skalabel, dan tidak memerlukan biaya lisensi, sehingga sesuai
 dengan kendala anggaran pemerintah daerah @pivotto2023. Penelitian ini merancang _prototype_ sistem
 _monitoring_ dan _alert_ yang memantau tujuh parameter kritis (ketersediaan _node_, CPU, memori,
@@ -226,7 +225,7 @@ mengekspos _endpoint_ HTTP yang dapat diakses oleh _server_ Prometheus @pivotto2
 
 == Prometheus
 
-Prometheus adalah sistem _monitoring_ dan _time-series database open-source_ yang dikembangkan oleh
+Prometheus versi 3.8.1 adalah sistem _monitoring_ dan _time-series database open-source_ yang dikembangkan oleh
 SoundCloud dan saat ini dikelola oleh _Cloud Native Computing Foundation_ (CNCF) @cncf2023. Prometheus
 menggunakan PromQL (_Prometheus Query Language_) untuk mengekstrak dan menganalisis metrik. Data
 dikumpulkan dari _exporter_ pada interval waktu yang dapat dikonfigurasi (_scrape interval_)
@@ -247,7 +246,7 @@ sebagai panel biner (Hijau/Merah) tanpa pengembangan _custom plugin_.
 
 == Alertmanager
 
-Alertmanager adalah komponen Prometheus yang bertanggung jawab menangani _alert_ @cncf2023.
+Alertmanager versi 0.31.0 adalah komponen Prometheus yang bertanggung jawab menangani _alert_ @cncf2023.
 Alertmanager menyediakan _routing_, pengelompokan (_grouping_), _deduplication_, dan _inhibit rules_.
 Mekanisme _inhibit rules_ memungkinkan penekanan _alert_ yang redundan: apabila _alert_ sumber
 (NodeDown) aktif, _alert_ target yang berkaitan pada _instance_ yang sama ditekan secara otomatis.
@@ -311,12 +310,12 @@ DRC.
 
 = Kerangka Pemikiran
 
-Penelitian ini dibangun di atas tiga premis yang saling terhubung. *Premis pertama*: regulasi SPBE
+Penelitian ini dibangun di atas tiga premis yang saling terhubung. _Premis pertama_: regulasi SPBE
 mewajibkan ketersediaan layanan digital, namun tidak menyertakan panduan teknis pemantauan DRC secara
 _real-time_, sehingga terdapat kesenjangan antara kewajiban regulasi dan kapabilitas teknis yang
-tersedia. *Premis kedua*: _stack_ teknologi _open-source_ (Prometheus + Grafana + Alertmanager) telah
-terbukti andal pada lingkungan serupa @Rahman2020 @Rahayu2025, tidak memerlukan biaya lisensi, dan
-dapat dikustomisasi sesuai kebutuhan spesifik DRC. *Premis ketiga*: simulasi berbasis _virtual
+tersedia. _Premis kedua_: _stack_ teknologi _open-source_ (Prometheus + Grafana + Alertmanager) telah
+menunjukkan keandalannya pada lingkungan serupa @Rahman2020 @Rahayu2025, tidak memerlukan biaya lisensi, dan
+dapat dikustomisasi sesuai kebutuhan spesifik DRC. _Premis ketiga_: simulasi berbasis _virtual
 machine_ memungkinkan pengembangan dan pengujian _prototype_ secara terkontrol tanpa harus mengakses
 infrastruktur produksi Diskominfo yang tidak dapat diinterupsi.
 
@@ -332,14 +331,10 @@ perancangan arsitektur _monitoring_ berbasis _single subnet_ untuk stabilitas op
 seluruh komponen sebagai layanan _systemd_, pengujian fungsional melalui simulasi gangguan yang
 terkontrol, hingga evaluasi akurasi dan latensi _alert_. Keluaran akhir adalah _prototype_ yang dapat
 direkomendasikan kepada Diskominfo Kota Bogor sebagai dasar pengembangan sistem nyata pada
-infrastruktur produksi.
+infrastruktur produksi. Kerangka pemikiran ini dirangkum secara visual pada @fig-kerangka.
 
 #figure(
-  rect(width: 100%, height: 2cm, stroke: 0.5pt)[
-    #align(center + horizon)[
-      #text(size: 9pt)[Gambar Kerangka Pemikiran Penelitian]
-    ]
-  ],
+  image("images/Kerangka Berpikir.png", width: 100%),
   caption: [Kerangka Pemikiran Penelitian.],
 ) <fig-kerangka>
 
@@ -363,9 +358,9 @@ Kota Bogor.
 
 - _Hypervisor_: VMware Workstation.
 - Sistem Operasi VM: Ubuntu Server 24.04 LTS.
-- _Stack Monitoring_: Prometheus, Grafana 12.4.1, Alertmanager --- dijalankan sebagai layanan
+- _Stack Monitoring_: Prometheus 3.8.1, Grafana 12.4.1, Alertmanager 0.31.0 --- dijalankan sebagai layanan
   _systemd_.
-- Agen _Monitoring_: Node Exporter 1.10.2 --- layanan _systemd_ di setiap VM target pada port 9100.
+- Agen _Monitoring_: Node Exporter 1.10.2 --- layanan _systemd_ pada seluruh empat VM, masing-masing berjalan pada port 9100.
 - _Traffic Generator_: `iperf3`, `stress-ng`.
 - Notifikasi: Telegram Bot API.
 - Akses Publik: Cloudflare Tunnel (`cloudflared`).
@@ -383,26 +378,25 @@ mulai melebihi kapasitas pemrosesan, sehingga _response time_ layanan dapat terd
 _Threshold disk usage_ 80% memberikan jendela waktu yang cukup bagi administrator untuk mengosongkan
 _storage_ sebelum sistem mengalami kegagalan penulisan log. Nilai _disk I/O wait_ 20% menandakan
 bahwa prosesor menghabiskan seperlima waktunya menunggu operasi _disk_, yang mengindikasikan
-_bottleneck_ I/O pada sistem @turnbull2018. Nilai trafik jaringan 10 MB/s disesuaikan dengan kapasitas
-jaringan virtual VMware pada lingkungan pengujian.
+_bottleneck_ I/O pada sistem @turnbull2018. Nilai _threshold_ trafik jaringan 10 MB/s ditetapkan sebagai indikator _congestion_ yang berpotensi
+mengganggu alur replikasi data antara DC dan DRC; nilai ini juga dikalibrasi terhadap kapasitas
+antarmuka jaringan virtual VMware pada lingkungan pengujian agar skenario dapat diverifikasi secara
+konsisten.
 
 Empat _virtual machine_ disiapkan dalam satu subnet `10.10.1.0/24`: Monitoring Server (10.10.1.100),
-DC Server (10.10.1.10), DRC Server (10.10.1.20), dan Router VM (10.10.1.2).
+DC Server (10.10.1.10), DRC Server (10.10.1.20), dan Router VM (10.10.1.2), seperti ditunjukkan pada
+@fig-arsitektur-jaringan.
 
 #figure(
-  rect(width: 100%, height: 2cm, stroke: 0.5pt)[
-    #align(center + horizon)[
-      #text(size: 9pt)[Arsitektur Jaringan Virtual dan Topologi VM]
-    ]
-  ],
-  caption: [Arsitektur Jaringan Virtual dan Topologi VM (subnet `10.10.1.0/24`).],
+  image("images/topology new.png", width: 100%),
+  caption: [Arsitektur Jaringan Virtual dan Topologi VM (subnet 10.10.1.0/24).],
 ) <fig-arsitektur-jaringan>
 
 === April 2026 --- Deployment Stack Monitoring
 
 Prometheus, Grafana, dan Alertmanager diinstalasi sebagai layanan _systemd_ pada VM Monitoring
 Server. Node Exporter 1.10.2 diinstalasi dan didaftarkan sebagai layanan _systemd_ pada DC Server,
-DRC Server, dan Router VM. _Scrape target_ Prometheus dikonfigurasi dengan _scrape interval_ 15 detik
+DRC Server, Router VM, dan Monitoring Server. _Scrape target_ Prometheus dikonfigurasi dengan _scrape interval_ 15 detik
 dan _scrape timeout_ 10 detik. Verifikasi aliran data metrik dilakukan menggunakan antarmuka Prometheus
 Expression Browser dan kueri PromQL dasar.
 
@@ -410,21 +404,42 @@ Expression Browser dan kueri PromQL dasar.
 
 Tujuh aturan _alerting_ ditulis dalam berkas `alert.rules.yml`. Konfigurasi Alertmanager mencakup
 _routing_, _grouping_ (`group_wait`: 10 detik), _inhibit rules_, dan integrasi Telegram Bot API
-dengan format pesan HTML. Simulasi gangguan dilakukan melalui empat
-skenario: beban CPU, beban memori, beban jaringan, dan _node down_.
-Perintah yang dieksekusi pada VM target:
+dengan format pesan HTML. Simulasi gangguan dilakukan secara terpisah untuk setiap _alert rule_, dengan enam perintah yang
+meng-_cover_ tujuh skenario. Perintah `stress-ng --cpu` pada VM 1 vCPU secara simultan memicu
+HighCPUUsage dan HighLoad; keduanya tetap diukur sebagai skenario independen karena menggunakan
+ekspresi PromQL yang berbeda (`node_cpu_seconds_total` untuk utilisasi CPU vs `node_load1` untuk
+_load average_). Seluruh skenario beban dieksekusi pada DC Server (10.10.1.10) sebagai _node_
+representatif; skenario HighNetworkTraffic menggunakan DC Server sebagai _client_ iperf3 dan DRC
+Server (10.10.1.20) sebagai _server_. Perintah-perintah yang dieksekusi:
 
 #raw(block: true, lang: "sh",
-"stress-ng --cpu 4 --timeout 120s
-stress-ng --vm 2 --vm-bytes 90%
-iperf3 -c [IP_target] -t 120
-systemctl stop node_exporter")
+"# HighCPUUsage + HighLoad (dua alert dari satu stimulus)
+stress-ng --cpu 4 --timeout 120s
+
+# HighMemoryUsage
+stress-ng --vm 2 --vm-bytes 90% --timeout 120s
+
+# HighDiskUsage (ukuran file disesuaikan agar disk usage > 80%)
+SIZE=$(df --output=avail -B1 / | tail -1 | awk '{print int($1*0.9)}')
+fallocate -l $SIZE /tmp/fill.img && rm /tmp/fill.img
+
+# HighDiskIOWait
+stress-ng --hdd 2 --hdd-bytes 1G --timeout 120s
+
+# HighNetworkTraffic (DC Server -> DRC Server)
+iperf3 -c 10.10.1.20 -t 120
+
+# NodeDown
+sudo systemctl stop node_exporter")
 
 === Juni 2026 --- Dashboarding dan Finalisasi
 
-_Dashboard_ Grafana bertema _Command Center_ dirancang dengan enam seksi panel: _Business Continuity
-Status_, _Node Status_, performa DC Server, performa DRC Server, performa Router VM, dan _System
-Health_. Evaluasi akurasi dan latensi _alert_ dilakukan, disertai penyusunan dokumentasi teknis
+_Dashboard_ Grafana bertema _Command Center_ dirancang dengan enam seksi panel yang dikelompokkan
+dalam empat area visualisasi: _Business Continuity Status_, _Node Status_, performa per-_node_
+(DC Server, DRC Server, Router VM), dan _System Health_. Akses publik ke _dashboard_ selama fase
+pengembangan dikonfigurasi melalui Cloudflare Tunnel (`cloudflared`), yang meneruskan port 3000
+Grafana ke URL sementara `*.trycloudflare.com` tanpa memerlukan konfigurasi _port forwarding_ atau
+IP publik. Evaluasi akurasi dan latensi _alert_ dilakukan, disertai penyusunan dokumentasi teknis
 lengkap.
 
 == Perancangan Sistem
@@ -433,24 +448,24 @@ lengkap.
 
 Arsitektur sistem terdiri dari tiga lapisan utama:
 
-+ *Lapisan Target* --- empat VM dengan Node Exporter berjalan sebagai layanan _systemd_ pada port
++ _Lapisan Target_ --- empat VM dengan Node Exporter berjalan sebagai layanan _systemd_ pada port
   9100;
-+ *Lapisan Pengumpulan Data* --- Prometheus yang melakukan _scraping_ setiap 15 detik, menyimpan data
++ _Lapisan Pengumpulan Data_ --- Prometheus yang melakukan _scraping_ setiap 15 detik, menyimpan data
   dalam _time-series database_, dan mengevaluasi tujuh _alert rules_; dan
-+ *Lapisan Visualisasi dan Notifikasi* --- Grafana 12.4.1 (port 3000) untuk _dashboard_ dan
++ _Lapisan Visualisasi dan Notifikasi_ --- Grafana 12.4.1 (port 3000) untuk _dashboard_ dan
   Alertmanager (port 9093) untuk pengiriman notifikasi Telegram.
 
 === Desain Skenario Alert
 
 Tujuh aturan _alert_ yang diimplementasikan:
 
-- *NodeDown*: `up == 0` selama 1 menit (level: _critical_).
-- *HighCPUUsage*: utilisasi CPU > 80% selama 1 menit (level: _warning_).
-- *HighMemoryUsage*: penggunaan memori > 80% selama 1 menit (level: _warning_).
-- *HighDiskUsage*: penggunaan _disk_ > 80% selama 1 menit (level: _critical_).
-- *HighLoad*: _load average_ per vCPU > 1,5 selama 1 menit (level: _warning_).
-- *HighNetworkTraffic*: trafik jaringan > 10 MB/s selama 1 menit (level: _warning_).
-- *HighDiskIOWait*: _disk I/O wait_ > 20% selama 1 menit (level: _warning_).
+- `NodeDown`: `up == 0` selama 1 menit (level: _critical_).
+- `HighCPUUsage`: utilisasi CPU > 80% selama 1 menit (level: _warning_).
+- `HighMemoryUsage`: penggunaan memori > 80% selama 1 menit (level: _warning_).
+- `HighDiskUsage`: penggunaan _disk_ > 80% selama 1 menit (level: _critical_).
+- `HighLoad`: _load average_ per vCPU > 1,5 selama 1 menit (level: _warning_).
+- `HighNetworkTraffic`: trafik jaringan > 10 MB/s (SI: 1 MB = 10#super[6] bytes) selama 1 menit (level: _warning_).
+- `HighDiskIOWait`: _disk I/O wait_ > 20% selama 1 menit (level: _warning_).
 
 Klausul `for: 1m` diterapkan pada seluruh aturan untuk menghindari _false positive_ akibat lonjakan
 metrik sesaat. _Inhibit rules_ dikonfigurasi sehingga apabila NodeDown aktif pada suatu _instance_,
@@ -462,16 +477,18 @@ storm_ akibat kegagalan total _node_.
 Pengujian dilakukan dengan metode _Negative Testing_, yaitu dengan sengaja menciptakan kondisi
 gangguan untuk memverifikasi kemampuan sistem. Parameter yang diukur:
 
-+ *_Alert Latency_* --- waktu (detik) dari eksekusi perintah simulasi gangguan hingga notifikasi
++ _Alert Latency_ --- waktu (detik) dari eksekusi perintah simulasi gangguan hingga notifikasi
   diterima di Telegram;
-+ *_Alert Accuracy_* --- rasio _true positive_ terhadap total kejadian gangguan yang disimulasikan;
++ _Alert Accuracy_ --- rasio _true positive_ terhadap total kejadian gangguan yang disimulasikan;
   dan
-+ *_Dashboard Refresh Rate_* --- interval pembaruan data pada panel Grafana (dikonfirmasi dari nilai
++ _Dashboard Refresh Rate_ --- interval pembaruan data pada panel Grafana (dikonfirmasi dari nilai
   `scrape_interval` Prometheus).
 
 Setiap skenario diulang sebanyak lima kali guna memperoleh nilai rata-rata dan standar deviasi yang
-valid secara statistik. Pengukuran latensi dilakukan dengan mencatat _timestamp_ eksekusi perintah di
-terminal dan _timestamp_ notifikasi yang diterima di Telegram.
+valid secara statistik. Seluruh skenario beban dieksekusi pada DC Server (10.10.1.10) sebagai _node_
+representatif; skenario NodeDown menghentikan layanan `node_exporter` pada DC Server yang sama.
+Pengukuran latensi dilakukan dengan mencatat _timestamp_ eksekusi perintah di terminal dan _timestamp_
+notifikasi yang diterima di Telegram.
 
 = Hasil dan Pembahasan
 
@@ -496,17 +513,20 @@ _scraping_ meningkat secara signifikan. Spesifikasi lengkap setiap VM disajikan 
   table(
     columns: (auto, 1fr, 1fr, 1fr, 1fr),
     align: (left, left, left, left, left),
-    stroke: 0.5pt,
+    stroke: none,
     inset: 6pt,
+    table.hline(stroke: 1pt),
     table.header(
       [*Parameter*], [*Monitoring Server*], [*DC Server*], [*DRC Server*], [*Router VM*],
     ),
+    table.hline(stroke: 0.5pt),
     [Peran],      [Monitoring Stack],  [Data Center],     [Disaster Recovery], [Gateway],
     [OS],         [Ubuntu 24.04 LTS],  [Ubuntu 24.04 LTS],[Ubuntu 24.04 LTS],  [Ubuntu 24.04 LTS],
     [vCPU],       [2],                 [1],               [1],                 [1],
     [RAM],        [2 GB],              [1 GB],            [1 GB],              [1 GB],
     [IP Address], [10.10.1.100],       [10.10.1.10],      [10.10.1.20],        [10.10.1.2],
-    [Port Utama], [3000, 9090, 9093],  [9100],            [9100],              [9100],
+    [Port Utama], [3000, 9090, 9093, 9100],  [9100],            [9100],              [9100],
+    table.hline(stroke: 1pt),
   ),
   caption: [Spesifikasi Virtual Machine Lingkungan Pengujian.],
 ) <tab-spesifikasi-vm>
@@ -515,23 +535,20 @@ _scraping_ meningkat secara signifikan. Spesifikasi lengkap setiap VM disajikan 
 // BODY — columns block 2 (sisa Hasil dan Pembahasan → akhir)
 // ============================================================
 
-#columns(2, gutter: 0.8cm)[
+#columns(2, gutter: 0.6cm)[
 
 == Implementasi Stack Monitoring
 
 _Stack monitoring_ berhasil diimplementasikan sebagai layanan _systemd_ pada VM Monitoring Server.
-Prometheus melakukan _scraping_ ke empat target: DC Server (`10.10.1.10:9100`), DRC Server
-(`10.10.1.20:9100`), Router VM (`10.10.1.2:9100`), dan Prometheus sendiri (`localhost:9090`). Seluruh
-target berhasil terhubung dan menampilkan status _UP_ pada halaman Prometheus Targets, mengkonfirmasi
+Prometheus melakukan _scraping_ ke lima target: empat Node Exporter (DC Server `10.10.1.10:9100`,
+DRC Server `10.10.1.20:9100`, Router VM `10.10.1.2:9100`, Monitoring Server `localhost:9100`) dan
+Prometheus sendiri (`localhost:9090`). Seluruh target berhasil terhubung dan
+menampilkan status _UP_ pada halaman Prometheus Targets (@fig-prometheus-targets), mengkonfirmasi
 bahwa aliran data metrik dari keempat VM berjalan dengan baik.
 
 #figure(
-  rect(width: 100%, height: 2cm, stroke: 0.5pt)[
-    #align(center + horizon)[
-      #text(size: 9pt)[Screenshot Prometheus Targets --- 4 Target Status UP]
-    ]
-  ],
-  caption: [_Screenshot_ halaman Prometheus Targets: keempat target berstatus UP.],
+  image("images/Prometheus Target Health.png", width: 100%),
+  caption: [_Screenshot_ halaman Prometheus Targets: seluruh target berstatus UP.],
 ) <fig-prometheus-targets>
 
 == Hasil Konfigurasi Threshold
@@ -548,11 +565,13 @@ meminimalkan _false positive_ tanpa mengorbankan kecepatan deteksi. Daftar lengk
     table(
       columns: (auto, auto, auto, auto),
       align: (left, center, center, center),
-      stroke: 0.5pt,
+      stroke: none,
       inset: 5pt,
+      table.hline(stroke: 1pt),
       table.header(
         [*Alert*], [*Threshold*], [*Durasi*], [*Level*],
       ),
+      table.hline(stroke: 0.5pt),
       [NodeDown],           [`up == 0`],  [1 menit], [_Critical_],
       [HighCPUUsage],       [> 80%],      [1 menit], [_Warning_],
       [HighMemoryUsage],    [> 80%],      [1 menit], [_Warning_],
@@ -560,6 +579,7 @@ meminimalkan _false positive_ tanpa mengorbankan kecepatan deteksi. Daftar lengk
       [HighLoad],           [> 1,5/vCPU], [1 menit], [_Warning_],
       [HighNetworkTraffic], [> 10 MB/s],  [1 menit], [_Warning_],
       [HighDiskIOWait],     [> 20%],      [1 menit], [_Warning_],
+      table.hline(stroke: 1pt),
     )
   },
   caption: [Daftar _Threshold_ dan Aturan _Alert_ yang Diimplementasikan.],
@@ -580,11 +600,13 @@ notifikasi diterima. Hasil per skenario disajikan pada @tab-alert-latency.
     table(
       columns: (auto, auto, auto),
       align: (left, center, center),
-      stroke: 0.5pt,
+      stroke: none,
       inset: 5pt,
+      table.hline(stroke: 1pt),
       table.header(
         [*Skenario*], [*Rata-rata (s)*], [*SD (s)*],
       ),
+      table.hline(stroke: 0.5pt),
       [NodeDown],           [79], [4],
       [HighCPUUsage],       [83], [5],
       [HighMemoryUsage],    [81], [4],
@@ -592,6 +614,7 @@ notifikasi diterima. Hasil per skenario disajikan pada @tab-alert-latency.
       [HighLoad],           [84], [5],
       [HighNetworkTraffic], [81], [4],
       [HighDiskIOWait],     [86], [7],
+      table.hline(stroke: 1pt),
     )
   },
   caption: [Hasil Pengukuran _Alert Latency_ per Skenario.],
@@ -601,9 +624,10 @@ notifikasi diterima. Hasil per skenario disajikan pada @tab-alert-latency.
 
 Dari total 35 skenario gangguan yang disimulasikan, sistem berhasil mendeteksi 34 gangguan
 dengan benar (_true positive_), 1 _false positive_, dan 0 _false negative_, sehingga akurasi
-keseluruhan mencapai 97,1%. Satu _false positive_ yang tercatat terjadi pada skenario
-HighNetworkTraffic, dipicu oleh lonjakan trafik latar belakang VMware yang sesaat melebihi
-_threshold_ 10 MB/s di luar konteks skenario pengujian.
+keseluruhan mencapai 97,1%. Satu _false positive_ yang tercatat terjadi pada salah satu iterasi
+skenario HighNetworkTraffic: trafik latar belakang hypervisor VMware sesaat melebihi _threshold_
+10 MB/s sebelum stimulus iperf3 dieksekusi, sehingga _alert_ terpicu bukan oleh beban uji yang
+disengaja melainkan oleh _noise_ jaringan virtual.
 
 === Hasil Pengujian Dashboard Refresh Rate
 
@@ -614,33 +638,33 @@ siklus _scraping_ metrik setiap 15 detik.
 == Tampilan Dashboard Grafana
 
 _Dashboard_ Grafana 12.4.1 yang dikembangkan dapat diakses pada `10.10.1.100:3000` dan memuat enam
-seksi panel yang dikelompokkan dalam empat area visualisasi:
+seksi panel yang dikelompokkan dalam empat area visualisasi (@fig-dashboard):
 
-- *Business Continuity Status*: panel penuh lebar menampilkan status operasional keseluruhan (Hijau =
+- _Business Continuity Status_: panel penuh lebar menampilkan status operasional keseluruhan (Hijau =
   NORMAL --- DC OPERATIONAL; Merah = DISASTER --- DRC ACTIVE). Panel ini menggunakan ekspresi PromQL
   gabungan berbasis metrik `up` keempat _node_.
-- *Node Status*: empat kartu konektivitas individual untuk DC Server, DRC Server, Router VM, dan
+- _Node Status_: empat kartu konektivitas individual untuk DC Server, DRC Server, Router VM, dan
   Monitoring Server.
-- *Performa DC Server, DRC Server, dan Router VM*: tiga panel _gauge_ (CPU, memori, _disk_) dan satu
-  panel _time series_ trafik jaringan per _node_.
-- *System Health*: grafik _load average_ komparatif keempat _node_ dan empat panel _uptime_
+- _Performa DC Server, DRC Server, dan Router VM_: tiga panel _gauge_ (CPU, memori, _disk_) dan satu
+  panel _time series_ trafik jaringan per _node_. Monitoring Server dikecualikan dari area ini karena
+  berperan sebagai infrastruktur pengamat, bukan sebagai _node_ DRC yang relevan untuk keputusan
+  _failover_.
+- _System Health_: grafik _load average_ komparatif keempat _node_ dan empat panel _uptime_
   individual.
 
 #figure(
-  rect(width: 100%, height: 3cm, stroke: 0.5pt)[
-    #align(center + horizon)[
-      #text(size: 9pt)[Screenshot Dashboard Grafana Command Center]
-    ]
-  ],
+  image("images/Grafana Dashboard.png", width: 100%),
   caption: [_Dashboard_ Grafana 12.4.1 bertema _Command Center_: panel _Business Continuity Status_ (atas) dan _Node Status_ (bawah).],
 ) <fig-dashboard>
 
+Setiap kondisi _alert_ menghasilkan notifikasi Telegram berformat HTML yang dikirim ke grup
+administrator (@fig-telegram-alert). Pesan _firing_ memuat nama _alert_, level (_critical_/_warning_),
+nilai metrik yang memicu kondisi, dan _instance_ yang terdampak. Pesan _resolved_ dikirim secara
+otomatis oleh Alertmanager saat kondisi kembali normal, memberikan konfirmasi pemulihan tanpa
+intervensi manual.
+
 #figure(
-  rect(width: 100%, height: 2cm, stroke: 0.5pt)[
-    #align(center + horizon)[
-      #text(size: 9pt)[Screenshot Notifikasi Telegram: Firing dan Resolved]
-    ]
-  ],
+  image("images/Telegram Alert.png", width: 100%),
   caption: [Notifikasi _alert_ Telegram format HTML: kondisi _firing_ dan _resolved_.],
 ) <fig-telegram-alert>
 
@@ -648,11 +672,11 @@ seksi panel yang dikelompokkan dalam empat area visualisasi:
 
 Secara keseluruhan, _prototype_ sistem _monitoring_ berhasil memenuhi seluruh target fungsional yang
 ditetapkan pada rumusan masalah. Untuk menjawab rumusan masalah pertama, arsitektur _single subnet_
-`10.10.1.0/24` dengan empat VM terbukti stabil dan dapat direproduksi. Untuk rumusan masalah kedua,
+`10.10.1.0/24` dengan empat VM menunjukkan stabilitas dan dapat direproduksi dalam lingkungan pengujian ini. Untuk rumusan masalah kedua,
 tujuh parameter dengan justifikasi _threshold_ berbasis literatur berhasil dipantau secara konsisten.
 Untuk rumusan masalah ketiga, _alert latency_ berada di bawah 120 detik dan mekanisme _inhibit rules_
 berhasil mencegah _alert storm_ pada pengujian skenario NodeDown. Untuk rumusan masalah keempat,
-panel _Business Continuity Status_ memberikan indikator biner yang intuitif bagi administrator.
+panel _Business Continuity Status_ memberikan indikator biner yang dapat dibaca secara langsung oleh administrator.
 
 Dua kendala utama yang dihadapi adalah: (1) keterbatasan RAM 1 GB pada VM target memengaruhi kinerja
 saat beban penuh, yang secara tidak langsung mempercepat tercapainya _threshold_ dan dapat
@@ -662,33 +686,39 @@ _viewer_ dikonfigurasi melalui akun khusus dengan manajemen izin _folder_.
 
 Dibandingkan dengan Rahman et al. @Rahman2020 yang mencapai latensi di bawah 30 detik, latensi
 penelitian ini lebih panjang karena adanya klausul `for: 1m` yang sengaja diterapkan untuk
-meminimalkan _false positive_. Pertukaran ini (_trade-off_) antara kecepatan deteksi dan akurasi
-dinilai lebih tepat untuk konteks DRC pemerintah daerah, di mana notifikasi yang salah dapat
+meminimalkan _false positive_. Menurut penilaian peneliti, pertukaran ini (_trade-off_) antara kecepatan deteksi dan akurasi
+lebih tepat untuk konteks DRC pemerintah daerah, di mana notifikasi yang salah dapat
 menyebabkan tindakan _failover_ yang tidak perlu dan berdampak pada layanan publik.
+
+Dibandingkan dengan Rahayu et al. @Rahayu2025 yang menggunakan Zabbix, Alertmanager dalam penelitian
+ini menyediakan mekanisme _inhibit rules_ yang beroperasi di level _routing_ sehingga pencegahan
+_alert storm_ pada kondisi NodeDown berjalan otomatis tanpa perlu mengonfigurasi dependensi
+antar-_trigger_ secara manual seperti pada Zabbix.
 
 = Simpulan dan Saran
 
 == Simpulan
 
 + _Prototype_ sistem _monitoring_ dan _alert_ DRC berhasil dibangun menggunakan _stack open-source_
-  (Prometheus, Grafana 12.4.1, Alertmanager, Node Exporter 1.10.2) sebagai layanan _systemd_ pada
-  empat _virtual machine_ Ubuntu Server 24.04 LTS dalam subnet `10.10.1.0/24`, membuktikan kelayakan
-  solusi _open-source_ sebagai alternatif sistem _monitoring_ komersial untuk pemerintah daerah.
+  (Prometheus 3.8.1, Grafana 12.4.1, Alertmanager 0.31.0, Node Exporter 1.10.2) sebagai layanan _systemd_ pada
+  empat _virtual machine_ Ubuntu Server 24.04 LTS dalam subnet `10.10.1.0/24`, mendemonstrasikan
+  kelayakan solusi _open-source_ sebagai alternatif sistem _monitoring_ komersial untuk pemerintah daerah.
 + Tujuh parameter kritis DRC berhasil dipantau secara _real-time_ dengan _threshold_ yang
-  terjustifikasi secara literatur, akurasi deteksi sebesar 97,1%, dan rata-rata _alert latency_
-  sebesar 83 detik.
+  terjustifikasi secara literatur: dari 35 skenario gangguan, 34 terdeteksi benar (_true positive_),
+  0 gangguan terlewat (_false negative_), dengan akurasi keseluruhan 97,1% dan rata-rata _alert
+  latency_ 83 detik.
 + Integrasi Telegram Bot API dengan format pesan HTML dan mekanisme _inhibit rules_ berfungsi efektif:
   notifikasi gangguan diterima secara otomatis dalam rata-rata 83 detik, dan _alert storm_ akibat kondisi NodeDown berhasil
-  ditekan tanpa konfigurasi manual.
+  ditekan tanpa intervensi manual saat _runtime_.
 + _Dashboard_ Grafana bertema _Command Center_ dengan panel _Business Continuity Status_ berhasil
-  menyediakan indikator operasional tunggal yang intuitif, membantu administrator mengambil keputusan
+  menyediakan indikator operasional tunggal yang dapat dibaca secara langsung, membantu administrator mengambil keputusan
   _failover_ berdasarkan data _real-time_.
 
 == Saran
 
 + Penelitian lanjutan disarankan melibatkan integrasi langsung dengan infrastruktur Diskominfo untuk
   validasi pada lingkungan produksi nyata.
-+ Penambahan _exporter_ khusus (MySQL Exporter, PostgreSQL Exporter) akan meningkatkan cakupan
++ Penambahan _exporter_ khusus (MySQL Exporter, PostgreSQL Exporter) dapat meningkatkan cakupan
   pemantauan replikasi _database_ sebagai parameter DRC yang kritis dalam konteks RPO.
 + Sistem saat ini menggunakan Cloudflare Quick Tunnel yang menghasilkan URL sementara
   (_trycloudflare.com_); disarankan beralih ke Named Tunnel dengan domain khusus untuk
@@ -697,6 +727,9 @@ menyebabkan tindakan _failover_ yang tidak perlu dan berdampak pada layanan publ
   memungkinkan prediksi kegagalan sebelum _threshold_ statis terlampaui.
 + Penguatan keamanan sistem _monitoring_ (autentikasi mutual TLS pada Prometheus, enkripsi komunikasi
   Alertmanager) perlu dilakukan sebelum _deployment_ ke lingkungan produksi.
++ Penerapan _high availability_ pada Monitoring Server, misalnya melalui Prometheus Federation atau
+  replikasi Grafana, perlu dipertimbangkan untuk mengeliminasi _single point of failure_ pada
+  infrastruktur _monitoring_ itu sendiri.
 
 #heading(numbering: none)[Ucapan Terima Kasih]
 

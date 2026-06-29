@@ -173,6 +173,13 @@ scrape_configs:
         labels:
           server: "Router VM"
           role: "gateway"
+
+  - job_name: "monitoring-server"
+    static_configs:
+      - targets: ["localhost:9100"]
+        labels:
+          server: "Monitoring Server"
+          role: "monitoring"
 ```
 
 ---
@@ -290,14 +297,11 @@ stress-ng --vm 2 --vm-bytes 90% --timeout 120s
 ## 💽 Disk Usage Stress Test
 
 ```bash
-fallocate -l 6G bigfile.test
+SIZE=$(df --output=avail -B1 / | tail -1 | awk '{print int($1*0.9)}')
+fallocate -l $SIZE /tmp/fill.img && rm /tmp/fill.img
 ```
 
-Hapus file setelah testing:
-
-```bash
-rm bigfile.test
-```
+Ukuran file disesuaikan secara otomatis agar disk usage melebihi 80%.
 
 ---
 
@@ -399,9 +403,9 @@ Kemudian set folder permissions via Grafana UI: Dashboards -> folder -> Manage p
 
 | Teknologi | Versi | Fungsi |
 |---|---|---|
-| Prometheus | latest | Metrics scraping dan alert evaluation |
+| Prometheus | 3.8.1 | Metrics scraping dan alert evaluation |
 | Grafana | 12.4.1 | Visualisasi dashboard |
-| Alertmanager | latest | Alert routing dan notifikasi |
+| Alertmanager | 0.31.0 | Alert routing dan notifikasi |
 | Node Exporter | 1.10.2 | Metrics collection per server |
 | Telegram Bot | - | Notifikasi alert real-time |
 | Cloudflare Tunnel | latest | Public access tanpa port forwarding |

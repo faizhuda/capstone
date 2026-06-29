@@ -42,7 +42,7 @@ groups:
 
       # =====================================================
       # HIGH DISK USAGE
-      # Trigger jika storage > 80%
+      # Trigger jika storage > 80% selama 1 menit
       # =====================================================
       - alert: HighDiskUsage
         expr: (1 - (node_filesystem_free_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 80
