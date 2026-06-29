@@ -93,11 +93,17 @@ Storage > 80% selama 1 menit
 
 ```bash
 SIZE=$(df --output=avail -B1 / | tail -1 | awk '{print int($1*0.9)}')
-fallocate -l $SIZE /tmp/fill.img && rm /tmp/fill.img
+fallocate -l $SIZE /tmp/fill.img
 ```
 
-Ukuran file disesuaikan otomatis agar disk usage melebihi 80%, kemudian
-file dihapus setelah selesai.
+Ukuran file disesuaikan otomatis agar disk usage melebihi 80%.
+Tunggu alert HighDiskUsage firing (~90 detik), lalu bersihkan:
+
+## Recovery
+
+```bash
+rm /tmp/fill.img
+```
 
 ---
 

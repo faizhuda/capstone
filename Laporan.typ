@@ -209,7 +209,7 @@ _Disaster Recovery Center_ (DRC) merupakan fasilitas cadangan yang dirancang unt
 operasional sistem informasi ketika pusat data utama mengalami kegagalan @bssn2021. DRC memiliki
 peran strategis dalam menjamin _Business Continuity Plan_ (BCP) suatu organisasi. Konsep _Recovery
 Time Objective_ (RTO) dan _Recovery Point Objective_ (RPO) menjadi tolok ukur utama keberhasilan
-implementasi DRC @kominfo2020. Dalam konteks penelitian ini, pemantauan parameter kesehatan DRC
+implementasi DRC @kominfo2016. Dalam konteks penelitian ini, pemantauan parameter kesehatan DRC
 secara _real-time_ merupakan prasyarat teknis untuk meminimalkan RTO: administrator hanya dapat
 memutuskan _failover_ ke DRC jika kondisi infrastruktur DRC dipastikan siap, dan keputusan tersebut
 membutuhkan data yang akurat dan terkini.

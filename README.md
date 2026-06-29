@@ -304,10 +304,15 @@ stress-ng --vm 2 --vm-bytes 90% --timeout 120s
 
 ```bash
 SIZE=$(df --output=avail -B1 / | tail -1 | awk '{print int($1*0.9)}')
-fallocate -l $SIZE /tmp/fill.img && rm /tmp/fill.img
+fallocate -l $SIZE /tmp/fill.img
 ```
 
 Ukuran file disesuaikan secara otomatis agar disk usage melebihi 80%.
+Tunggu alert HighDiskUsage firing (~90 detik), lalu bersihkan:
+
+```bash
+rm /tmp/fill.img
+```
 
 ---
 

@@ -1049,6 +1049,14 @@
           {
             "matcher": { "id": "byName", "options": "Router - Load 5m" },
             "properties": [{ "id": "color", "value": { "fixedColor": "#D97706", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Monitoring - Load 1m" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#8B5CF6", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Monitoring - Load 5m" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "#7C3AED", "mode": "fixed" } }]
           }
         ]
       },
@@ -1094,9 +1102,21 @@
           "expr": "node_load5{job=\"router\"}",
           "legendFormat": "Router - Load 5m",
           "refId": "F"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "node_load1{job=\"monitoring-server\"}",
+          "legendFormat": "Monitoring - Load 1m",
+          "refId": "G"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "node_load5{job=\"monitoring-server\"}",
+          "legendFormat": "Monitoring - Load 5m",
+          "refId": "H"
         }
       ],
-      "title": "Load Average - DC vs DRC vs Router",
+      "title": "Load Average - All Nodes",
       "type": "timeseries"
     },
 
@@ -1230,7 +1250,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "time() - process_start_time_seconds{job=\"prometheus\"}",
+          "expr": "time() - node_boot_time_seconds{job=\"monitoring-server\"}",
           "instant": true,
           "legendFormat": "",
           "refId": "A"
