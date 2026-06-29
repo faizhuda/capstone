@@ -646,7 +646,7 @@ seksi panel yang dikelompokkan dalam empat area visualisasi (@fig-dashboard):
   keputusan _failover_.
 - _Node Status_: empat kartu konektivitas individual untuk DC Server, DRC Server, Router VM, dan
   Monitoring Server.
-- _Performa DC Server, DRC Server, dan Router VM_: tiga panel _gauge_ (CPU, memori, _disk_) dan satu
+- _Performa DC Server, DRC Server, dan Router VM_: empat panel _gauge_ (CPU, memori, _disk_, dan _disk I/O wait_) dan satu
   panel _time series_ trafik jaringan per _node_. Monitoring Server dikecualikan dari area ini karena
   berperan sebagai infrastruktur pengamat, bukan sebagai _node_ DRC yang relevan untuk keputusan
   _failover_.
