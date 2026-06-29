@@ -277,7 +277,7 @@ mengurangi kompleksitas _deployment_ @linux2023.
 
 Telegram Bot API adalah antarmuka pemrograman yang memungkinkan pembuatan bot otomatis pada platform
 Telegram @telegram2023. Alertmanager dikonfigurasi untuk mengirimkan pesan berformat HTML ke grup
-Telegram melalui _webhook_, memungkinkan administrator menerima peringatan secara instan di perangkat
+Telegram melalui Telegram Bot API, memungkinkan administrator menerima peringatan secara instan di perangkat
 _mobile_. Telegram dipilih sebagai saluran notifikasi karena tidak memerlukan konfigurasi server email
 atau berlangganan layanan berbayar, mendukung format HTML untuk penyajian informasi terstruktur, dan
 telah terbukti efektif pada penelitian serupa @Rahman2020.

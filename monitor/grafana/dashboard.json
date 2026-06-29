@@ -283,7 +283,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "up{job=\"prometheus\"}",
+          "expr": "up{job=\"monitoring-server\"}",
           "instant": true,
           "legendFormat": "",
           "refId": "A"
