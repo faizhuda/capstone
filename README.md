@@ -41,6 +41,7 @@ Sistem monitoring ini mampu:
                | Prometheus                  |
                | Grafana                     |
                | Alertmanager                |
+               | Node Exporter               |
                |                             |
                | ens33 → 10.10.1.100         |
                | ens37 → 192.168.163.x       |
@@ -52,6 +53,7 @@ Sistem monitoring ini mampu:
                     |   Router VM    |
                     |----------------|
                     | 10.10.1.2      |
+                    | Node Exporter  |
                     +--------+-------+
                              |
          ------------------------------------------------
@@ -214,11 +216,11 @@ Digunakan untuk:
 |---|---|
 | HighCPUUsage | CPU > 80% selama 1 menit |
 | HighMemoryUsage | RAM > 80% selama 1 menit |
-| HighDiskUsage | Storage > 80% |
+| HighDiskUsage | Storage > 80% selama 1 menit |
 | HighNetworkTraffic | Traffic > 10 MB/s selama 1 menit |
 | HighLoad | Load average per core > 1.5 selama 1 menit |
 | HighDiskIOWait | Disk I/O wait > 20% selama 1 menit |
-| NodeDown | Server tidak dapat diakses |
+| NodeDown | Server tidak dapat diakses selama 1 menit |
 
 ---
 
@@ -338,14 +340,15 @@ sudo systemctl start node_exporter
 # Fitur yang Sudah Diimplementasikan
 
 - Centralized monitoring DC & DRC
-- Real-time Grafana dashboard
-- Prometheus metrics scraping
-- Telegram alert notification
-- Stress testing simulation
+- Real-time Grafana dashboard (Command Center theme)
+- Prometheus metrics scraping (5 targets, 7 alert rules)
+- Telegram alert notification (format HTML, firing + resolved)
+- Inhibit rules untuk pencegahan alert storm saat NodeDown
+- Node Exporter pada seluruh 4 VM
+- Stress testing simulation (stress-ng, iperf3, fallocate)
 - Single subnet infrastructure optimization
 - VMware virtual infrastructure simulation
 - Core router simulation
-- Real-time observability system
 
 ---
 
