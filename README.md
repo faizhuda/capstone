@@ -204,9 +204,9 @@ Dashboard menampilkan:
 Digunakan untuk:
 
 - Mengelola alert Prometheus
-- Mengirim notifikasi Telegram
+- Mengirim notifikasi Telegram (format HTML, firing + resolved)
 - Grouping alert
-- Real-time notification
+- Inhibit rules: suppress alert resource (CPU/Memory/Disk/dll) secara otomatis saat NodeDown aktif, mencegah alert storm
 
 ---
 
@@ -258,23 +258,29 @@ Resolved: 03 Jun 2026, 14:33 WIB
 
 ## Konfigurasi Token Telegram
 
-Edit file `monitor/alertmanager/alertmanager.yml` dan isi placeholder berikut:
+File `monitor/alertmanager/alertmanager.yml` di repo menggunakan placeholder `YOUR_TOKEN`.
+Isi token asli **langsung di VM**, bukan di repo:
 
 | Field | Cara Mendapatkan |
 |---|---|
 | `bot_token` | Buat bot baru via [@BotFather](https://t.me/BotFather), salin token yang diberikan |
 | `chat_id` | Kirim pesan ke bot, lalu buka `https://api.telegram.org/bot<TOKEN>/getUpdates` dan ambil nilai `chat.id` |
 
-Setelah diisi, restart Alertmanager:
+Edit config di VM:
 
 ```bash
-sudo cp monitor/alertmanager/alertmanager.yml /etc/alertmanager/
+sudo nano /etc/alertmanager/alertmanager.yml
+```
+
+Restart Alertmanager setelah diisi:
+
+```bash
 sudo systemctl restart alertmanager
 ```
 
-> ⚠️ Jangan commit token asli ke Git. File `.gitignore` sudah mengabaikan
-> `token.txt`, `secrets.yml`, dan `.env`. Biarkan placeholder `YOUR_TOKEN`
-> di repo, isi nilai asli hanya di file `/etc/alertmanager/` pada VM.
+> ⚠️ Jangan commit token asli ke Git dan jangan overwrite `/etc/alertmanager/alertmanager.yml`
+> dengan file dari repo (repo berisi placeholder `YOUR_TOKEN`). Isi nilai asli hanya
+> di file `/etc/alertmanager/` pada VM secara langsung.
 
 ---
 
@@ -319,6 +325,14 @@ iperf3 -s
 
 ```bash
 iperf3 -c 10.10.1.20 -t 120
+```
+
+---
+
+## 💿 Disk I/O Wait Stress Test
+
+```bash
+stress-ng --hdd 2 --hdd-bytes 1G --timeout 120s
 ```
 
 ---

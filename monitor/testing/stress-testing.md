@@ -1,10 +1,11 @@
-# 🚨 Alert Testing Cheatsheet
+# Alert Testing Cheatsheet
 
-Dokumentasi command untuk melakukan simulasi dan testing seluruh alert pada sistem monitoring.
+Dokumentasi command untuk simulasi dan testing seluruh 7 alert pada sistem monitoring.
+Seluruh perintah dieksekusi pada **DC Server (10.10.1.10)** sebagai node representatif.
 
 ---
 
-# 1. Node Down Alert
+# 1. NodeDown Alert
 
 ## Tujuan
 Mensimulasikan server tidak dapat diakses oleh Prometheus.
@@ -29,27 +30,24 @@ sudo systemctl start node_exporter
 
 ---
 
-# 2. High CPU Usage Alert
+# 2. HighCPUUsage + HighLoad Alert
+
+> Satu perintah memicu dua alert sekaligus: HighCPUUsage (node_cpu_seconds_total)
+> dan HighLoad (node_load1). Keduanya diukur sebagai skenario independen karena
+> menggunakan ekspresi PromQL yang berbeda.
 
 ## Threshold
 
 ```text
 CPU > 80% selama 1 menit
+Load average per vCPU > 1.5 selama 1 menit
 ```
 
 ## Command
 
 ```bash
-stress-ng --cpu 1 --timeout 120s
+stress-ng --cpu 4 --timeout 120s
 ```
-
-## Monitoring
-
-Grafana:
-- CPU Usage naik > 80%
-
-Telegram:
-- Alert HighCPUUsage muncul
 
 ## Recovery
 
@@ -61,7 +59,7 @@ pkill stress-ng
 
 ---
 
-# 3. High Memory Usage Alert
+# 3. HighMemoryUsage Alert
 
 ## Threshold
 
@@ -72,16 +70,8 @@ RAM > 80% selama 1 menit
 ## Command
 
 ```bash
-stress-ng --vm 1 --vm-bytes 80% --vm-keep --timeout 120s
+stress-ng --vm 2 --vm-bytes 90% --timeout 120s
 ```
-
-## Monitoring
-
-Grafana:
-- Memory usage > 80%
-
-Telegram:
-- Alert HighMemoryUsage muncul
 
 ## Recovery
 
@@ -91,43 +81,49 @@ pkill stress-ng
 
 ---
 
-# 4. High Disk Usage Alert
+# 4. HighDiskUsage Alert
 
 ## Threshold
 
 ```text
-Storage > 80%
+Storage > 80% selama 1 menit
 ```
 
-## Check Available Space
+## Command
 
 ```bash
-df -h
+SIZE=$(df --output=avail -B1 / | tail -1 | awk '{print int($1*0.9)}')
+fallocate -l $SIZE /tmp/fill.img && rm /tmp/fill.img
 ```
 
-## Simulasi Disk Full
+Ukuran file disesuaikan otomatis agar disk usage melebihi 80%, kemudian
+file dihapus setelah selesai.
+
+---
+
+# 5. HighDiskIOWait Alert
+
+## Threshold
+
+```text
+Disk I/O wait > 20% selama 1 menit
+```
+
+## Command
 
 ```bash
-fallocate -l 6G largefile.img
+stress-ng --hdd 2 --hdd-bytes 1G --timeout 120s
 ```
-
-## Monitoring
-
-Grafana:
-- Disk usage meningkat
-
-Telegram:
-- Alert HighDiskUsage muncul
 
 ## Recovery
 
 ```bash
-rm largefile.img
+pkill stress-ng
 ```
 
 ---
 
-# 5. High Network Traffic Alert
+# 6. HighNetworkTraffic Alert
 
 ## Threshold
 
@@ -135,43 +131,27 @@ rm largefile.img
 Traffic > 10 MB/s selama 1 menit
 ```
 
-## Install iperf3
-
-```bash
-sudo apt install iperf3 -y
-```
-
-## Jalankan Server (DRC)
+## Setup Server (DRC Server — 10.10.1.20)
 
 ```bash
 iperf3 -s
 ```
 
-## Jalankan Client (DC)
+## Command (DC Server)
 
 ```bash
 iperf3 -c 10.10.1.20 -t 120
 ```
 
-## Monitoring
-
-Grafana:
-- Network traffic meningkat
-
-Telegram:
-- Alert HighNetworkTraffic muncul
-
 ## Recovery
 
-Tekan:
-
-```text
-CTRL + C
+```bash
+# Ctrl+C pada kedua sisi
 ```
 
 ---
 
-# 📊 Monitoring Dashboard
+# Monitoring Dashboard
 
 ## Prometheus
 
@@ -193,22 +173,11 @@ http://10.10.1.100:9093
 
 ---
 
-# 🔥 Tips Saat Demo
+# Catatan
 
-## Recommended Demo Flow
-
-1. Tampilkan Grafana dashboard
-2. Tampilkan Telegram group
-3. Jalankan stress test
-4. Tunggu alert muncul
-5. Jelaskan threshold & dampaknya
-
----
-
-# ⚠️ Notes
-
-- Semua threshold disesuaikan dengan spesifikasi VM:
-  - 1 vCPU
-  - 1 GB RAM
-
-- Environment menggunakan VMware virtual network sehingga kemungkinan terdapat sedikit fluktuasi performa selama stress testing.
+- Semua threshold menggunakan klausul `for: 1m` — alert hanya firing jika kondisi
+  bertahan minimal 1 menit, bukan akibat lonjakan sesaat.
+- Jika NodeDown aktif pada suatu instance, alert resource (CPU/Memory/Disk/Load/Network/IOWait)
+  untuk instance yang sama akan di-suppress otomatis via inhibit_rules.
+- Spesifikasi VM target pengujian: DC Server 1 vCPU, 1 GB RAM (10.10.1.10).
+- Monitoring Server memiliki 2 vCPU, 2 GB RAM dan tidak digunakan sebagai target stress test.
