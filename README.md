@@ -444,14 +444,8 @@ Dashboard Grafana dapat diakses secara publik melalui Cloudflare Tunnel.
 
 ## Cara Akses
 
-Buka URL tunnel yang aktif di browser. Dashboard langsung tampil tanpa login.
-
-Untuk akses dengan privileges viewer (read-only):
-
-| Field | Value |
-|---|---|
-| Username | viewer |
-| Password | viewer123 |
+Buka URL tunnel yang aktif di browser. Dashboard langsung tampil tanpa login
+(anonymous access dikonfigurasi via `grafana.ini`).
 
 ## Menjalankan Tunnel
 

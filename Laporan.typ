@@ -304,9 +304,9 @@ _Business Continuity Plan_ dan keputusan _failover_. Kedua, manajemen _alert sto
 tidak membahas mekanisme penekanan _alert_ redundan, dan Rahayu et al. menggunakan Zabbix yang
 memiliki pendekatan berbeda; penelitian ini mengimplementasikan _inhibit rules_ Alertmanager sebagai
 kontribusi teknis eksplisit. Ketiga, indikator keberlangsungan: penelitian ini merancang panel
-_Business Continuity Status_ sebagai indikator tunggal berbasis kondisi keempat _node_, yang tidak
-ditemukan pada penelitian sebelumnya dan secara langsung mendukung keputusan operasional administrator
-DRC.
+_Business Continuity Status_ sebagai indikator tunggal ketersediaan DC Server untuk keputusan
+_failover_, yang tidak ditemukan pada penelitian sebelumnya dan secara langsung mendukung keputusan
+operasional administrator DRC.
 
 = Kerangka Pemikiran
 
@@ -642,7 +642,8 @@ seksi panel yang dikelompokkan dalam empat area visualisasi (@fig-dashboard):
 
 - _Business Continuity Status_: panel penuh lebar menampilkan status operasional keseluruhan (Hijau =
   NORMAL --- DC OPERATIONAL; Merah = DISASTER --- DRC ACTIVE). Panel ini menggunakan ekspresi PromQL
-  gabungan berbasis metrik `up` keempat _node_.
+  `up{job="dc-server"}` yang secara langsung mencerminkan ketersediaan DC Server sebagai penentu
+  keputusan _failover_.
 - _Node Status_: empat kartu konektivitas individual untuk DC Server, DRC Server, Router VM, dan
   Monitoring Server.
 - _Performa DC Server, DRC Server, dan Router VM_: tiga panel _gauge_ (CPU, memori, _disk_) dan satu
