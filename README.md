@@ -85,7 +85,7 @@ Router VM berfungsi sebagai:
 
 Monitoring Server bertugas untuk:
 
-- Melakukan scraping metrics dari DC & DRC
+- Melakukan scraping metrics dari DC Server, DRC Server, Router VM, dan dirinya sendiri
 - Menampilkan visualisasi monitoring
 - Mengirim alert otomatis ke Telegram
 - Menjadi pusat observability seluruh infrastruktur
@@ -229,31 +229,29 @@ Digunakan untuk:
 Contoh alert Telegram (format aktual yang diterima):
 
 ```text
-INFRASTRUCTURE ALERT
-────────────────────────
-Server    : dc-server
-Severity  : warning
+🚨 INFRASTRUCTURE ALERT
+━━━━━━━━━━━━━━━━━━━━━━━━
+🖥  Server    :  dc-server
+🟡  Severity  :  Warning
 
-Penggunaan CPU Tinggi
-Penggunaan CPU pada dc-server melebihi 80% selama 1 menit.
-
-Fired: 03 Jun 2026, 14:30 WIB
-────────────────────────
+📋  Penggunaan CPU Tinggi
+📝  Penggunaan CPU pada dc-server melebihi 80% selama 1 menit.
+━━━━━━━━━━━━━━━━━━━━━━━━
+🕐  Fired: 03 Jun 2026, 14:30 WIB
 ```
 
 Contoh alert resolved:
 
 ```text
-ALERT RESOLVED
-────────────────────────
-Server    : dc-server
-Severity  : warning
+✅ ALERT RESOLVED
+━━━━━━━━━━━━━━━━━━━━━━━━
+🖥  Server    :  dc-server
+🟡  Severity  :  Warning
 
-Penggunaan CPU Tinggi
-Penggunaan CPU pada dc-server melebihi 80% selama 1 menit.
-
-Resolved: 03 Jun 2026, 14:33 WIB
-────────────────────────
+📋  Penggunaan CPU Tinggi
+📝  Penggunaan CPU pada dc-server melebihi 80% selama 1 menit.
+━━━━━━━━━━━━━━━━━━━━━━━━
+🕐  Resolved: 03 Jun 2026, 14:33 WIB
 ```
 
 ## Konfigurasi Token Telegram
